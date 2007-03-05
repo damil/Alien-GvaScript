@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <script src="../../../lib/Alien/GvaScript/lib/prototype.js"></script>
+    <link href="../../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css">
+    <script src="../../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
+
+    <link href="default.css"  rel="stylesheet"  type="text/css">
+    <script src="window.js"></script>
+
+    <script src="durand.js"></script>
+    <script src="bouvier.js"></script>
+
+    <script>
+
+
+      function displayChoices(liste) {  
+        var keymap = new GvaScript.KeyMap({});
+        var km_handler = keymap.eventHandler();
+        var div = $('liste1');
+        Event.observe(div, "keydown", km_handler);
+
+        var liste = liste == "bouvier" ? choices_bouv : choices;
+        if (div.choiceList) {
+            var c = div.choiceList;
+            c.updateContainer(div, liste);
+            c.onPing = function(event) {
+                var who = liste[event.index];
+                //alert(liste.length + "-- for index " + event.index);
+                $('result').innerHTML = who.CLE_PARTIE + ": " + who.NOM_ETAT_CIV + " " + who.PRE_PARTIE;
+                //win.destroy();
+                //Event.stopObserving(document, "keydown", km_handler);
+            };
+            c.onCancel = function(event) {
+                $('result').innerHTML = "nobody";
+                //win.destroy();
+                //Event.stopObserving(document, "keydown", km_handler);
+            };
+            div.focus();
+            return;
+        }
+        var cl = new GvaScript.ChoiceList(liste, {keymap: keymap});
+        cl.onPing = function(event) {
+           var who = liste[event.index];
+           //alert(liste.length + "-- for index " + event.index);
+           $('result').innerHTML = who.CLE_PARTIE + ": " + who.NOM_ETAT_CIV + " " + who.PRE_PARTIE;
+           //win.destroy();
+           //Event.stopObserving(document, "keydown", km_handler);
+         };
+         cl.onCancel = function(event) {
+           $('result').innerHTML = "nobody";
+           //win.destroy();
+           //Event.stopObserving(document, "keydown", km_handler);
+         };
+
+         //win.showCenter();        
+         cl.fillContainer(div);
+         div.focus();
+
+      }
+
+      function displayBouvier() {
+        var keymap = new GvaScript.KeyMap({});
+        var km_handler = keymap.eventHandler();
+        Event.observe($('liste2'), "keydown", km_handler);
+
+        var liste = choices_bouv;
+ 
+        var cl = new GvaScript.ChoiceList(liste, {keymap: keymap});
+        cl.onPing = function(event) {
+           var who = liste[event.index];
+           //alert(liste.length + "-- for index " + event.index);
+           $('result').innerHTML = who.CLE_PARTIE + ": " + who.NOM_ETAT_CIV + " " + who.PRE_PARTIE;
+           //win.destroy();
+           Event.stopObserving(document, "keydown", km_handler);
+         };
+         cl.onCancel = function(event) {
+           $('result').innerHTML = "nobody";
+           //win.destroy();
+           //Event.stopObserving(document, "keydown", km_handler);
+         };
+
+         //win.showCenter();        
+         cl.fillContainer($('liste2'));
+         $('liste2').focus();
+      }
+
+    </script>
+
+
+  </head>
+
+  <body>
+
+    <h1>Choice list</h1>
+
+
+<button onclick="displayChoices()">display default choices</button>
+<button onclick="displayChoices('bouvier')">display bouvier choices same container</button>
+<button onclick="displayBouvier()">display bouvier choices other container</button>
+
+<p>
+You chose : <span id="result"></span>
+<div id="liste1" style="width:40%; float:left; height: 500px; overflow: auto;" tabIndex="1"></div>
+<div id="liste2" style="width:40%; float:right; height: 500px; overflow: auto;" tabIndex="1"></div>
+  </body>
+</html>
