@@ -55,15 +55,22 @@ Alien::GvaScript - Gva extension to the prototype javascript framework
 GvaScript (pronounce "gee-vascript") is a javascript framework 
 born in Geneva, Switzerland (C<GVA> is the IATA code for 
 Geneva Cointrin International Airport). 
-It is built on top of the B<prototype>
-object-oriented javascript framework (L<http://prototype.conio.net>).
 
-It distributed using Perl distribution tools, but the actual
+It is built on top of the B<prototype>
+object-oriented javascript framework (L<http://prototype.conio.net>)
+and offers a number of extensions and widgets, such as 
+keymap handling, application-specific events, 
+autocompletion on input field, and a tree navigator 
+--- see L<Alien::GvaScript::Intro>.
+
+GvaScript is distributed using Perl  tools, but the actual
 content of the library is pure javascript; hence its 
 location in the Alien namespace (see the L<Alien> manifesto).
 
-Functionalities of GvaScript are described in 
-L<Alien::GvaScript::Intro>.
+GvaScript runtime library does not need Perl; you can integrate
+it in any other Web programming framework. Perl is only needed for
+developers who want to modify GvaScript sources and recreate a 
+distribution package.
 
 
 

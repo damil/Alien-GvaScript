@@ -211,6 +211,17 @@ select the first node of the tree
 
 select the last visible subnode of the tree
 
+=item C<Ctrl-PAGE_UP>
+
+select the enclosing node (useful if not positioned on a node, but
+within a long node content)
+
+=item C<Ctrl-PAGE_DOWN>
+
+select the displayed node after 
+the current enclosing node (useful if not positioned on a node, but
+within a long node content)
+
 =item C<Ctrl-R>
 
 refresh the node's content (if that node has an URL for dynamic
@@ -518,6 +529,11 @@ node down the page).
 
 Returns the previous tree node in page display order (i.e. previous
 visible node up the page).
+
+=item C<enclosingNode(elem)>
+
+Returns the first tree node that contains the given element
+(which might be for example a form input).
 
 =back
 

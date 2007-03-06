@@ -66,6 +66,10 @@ GvaScript.TreeNavigator = function(elem, options) {
     HOME:       this._homeHandler   .bindAsEventListener(this),
     END:        this._endHandler    .bindAsEventListener(this),
 
+    C_PAGE_UP  : this._ctrlPgUpHandler  .bindAsEventListener(this),
+    C_PAGE_DOWN: this._ctrlPgDownHandler.bindAsEventListener(this),
+
+
     // to think : do these handlers really belong to Tree.Navigator?
     PAGE_DOWN:function(event){window.scrollBy(0, document.body.clientHeight/2);
                               Event.stop(event)},
@@ -157,9 +161,7 @@ GvaScript.TreeNavigator.prototype = {
 
 
   openEnclosingNodes: function (elem) {
-    var node = Element.navigateDom(
-      $(elem), 'parentNode', this.classes.node, 
-      this.isRootElement.bind(this));
+    var node = this.enclosingNode(elem);
     while (node) {
       if (this.isClosed(node))
         this.open(node);
@@ -348,6 +350,13 @@ GvaScript.TreeNavigator.prototype = {
     // if no previous sibling
     return this.parentNode(node_init);
   },
+
+  enclosingNode:  function (elem) {
+    return Element.navigateDom(
+      $(elem), 'parentNode', this.classes.node, 
+      this.isRootElement.bind(this));
+  },
+
 
   // set node background to red for 200 milliseconds
   flash: function (node, milliseconds, color) {
@@ -621,6 +630,19 @@ GvaScript.TreeNavigator.prototype = {
     if (this.selectedNode) {
         this.select(this.lastVisibleSubnode());
         Event.stop(event);
+    }
+  },
+
+  _ctrlPgUpHandler: function (event) {
+    var node = this.enclosingNode(Event.element(event));
+    if (node) this.select(node);
+  },
+
+  _ctrlPgDownHandler: function (event) {
+    var node = this.enclosingNode(Event.element(event));
+    if (node) {
+      node = this.nextDisplayedNode(node);
+      if (node) this.select(node);
     }
   },
 
