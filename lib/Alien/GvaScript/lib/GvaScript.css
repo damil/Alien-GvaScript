@@ -44,6 +44,7 @@
 
 /* labels are clickable */
 .TN_label {
+  display: -moz-inline-box;
   cursor: pointer;
 }
 
