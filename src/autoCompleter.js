@@ -336,11 +336,11 @@ GvaScript.AutoCompleter.prototype = {
     }
 
     if (this.options.actionItems) {
-      var act = this.options.actionItems;
-      for (var k=0; k < act.length; k++) {
-        var action_label = act[k][this.options.labelField];
-        act[k][this.options.labelField] = "<span class=" + this.classes.action + ">" + action_label + "</span>";
-        this.choices[this.choices.length] = act[k];
+      var action = this.options.actionItems;
+      for (var k=0; k < action.length; k++) {
+        var action_label = action[k][this.options.labelField];
+        action[k][this.options.labelField] = "<span class=" + this.classes.action + ">" + action_label + "</span>";
+        this.choices[this.choices.length] = action[k];
       }
     }
 
@@ -370,6 +370,9 @@ GvaScript.AutoCompleter.prototype = {
         var index = cl.currentHighlightedIndex;
         if (index != undefined) {
           var elem = cl._choiceElem(index);
+          // Only return and click events should launch action items
+          if (ac.choices[index]['action'])
+              return;
           cl.fireEvent({type : "Ping", 
                         index: index}, elem, cl.container);
           // NO Event.stop() here
@@ -411,6 +414,12 @@ GvaScript.AutoCompleter.prototype = {
 
     var choice = this.choices[num];
     if (!choice) throw new Error("choice number is out of range : " + num);
+    var action = choice['action'];
+    if (action) {
+        this._removeDropdownDiv(); 
+        eval(action);
+        return;
+    }
     var value = this._valueFromChoice(num);
     if (value) {
       this.inputElement.value = this.lastValue = value;
@@ -419,11 +428,6 @@ GvaScript.AutoCompleter.prototype = {
       this.inputElement.select();
       this.fireEvent({type: "Complete", index: num}, elem, this.inputElement); 
     } else {
-       var action = choice['action'];
-       if (action) {
-         this._removeDropdownDiv(); 
-         eval(action);
-       }
     }
     // else WHAT ??
     //    - might have other things to trigger (JS actions / hrefs)

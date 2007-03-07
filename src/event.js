@@ -44,7 +44,7 @@ GvaScript.fireEvent = function(/* type, elem1, elem2, ... */) {
     if (typeof(handler) == "string") {
       // string will be eval-ed in a closure context where 'this', 'event',
       // 'target' and 'controller' are defined.
-      var eval_handler = function(){return eval( "(" + handler + ")" ) };
+      var eval_handler = function(){return eval( handler ) };
       handler = eval_handler.call(currentTarget); // target bound to 'this'
     }
 
