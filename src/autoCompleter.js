@@ -4,7 +4,7 @@ TODO:
   - ctor option: caseSensitive
   - BUG: if strict && noBlank && Ajax server down, MSIE takes 100% CPU
   - messages : choose language
-
+  - 'actions' are not documented because the design needs rethinking
 **/
 
 //----------------------------------------------------------------------
