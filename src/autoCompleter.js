@@ -116,6 +116,13 @@ GvaScript.AutoCompleter.prototype = {
     Element.addClassName(div, this.classes.message);
   },
 
+  //
+  // TODO: TO BE REMOVED OR COMMITED TO ALIEN PACKAGE
+  //
+  setdatasource : function(datasource) {
+    this.updateChoices = this._updateChoicesFunction(datasource);
+  },
+
   fireEvent: GvaScript.fireEvent, // must be copied here for binding "this" 
 
 
@@ -356,7 +363,9 @@ GvaScript.AutoCompleter.prototype = {
       var cl = this.choiceList = new GvaScript.ChoiceList(this.choices, {
         labelField : this.options.labelField
         });
-
+      if ( this.choiceElementHTML ) {
+        cl.choiceElementHTML = this.choiceElementHTML;
+      }
       cl.onHighlight = function(event) {
         if (ac.options.typeAhead) 
           ac._typeAhead();

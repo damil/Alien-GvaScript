@@ -59,7 +59,7 @@ Object.extend(Element, {
          parent = parent.parentNode;
        }
        parent  = parent || document.body;
-       offset -= parent.offsetTop
+       //offset -= parent.offsetTop
      }
 
      var min = offset - (parent.clientHeight * (100-percentage)/100);
