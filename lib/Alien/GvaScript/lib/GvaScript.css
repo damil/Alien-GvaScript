@@ -5,6 +5,7 @@
   background-color:#ecf2ff;
   border: 1px solid #183E6C;
   padding: 3px;
+  padding-right: 25px; /* so that scrollbars don't hide the content */
   color: #183E6C;
   overflow-y: auto; 
 }

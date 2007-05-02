@@ -1,5 +1,8 @@
 Revision history for Alien-GvaScript
 
+1.07    02.05.2007
+  - autocompleter : support for "" in strict mode
+
 1.06    22.04.2007
   - fix strict mode when autoSuggest=false
 

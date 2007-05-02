@@ -237,12 +237,28 @@ GvaScript.AutoCompleter.prototype = {
         var async = this.updateChoices(); 
 
         // can only check if in synchronous mode
-        if (!async && this.choices.length == 1) { // got one single choice
-          this.inputElement.value 
-            = this.lastValue
-            = this._valueFromChoice(0); // canonic form
-          this.fireEvent({type: "Complete", index: 0}, this.inputElement); 
-          valueOK = true;
+        if (!async) {
+
+          // if got one single choice, take the canonic form of that one
+          if (this.choices.length == 1) { 
+            this.inputElement.value 
+              = this.lastValue
+              = this._valueFromChoice(0); // canonic form
+            this.fireEvent({type: "Complete", index: 0}, this.inputElement); 
+            valueOK = true;
+          }
+
+          // if got many choices and our input is "", check if it belongs there
+          else if (   this.inputElement.value == "" 
+                   && this.choices.length > 1 ) {
+            for (var i = 0; i < this.choices.length; i++) {
+              if (this._valueFromChoice(i) == "") {
+                valueOK = true;
+                break;
+              }
+            }
+          }
+
         }
       }
 
