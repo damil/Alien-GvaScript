@@ -159,6 +159,12 @@ GvaScript.TreeNavigator.prototype = {
       this.loadContent(node);
   },
 
+  toggle: function(node) {
+    if (this.isClosed(node))
+        this.open(node);
+    else
+        this.close(node);
+  },
 
   openEnclosingNodes: function (elem) {
     var node = this.enclosingNode(elem);
