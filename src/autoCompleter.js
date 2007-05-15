@@ -367,6 +367,7 @@ GvaScript.AutoCompleter.prototype = {
     div.style.top       = coords[1] + dim.height + "px";
     div.style.maxHeight = this.options.maxHeight + "px";
     div.style.minWidth  = this.options.minWidth + "px";
+    div.style.zIndex    = 32767; //Seems to be the highest valide value
 
     // insert into DOM
     document.body.appendChild(div);
