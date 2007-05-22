@@ -1,5 +1,8 @@
 Revision history for Alien-GvaScript
 
+1.08    22.05.2007
+  - Event.stop() for keypad '*' and '-' in treeNavigator
+
 1.07    02.05.2007
   - autocompleter : support for "" in strict mode
 
