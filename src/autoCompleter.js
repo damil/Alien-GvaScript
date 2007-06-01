@@ -249,16 +249,24 @@ GvaScript.AutoCompleter.prototype = {
           }
 
           // if got many choices and our input is "", check if it belongs there
-          else if (   this.inputElement.value == "" 
-                   && this.choices.length > 1 ) {
-            for (var i = 0; i < this.choices.length; i++) {
-              if (this._valueFromChoice(i) == "") {
-                valueOK = true;
-                break;
+          else {
+            //if ( this.inputElement.value == "" && this.choices.length > 1 ) {
+            if ( this.inputElement.value && this.choices.length > 1 ) {
+              for (var i = 0; i < this.choices.length; i++) {
+                //if length of one element of choicelist is same as length of input.value
+                //then they are identical (here no need to check caseSensitive since it is
+                //being done when generating choiceList
+                if (this._valueFromChoice(i).length == this.inputElement.value.length) {
+                  this.inputElement.value 
+                      = this.lastValue
+                      = this._valueFromChoice(i); // canonic form
+                  this.fireEvent({type: "Complete", index: i}, this.inputElement); 
+                  valueOK = true;
+                  break;
+                }
               }
             }
           }
-
         }
       }
 
