@@ -30,6 +30,7 @@ GvaScript.AutoCompleter = function(datasource, options) {
     minWidth         : 200,       // pixels
     offsetX          : 0,         // pixels
     strict           : false,     // will not force to take value from choices
+    completeOnTab    : true,     // will not force to take value from choices
     blankOK          : true,
     colorIllegal     : "red",
     scrollCount      : 5,
@@ -209,8 +210,14 @@ GvaScript.AutoCompleter.prototype = {
 
     // check if this is a "real" blur, or just a clik on dropdownDiv
     if (this.dropdownDiv) {
-      var x = Event.pointerX(window.event);
-      var y = Event.pointerY(window.event);
+      var targ;
+      var e = window.event;
+      if (e.target) targ = e.target;
+      else if (e.srcElement) targ = e.srcElement;
+      if (targ.nodeType == 3) // defeat Safari bug
+          targ = targ.parentNode;
+      var x = Event.pointerX(e) || Position.cumulativeOffset(targ)[0];
+      var y = Event.pointerY(e) || Position.cumulativeOffset(targ)[1];
       if (Position.within(this.dropdownDiv, x, y)) {
         // not a "real" blur ==> bring focus back to the input element
         this.inputElement.focus(); // will trigger again this.autocomplete()
@@ -233,7 +240,7 @@ GvaScript.AutoCompleter.prototype = {
       }
 
       // else update choices and then check
-      else { 
+      else {
         var async = this.updateChoices(); 
 
         // can only check if in synchronous mode
@@ -438,7 +445,10 @@ GvaScript.AutoCompleter.prototype = {
       cl.fillContainer(this._mkDropdownDiv());
 
       // playing with the keymap: when tabbing, should behave like RETURN
+      var autocompleter = this;
       cl.keymap.rules[0].TAB = cl.keymap.rules[0].S_TAB = function(event) {
+        if (!autocompleter.options.completeOnTab)
+            return;
         var index = cl.currentHighlightedIndex;
         if (index != undefined) {
           var elem = cl._choiceElem(index);
@@ -493,14 +503,14 @@ GvaScript.AutoCompleter.prototype = {
         return;
     }
     var value = this._valueFromChoice(num);
-    if (value) {
+    //if (value) {
       this.inputElement.value = this.lastValue = value;
       this.inputElement.jsonValue = choice;
       this._removeDropdownDiv();
       this.inputElement.select();
       this.fireEvent({type: "Complete", index: num}, elem, this.inputElement); 
-    } else {
-    }
+    //} else {
+    //}
     // else WHAT ??
     //    - might have other things to trigger (JS actions / hrefs)
   }
