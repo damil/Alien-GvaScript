@@ -495,7 +495,7 @@ GvaScript.AutoCompleter.prototype = {
     var num = parseInt(elem.id.match(/\.(\d+)$/)[1], 10);
 
     var choice = this.choices[num];
-    if (!choice) throw new Error("choice number is out of range : " + num);
+    if (!choice && choice!="" && choice!=0) throw new Error("choice number is out of range : " + num);
     var action = choice['action'];
     if (action) {
         this._removeDropdownDiv(); 
