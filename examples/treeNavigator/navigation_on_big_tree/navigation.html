@@ -1,0 +1,174 @@
+<html><head><title>DBI</title>
+
+
+        <link href="../../../lib/Alien/GvaScript/lib/PodPomWeb.css" rel="stylesheet" type="text/css">
+        <link href="../../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css">
+        <script src="../../../lib/Alien/GvaScript/lib/prototype1_6.js"></script>
+        <script src="../../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
+
+
+        <script>
+            var treeNavigator;
+            function setup() {  
+                new GvaScript.TreeNavigator(
+                'TN_tree', 
+                {selectFirstNode: location.hash ? false : true}
+                );
+            }
+            window.onload = setup;
+            function jumpto_href(event) {
+                var label = event.controller.label(event.target);
+                if (label && label.tagName == "A") {
+                    label.focus();
+                    return Event.stopNone;
+                }
+            }
+        </script>
+        <style>
+            #TOC .TN_content .TN_label {font-size: 80%; font-weight: bold}
+            #TOC .TN_leaf    .TN_label {font-weight: normal}
+
+            #ref_box {
+                clear: right;
+                float: right; 
+                text-align: right; 
+                font-size: 80%;
+            }
+            #title_descr {
+                clear: right;
+                float: right; 
+                font-style: italic; 
+                margin-top: 8px;
+                margin-bottom: 8px;
+                padding: 5px;
+                text-align: center;
+                border: 3px double #888;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="TN_tree">
+            <div class="TN_node">
+                <h1 class="TN_label TN_selected">DBI</h1>
+                <small>(installed 23.08.07)</small>
+
+
+                <span id="title_descr">Database independent interface for Perl</span>
+
+                <span id="ref_box">
+
+                    <a href="/perldoc/source/DBI">Source</a><br>
+                    CPAN 
+                    <a href="http://www.annocpan.org/?mode=search&amp;field=Module&amp;name=DBI" target="_blank">Anno</a> |
+                    <a href="http://www.cpanforum.com/search/?what=modulee&amp;name=DBI" target="_blank">Forum</a> |
+                    <a href="http://cpan.uwinnipeg.ca/search/?mode=modulee&amp;query=DBI" target="_blank">Kobes</a>
+                </span>
+
+
+                <div class="TN_content">
+                    <div>
+                        <div>
+                            <div>
+                                <div>
+                                    <div class="TN_node" onping="jumpto_href"
+                                        id="node1">
+                                        <h3 class="TN_label">Table of contents
+                                        1</h3>
+                                        <div class="TN_content">
+                                            test1
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <div>
+                                <div>
+
+                                    <div class="TN_node" onping="jumpto_href"
+                                        id="node2">
+                                        <h3 class="TN_label">Table of contents
+                                        2</h3>
+                                        <div class="TN_content">
+                                            test2
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <div>
+                                <div>
+
+                                    <div class="TN_node" onping="jumpto_href"
+                                        id="node3">
+                                        <h3 class="TN_label">Table of contents
+                                        3</h3>
+                                        <div class="TN_content">
+                                            test3
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <div>
+                                <div>
+
+                                    <div class="TN_node" onping="jumpto_href"
+                                        id="node4">
+                                        <h3 class="TN_label">Table of content
+                                        4</h3>
+                                        <div class="TN_content">
+                                            test4
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <div>
+                                <div>
+
+                                    <div class="TN_node" onping="jumpto_href"
+                                        id="node5">
+                                        <h3 class="TN_label">Table of contents
+                                        5</h3>
+                                        <div class="TN_content">
+                                            test5
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
