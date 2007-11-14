@@ -194,6 +194,9 @@ GvaScript.TreeNavigator.prototype = {
       if (!content) {
         content = document.createElement('div');
         content.className = this.classes.content;
+        if ( node.getAttribute('content_type') ) {
+            content.className += " " + node.getAttribute('content_type');
+        }
         content.innerHTML = "loading " + url;
         node.insertBefore(content, null); // null ==> insert at end of node
       }
