@@ -10,6 +10,21 @@
     <script src="durand.js"></script>
     <script src="bouvier.js"></script>
 
+    <style>
+    .testclass {
+        background-color: #eeeef2;
+        width: 100%;
+        padding: 0px;
+        border-collapse: collapse; 
+    }
+    .testclass tr {
+        padding:0px;
+    }
+    #liste1 {
+        width: 100%;
+        overflow-x: hidden;
+    }
+    </style>
     <script>
 
       function build_label(h) {
@@ -51,7 +66,7 @@
                 liste, 
                 {
                   keymap: keymap, 
-                  htmlWrapper: function(html) {return "<table>"+html+"</table>"},
+                  htmlWrapper: function(html) {return "<table class='testclass'>"+html+"</table>"},
                   choiceItemTagName: "tr"
                 }
         );
@@ -82,6 +97,6 @@
 
 <p>
 You chose : <span id="result"></span>
-<div id="liste1" style="width:80%; float:left; height: 500px; overflow: auto;" tabIndex="1"></div>
+<div id="liste1" style="width:80%; float:left; height: 500px;" tabIndex="1"></div>
   </body>
 </html>
