@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <script src="../../../lib/Alien/GvaScript/lib/prototype.js"></script>
+    <link href="../../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css">
+    <script src="../../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
+
+    <link href="default.css"  rel="stylesheet"  type="text/css">
+    <script src="window.js"></script>
+
+    <script src="durand.js"></script>
+    <script src="bouvier.js"></script>
+
+    <script>
+
+      function build_label(h) {
+          var list = new Array();
+          for (var i=0; i<h.length; i++){
+              var p = h[i];
+              var score = Math.round(p.SCORE * 100);
+              var label = '<td style="padding-right:25px;">' + p.CLE_PARTIE + '</td>';
+              label     += '<td style="padding-right:25px;">' + p.NOM_ETAT_CIV + '</td>';
+              label     += '<td style="padding-right:5px;">' + p.PRE_PARTIE + '</td>';
+              label     += '<td style="padding-right:5px;">' + p.ADR_PARTIE + '</td>';
+              list.push({'label': label});
+          }
+          return list;
+      }
+
+      function displayChoices(liste) {  
+        var keymap = new GvaScript.KeyMap({});
+        var km_handler = keymap.eventHandler();
+        var div = $('liste1');
+        Event.observe(div, "keydown", km_handler);
+
+        var liste = build_label(choices_bouv);
+        if (div.choiceList) {
+            var c = div.choiceList;
+            c.updateContainer(div, liste);
+            c.onPing = function(event) {
+                var who = liste[event.index];
+                $('result').innerHTML = who.CLE_PARTIE + ": " + who.NOM_ETAT_CIV + " " + who.PRE_PARTIE;
+            };
+            c.onCancel = function(event) {
+                $('result').innerHTML = "nobody";
+            };
+            div.focus();
+            return;
+        }
+
+        var cl = new GvaScript.ChoiceList(
+                liste, 
+                {
+                  keymap: keymap, 
+                  htmlWrapper: function(html) {return "<table>"+html+"</table>"},
+                  choiceItemTagName: "tr"
+                }
+        );
+        cl.onPing = function(event) {
+           var who = liste[event.index];
+           $('result').innerHTML = who.CLE_PARTIE + ": " + who.NOM_ETAT_CIV + " " + who.PRE_PARTIE;
+         };
+         cl.onCancel = function(event) {
+           $('result').innerHTML = "nobody";
+         };
+
+         cl.fillContainer(div);
+         div.focus();
+
+      }
+
+    </script>
+
+
+  </head>
+
+  <body>
+
+    <h1>Choice list</h1>
+
+
+<button onclick="displayChoices('bouvier')">display bouvier choices same container</button>
+
+<p>
+You chose : <span id="result"></span>
+<div id="liste1" style="width:80%; float:left; height: 500px; overflow: auto;" tabIndex="1"></div>
+  </body>
+</html>
