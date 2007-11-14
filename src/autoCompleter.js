@@ -70,7 +70,8 @@ GvaScript.AutoCompleter = function(datasource, options) {
 
   // prepare some stuff to be reused when binding to inputElements
   this.reuse = {
-    onblur : this._blurHandler.bindAsEventListener(this)
+    onblur  : this._blurHandler.bindAsEventListener(this),
+    onclick : this._clickHandler.bindAsEventListener(this)
   };
 }
 
@@ -97,6 +98,7 @@ GvaScript.AutoCompleter.prototype = {
       this.keymap.observe("keydown", elem, { preventDefault:false,
                                              stopPropagation:false});
       Element.observe(elem, "blur", this.reuse.onblur);
+      Element.observe(elem, "click", this.reuse.onclick);
     }
 
     // initialize time stamps
@@ -284,6 +286,16 @@ GvaScript.AutoCompleter.prototype = {
         
     this.fireEvent("Leave", this.inputElement);
     this.inputElement = null;
+  },
+
+  _clickHandler: function(event) {
+    var x = event.offsetX || event.layerX; // MSIE || FIREFOX
+    if (x > Element.getDimensions(this.inputElement).width - 20) {
+        if ( this.dropdownDiv )
+            this._removeDropdownDiv(event);
+        else
+            this._keyDownHandler(event);
+    }
   },
 
   _keyDownHandler: function(event) { 
