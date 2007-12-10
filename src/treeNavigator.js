@@ -243,7 +243,7 @@ GvaScript.TreeNavigator.prototype = {
 
         if (this.isVisible(label)) {
           if (this.options.autoScrollPercentage !== null)
-            Element.autoScroll(label, this.options.autoScrollPercentage);
+            Element.autoScroll(label, this.rootElement, this.options.autoScrollPercentage);
           if (this.options.tabIndex >= 0)          
             label.focus();
         }

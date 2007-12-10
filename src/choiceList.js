@@ -146,7 +146,7 @@ GvaScript.ChoiceList.prototype = {
     Element.addClassName(elem, this.classes.choiceHighlight);
 
     if (autoScroll) 
-      Element.autoScroll(elem, 30); // 30%
+      Element.autoScroll(elem, this.container, 30); // 30%
 
     this.fireEvent({type: "Highlight", index: newIndex}, elem, this.container);
   },
