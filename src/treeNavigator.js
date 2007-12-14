@@ -25,7 +25,8 @@ GvaScript.TreeNavigator = function(elem, options) {
     autoScrollPercentage: 20,
     classes             : {},
     keymap              : null,
-    selectFirstNode     : true
+    selectFirstNode     : true,
+    forceDoublePing     : false
   };
 
   this.options = Class.checkOptions(defaultOptions, options);
@@ -213,7 +214,7 @@ GvaScript.TreeNavigator.prototype = {
   },
 
   select: function (node) {
-    var previousNode  = this.selectedNode;
+    var previousNode  = this.previousNode = this.selectedNode;
 
     // re-selecting the current node is a no-op
     if (node == previousNode) return;
@@ -421,7 +422,10 @@ GvaScript.TreeNavigator.prototype = {
   
   _labelClickHandler : function(event, label) {
     var node = label.parentNode;
+    var selected = this.previousNode == node;
     this.select(node);
+    if (!selected && this.options.forceDoublePing)
+        return;
     var to_stop = this.fireEvent("Ping", node, this.rootElement);
     Event.detailedStop(event, to_stop || Event.stopAll);
   },
