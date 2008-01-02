@@ -75,19 +75,21 @@ Object.extend(Element, {
   },
 
   outerHTML: function(elem) {
-     var tag = elem.tagName;
-     if (!tag)
-         return elem;
-     if (elem.outerHTML) {
-         return elem.outerHTML;
-     } else {
-         var attrs = elem.attributes;
-         var str = "<" + tag;
-         for (var i = 0; i < attrs.length; i++)
-             str += " " + attrs[i].name + "=\"" + attrs[i].value + "\"";
-
-         return str + ">" + elem.innerHTML + "</" + elem.tagName + ">";
-     }
+    var tag = elem.tagName;
+    if (!tag)
+      return elem;           // not an element node
+    if (elem.outerHTML)
+      return elem.outerHTML; // has builtin implementation 
+    else {
+      var attrs = elem.attributes;
+      var str = "<" + tag;
+      for (var i = 0; i < attrs.length; i++) {
+        var val = attrs[i].value;
+        var delim = val.indexOf('"') > -1 ? "'" : '"';
+        str += " " + attrs[i].name + "=" + delim + val + delim;
+      }
+      return str + ">" + elem.innerHTML + "</" + tag + ">";
+    }
   }
 
 });

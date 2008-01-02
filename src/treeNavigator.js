@@ -94,8 +94,7 @@ GvaScript.TreeNavigator = function(elem, options) {
     // if the tree labels have no tabIndex, only the document receives 
     // keyboard events
     var target = this.options.tabIndex < 0 ? document : elem;
-    this.keymap.observe("keydown", target, {preventDefault:false,
-                                            stopPropagation:false});
+    this.keymap.observe("keydown", target, Event.stopNone);
   }
 
   // selecting the first node

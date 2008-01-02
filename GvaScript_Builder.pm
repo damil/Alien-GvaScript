@@ -33,7 +33,8 @@ sub generate_js { # concatenates sources below into "GvaScript.js"
   require "lib/Alien/GvaScript.pm";
 
   my @sources = qw/protoExtensions event keyMap 
-                   treeNavigator choiceList autoCompleter/;
+                   treeNavigator choiceList autoCompleter
+                   repeat form/;
   my $dest = "lib/Alien/GvaScript/lib/GvaScript.js";
   chmod 0777, $dest;
   open my $dest_fh, ">$dest"  or die "open >$dest : $!";
