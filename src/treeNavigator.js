@@ -521,11 +521,14 @@ GvaScript.TreeNavigator.prototype = {
     var selectedNode = this.selectedNode;
     if (selectedNode) {
       var nextNode = this.nextDisplayedNode(selectedNode);
-      if (nextNode)
+      if (nextNode) {
         this.select(nextNode);
-      else
-        this.flash(selectedNode); 
-      Event.stop(event);
+        Event.stop(event);
+      }
+      else {
+        // this.flash(selectedNode); // commented: do nothing
+        // let default behaviour happen
+      }
     }
   },
 
@@ -533,11 +536,14 @@ GvaScript.TreeNavigator.prototype = {
     var selectedNode = this.selectedNode;
     if (selectedNode) {
       var prevNode = this.previousDisplayedNode(selectedNode);
-      if (prevNode)
+      if (prevNode) {
         this.select(prevNode);
-      else
-        this.flash(selectedNode); 
-      Event.stop(event);
+        Event.stop(event);
+      }
+      else {
+        // this.flash(selectedNode); // commented: do nothing
+        // let default behaviour happen
+      }
     }
   },
 
