@@ -34,7 +34,9 @@ GvaScript.AutoCompleter = function(datasource, options) {
     blankOK          : true,
     colorIllegal     : "red",
     scrollCount      : 5,
-    actionItems      : null       // choice items to invoke javascript method
+    actionItems      : null,       // choice items to invoke javascript method
+    multivalued      : false,
+    multivalue_separator :  /[;,\s\t]/
   };
 
   // more options for array datasources
@@ -52,6 +54,13 @@ GvaScript.AutoCompleter = function(datasource, options) {
     action          : "AC_action"
   };
   this.classes = Class.checkOptions(defaultClasses, this.options.classes);
+  
+  this.separator = new RegExp(this.options.multivalue_separator);
+  this.default_separator_char = " "; //character used when the values are joined
+
+  if (this.options.multivalued && this.options.strict) {
+    throw new Error("not allowed to have a mutlivalued autocompleter in strict mode");
+  }
 
   this.dropdownDiv = null;
 
@@ -150,8 +159,12 @@ GvaScript.AutoCompleter.prototype = {
         if (this._runningAjax)
           this._runningAjax.transport.abort();
         Element.addClassName(autocompleter.inputElement, this.classes.loading);
+        var toCompleteVal = this.inputElement.value;
+        if (this.options.multivalued) {
+            toCompleteVal = this._getValueToComplete();
+        }
         this._runningAjax = new Ajax.Request(
-          datasource + autocompleter.inputElement.value,
+          datasource + toCompleteVal,
           {asynchronous: true,
            onSuccess: function(xhr) {
               autocompleter._runningAjax = null;
@@ -230,7 +243,6 @@ GvaScript.AutoCompleter.prototype = {
       }
     }
     if (this.options.strict) {
-
       // initially : not OK unless options.blankOK and value is empty
       var valueOK = this.options.blankOK && this.inputElement.value == "";
 
@@ -244,10 +256,8 @@ GvaScript.AutoCompleter.prototype = {
       // else update choices and then check
       else {
         var async = this.updateChoices(); 
-
         // can only check if in synchronous mode
         if (!async) {
-
           // if got one single choice, take the canonic form of that one
           if (this.choices.length == 1) { 
             this.inputElement.value 
@@ -299,7 +309,11 @@ GvaScript.AutoCompleter.prototype = {
   },
 
   _keyDownHandler: function(event) { 
-    var valueLength = (this.inputElement.value || "").length; 
+    var value = this.inputElement.value; 
+    if (this.options.multivalued) {
+        value = this._getValueToComplete(); 
+    }
+    var valueLength = (value || "").length; 
     if (valueLength < this.options.minimumChars)
       this.displayMessage("liste de choix à partir de " 
                             + this.options.minimumChars + " caractères");
@@ -342,7 +356,11 @@ GvaScript.AutoCompleter.prototype = {
 
     // OK, we really have to check the value now
     this._timeLastCheck = now;
-    var value = this.inputElement.value;
+    var value = this.inputElement.value; //normal case
+    if (this.options.mutlivalued) { 
+        var vals = (this.inputElement.value).split(this.separator);
+        var value = vals[-1];
+    }
     if (value != this.lastValue) {
       this.lastValue = value;
       this.choices = null; // value changed, so invalidate previous choices
@@ -356,6 +374,28 @@ GvaScript.AutoCompleter.prototype = {
     }
   },
 
+  // return the value to be completed; added for multivalued autocompleters                  
+  _getValueToComplete : function() {
+    var toCompleteVal = this.inputElement.value;
+    if (this.options.multivalued) {
+        vals = (this.inputElement.value).split(this.separator);
+        toCompleteVal = vals[vals.length-1].replace(/\s+/, "");
+    }
+    return toCompleteVal;
+  },
+
+  // set the value of the field; used to set the new value of the field once the user 
+  // pings a choice item 
+  _setValue : function(value) {              
+    if (!this.options.multivalued) {
+        this.inputElement.value = value;
+    } else {
+        var vals = (this.inputElement.value).split(this.separator);
+        vals[vals.length-1] = value;
+        this.inputElement.value = vals.join(this.default_separator_char); 
+    }
+  
+  },
 
   _typeAhead : function () {
     var curLen     = this.lastValue.length;
@@ -413,8 +453,9 @@ GvaScript.AutoCompleter.prototype = {
 
 
   _displayChoices: function() {
+    var toCompleteVal = this._getValueToComplete();
     if (!this.choices) {
-      var asynch = this.updateChoices();
+      var asynch = this.updateChoices(toCompleteVal);
       if (asynch) return; // updateChoices() is responsible for calling back
     }
 
@@ -502,10 +543,11 @@ GvaScript.AutoCompleter.prototype = {
   },
 
 
-
+  //triggered by the onPing event on the choicelist, i.e. when the user selects
+  //one of the choices in the list
   _completeFromChoiceElem: function(elem) {
+    // identify the selected line and handle it
     var num = parseInt(elem.id.match(/\.(\d+)$/)[1], 10);
-
     var choice = this.choices[num];
     if (!choice && choice!="" && choice!=0) throw new Error("choice number is out of range : " + num);
     var action = choice['action'];
@@ -514,12 +556,18 @@ GvaScript.AutoCompleter.prototype = {
         eval(action);
         return;
     }
+
+    // add the value to the input element
     var value = this._valueFromChoice(num);
     //if (value) {
-      this.inputElement.value = this.lastValue = value;
-      this.inputElement.jsonValue = choice;
+      this.lastValue = value;
+      this._setValue(value)
+//      this.inputElement.value = this.lastValue = value;
+      this.inputElement.jsonValue = choice; //never used elsewhere?!
       this._removeDropdownDiv();
-      this.inputElement.select();
+      if (!this.options.multivalued) {
+        this.inputElement.select();
+      } 
       this.fireEvent({type: "Complete", index: num}, elem, this.inputElement); 
     //} else {
     //}
@@ -528,3 +576,4 @@ GvaScript.AutoCompleter.prototype = {
   }
 
 }
+
