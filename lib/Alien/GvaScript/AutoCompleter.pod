@@ -236,6 +236,14 @@ How many items to skip when hitting the
 C<PAGE_UP> or C<PAGE_DOWN> keys. 
 Default is 5
 
+=item htmlWrapper
+
+See the C<ChoiceList> documentation.
+
+=item choiceItemTagName
+
+See the C<ChoiceList> documentation.
+
 =back
 
 =head1 METHODS

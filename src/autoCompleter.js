@@ -36,7 +36,9 @@ GvaScript.AutoCompleter = function(datasource, options) {
     scrollCount      : 5,
     actionItems      : null,       // choice items to invoke javascript method
     multivalued      : false,
-    multivalue_separator :  /[;,\s\t]/
+    multivalue_separator :  /[;,\s\t]/,
+    choiceItemTagName: "div",
+    htmlWrapper      : function(html) {return html;}
   };
 
   // more options for array datasources
@@ -471,8 +473,10 @@ GvaScript.AutoCompleter.prototype = {
     if (this.choices.length > 0) {
       var ac = this;
       var cl = this.choiceList = new GvaScript.ChoiceList(this.choices, {
-        labelField : this.options.labelField,
-        scrollCount: this.options.scrollCount
+        labelField        : this.options.labelField,
+        scrollCount       : this.options.scrollCount,
+        choiceItemTagName : this.options.choiceItemTagName,
+        htmlWrapper       : this.options.htmlWrapper
       });
 
 

@@ -215,10 +215,10 @@ by dots. </p>
 <p>The <code>path</code> is unique within any nesting of repeat elements,
 and therefore is typically used for ids or for
 names of input elements :</p>
-<pre>  E&lt;lt&gt;tr repeat="bar"E&lt;gt&gt;
-    E&lt;lt&gt;tdE&lt;gt&gt;Item #{bar.ix}E&lt;lt&gt;/tdE&lt;gt&gt;
-    E&lt;lt&gt;tdE&lt;gt&gt;E&lt;lt&gt;input name="#{bar.path}.buz"E&lt;gt&gt;E&lt;lt&gt;/tdE&lt;gt&gt;
-  E&lt;lt&gt;/trE&lt;gt&gt;</pre>
+<pre>  &lt;tr repeat="bar"&gt;
+    &lt;td&gt;Item #{bar.ix}&lt;/td&gt;
+    &lt;td&gt;&lt;input name="#{bar.path}.buz"&gt;&lt;/td&gt;
+  &lt;/tr&gt;</pre>
 
 <p>Within the 3rd repetition block of <code>bar</code>, nested
 within the 2nd repetition block of <code>foo</code>, the value of

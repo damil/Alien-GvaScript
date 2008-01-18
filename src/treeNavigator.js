@@ -421,12 +421,13 @@ GvaScript.TreeNavigator.prototype = {
   
   _labelClickHandler : function(event, label) {
     var node = label.parentNode;
-    var selected = this.previousNode == node;
+    var was_selected = this.previousNode == node;
+    var event_stop_mode;
+
     this.select(node);
-    if (!selected && this.options.forceDoublePing)
-        return;
-    var to_stop = this.fireEvent("Ping", node, this.rootElement);
-    Event.detailedStop(event, to_stop || Event.stopAll);
+    if (was_selected || ! this.options.forceDoublePing)
+      event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
+    Event.detailedStop(event, event_stop_mode || Event.stopAll);
   },
 
   _buttonClickHandler : function(event) {
