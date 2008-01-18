@@ -161,10 +161,7 @@ GvaScript.AutoCompleter.prototype = {
         if (this._runningAjax)
           this._runningAjax.transport.abort();
         Element.addClassName(autocompleter.inputElement, this.classes.loading);
-        var toCompleteVal = this.inputElement.value;
-        if (this.options.multivalued) {
-            toCompleteVal = this._getValueToComplete();
-        }
+        var toCompleteVal = this._getValueToComplete();
         this._runningAjax = new Ajax.Request(
           datasource + toCompleteVal,
           {asynchronous: true,
@@ -188,7 +185,7 @@ GvaScript.AutoCompleter.prototype = {
     else if (typeof datasource == "function") { // callback
       return function() {
         this.inputElement.style.backgroundColor = ""; // remove colorIllegal
-        this.choices = datasource(this.inputElement.value);
+        this.choices = datasource(this._getValueToComplete());
         return false; // not asynchronous
       };
     }
@@ -199,7 +196,8 @@ GvaScript.AutoCompleter.prototype = {
         if (this.options.ignorePrefix)
           this.choices = datasource;
         else {
-          var regex = new RegExp("^" + this.inputElement.value,
+            var toCompleteVal = this._getValueToComplete();
+            var regex = new RegExp("^" + toCompleteVal,
                                  this.options.caseSensitive ? "" : "i");
           var matchPrefix = function(choice) {
 	    var value;
@@ -311,10 +309,7 @@ GvaScript.AutoCompleter.prototype = {
   },
 
   _keyDownHandler: function(event) { 
-    var value = this.inputElement.value; 
-    if (this.options.multivalued) {
-        value = this._getValueToComplete(); 
-    }
+    var value = this._getValueToComplete(); 
     var valueLength = (value || "").length; 
     if (valueLength < this.options.minimumChars)
       this.displayMessage("liste de choix à partir de " 
@@ -393,8 +388,12 @@ GvaScript.AutoCompleter.prototype = {
         this.inputElement.value = value;
     } else {
         var vals = (this.inputElement.value).split(this.separator);
+        var result = (this.separator).exec(this.inputElement.value);
+        if (result) {
+            var user_sep = result[0];
+        }
         vals[vals.length-1] = value;
-        this.inputElement.value = vals.join(this.default_separator_char); 
+        this.inputElement.value = (vals).join(user_sep); 
     }
   
   },
