@@ -1,3 +1,7 @@
+/* OPEN BUG : MSIE strange interaction between tabindex/onfocus
+   => forceDoublePing / labelDblClickHandler only work if tabindex >= 0 */
+
+
 //-----------------------------------------------------
 // Constructor
 //-----------------------------------------------------
@@ -424,11 +428,28 @@ GvaScript.TreeNavigator.prototype = {
     var was_selected = this.previousNode == node;
     var event_stop_mode;
 
-    this.select(node);
-    if (was_selected || ! this.options.forceDoublePing)
+    if (!was_selected) this.select(node);
+
+    var should_ping = was_selected || !this.options.forceDoublePing;
+    if (should_ping)
       event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
+
+    this.should_ping_on_dblclick = !should_ping;
     Event.detailedStop(event, event_stop_mode || Event.stopAll);
   },
+
+
+  _labelDblClickHandler : function(event, label) {
+    var event_stop_mode;
+
+    // should_ping_on_dblclick was just set within _labelClickHandler
+    if (this.should_ping_on_dblclick) {
+      var node = label.parentNode;
+      event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
+    }
+    Event.detailedStop(event, event_stop_mode || Event.stopAll);
+  },
+
 
   _buttonClickHandler : function(event) {
     var node = Event.element(event).parentNode;
@@ -451,6 +472,9 @@ GvaScript.TreeNavigator.prototype = {
       Event.observe(
         label,  "click",
         this._labelClickHandler.bindAsEventListener(this, label));
+      Event.observe(
+        label,  "dblclick",
+        this._labelDblClickHandler.bindAsEventListener(this, label));
       if (this.options.createButtons) {
         var button = document.createElement("span");
         button.className = this.classes.button;
