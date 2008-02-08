@@ -1,5 +1,8 @@
 Revision history for Alien-GvaScript
 
+1.10
+  - double click on treeNavigator labels will ping the corresponding node
+
 1.09
   - upgrade to prototype.js v1.6
   - New components GvaScript.Repeat and GvaScript.Form

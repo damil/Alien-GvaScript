@@ -50,10 +50,10 @@ GvaScript.AutoCompleter = function(datasource, options) {
   this.options = Class.checkOptions(defaultOptions, options);
 
   var defaultClasses = {
+    loading         : "AC_loading",
     dropdown        : "AC_dropdown",
     message         : "AC_message",
-    loading         : "AC_loading",
-    action          : "AC_action"
+    action          : "AC_action"  // undocumented on purpose !
   };
   this.classes = Class.checkOptions(defaultClasses, this.options.classes);
   
