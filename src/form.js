@@ -37,6 +37,11 @@ GvaScript.Form = {
   },
 
 
+  to_tree: function(form) {
+    return this.expand_hash(this.to_hash(form));
+  },
+
+
   fill_from_tree : function(form, field_prefix, tree) {
     form = $(form);
     if (!form)
