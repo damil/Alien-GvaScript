@@ -238,7 +238,7 @@ GvaScript.AutoCompleter.prototype = {
            onComplete: function(xhr) {
               Element.removeClassName(autocompleter.inputElement, 
                                       autocompleter.classes.loading);
-           },
+           }
           });
         return true; // asynchronous
       };
