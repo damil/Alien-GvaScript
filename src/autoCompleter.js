@@ -38,7 +38,10 @@ GvaScript.AutoCompleter = function(datasource, options) {
     multivalued      : false,
     multivalue_separator :  /[;,\s\t]/,
     choiceItemTagName: "div",
-    htmlWrapper      : function(html) {return html;}
+    htmlWrapper      : function(html) {return html;},
+    observed_scroll  : null,      // observe the scroll of a given element and move the dropdown accordingly (useful in case of scrolling windows)
+    additional_params: null,        //additional parameters with optional default values (only in the case where the datasource is a URL)
+    http_method      : 'get' // when additional_params is set, we might to just pass them in the body of the request
   };
 
   // more options for array datasources
@@ -138,6 +141,24 @@ GvaScript.AutoCompleter.prototype = {
     Element.addClassName(div, this.classes.message);
   },
 
+  // set additional params for autocompleters that have more than 1 param;
+  // second param is the HTTP method (post or get)
+  setAdditionalParams : function(params, method) {
+    this.additional_params = params;           
+    this.http_method = method;
+  },
+
+  addAdditionalParam : function(param, value) {
+    this.additional_params[param] = value;
+  },
+
+  setHttpMethod : function(method) {
+    if (method != 'get' || method != 'post') {
+        alert('Unrecognised type of http method')
+    }
+    this.http_method = method;
+  }, 
+
   //
   // TODO: TO BE REMOVED OR COMMITED TO ALIEN PACKAGE
   //
@@ -146,6 +167,31 @@ GvaScript.AutoCompleter.prototype = {
   },
 
   fireEvent: GvaScript.fireEvent, // must be copied here for binding "this" 
+
+  // Set the element for the AC to look at to adapt its position. If elem is
+  // null, stop observing the scroll.
+  set_observed_scroll : function(elem) {
+    if (!elem) {
+        Event.stopObserving(this.observed_scroll, 'scroll', correct_dropdown_position);
+        return;
+    }
+
+    this.observed_scroll = elem;
+    this.currentScrollTop = elem.scrollTop;
+    this.currentScrollLeft = elem.scrollLeft;
+    var correct_dropdown_position = function() {
+      if (this.dropdownDiv) {
+        var dim = Element.getDimensions(this.inputElement);
+        var pos = this.dropdownDiv.positionedOffset()
+        this.dropdownDiv.style.top  = pos.top - (this.observed_scroll.scrollTop - this.currentScrollTop) + "px";
+        this.dropdownDiv.style.left = pos.left - this.observed_scroll.scrollLeft + "px"; 
+      }
+      this.currentScrollTop = this.observed_scroll.scrollTop;
+      this.currentScrollLeft = this.observed_scroll.scrollLeft;
+    }
+
+    Event.observe(elem, 'scroll', correct_dropdown_position.bindAsEventListener(this));
+  },
 
 
 //----------------------------------------------------------------------
@@ -162,9 +208,24 @@ GvaScript.AutoCompleter.prototype = {
           this._runningAjax.transport.abort();
         Element.addClassName(autocompleter.inputElement, this.classes.loading);
         var toCompleteVal = this._getValueToComplete();
+        
+        //integrate possible additional parameters in the URL request
+        var additional_params = this.additional_params;// for example {C_ETAT_AVOC : 'AC'}
+        var http_method = this.http_method ? this.http_method : this.options.http_method;
+        var partial_url = '';
+        if (additional_params && http_method == 'get') {
+            for (var key in additional_params) {
+                partial_url += "&" + key + "=" + additional_params[key]; 
+            }
+        } 
+
+        var complete_url = datasource + toCompleteVal + partial_url;
         this._runningAjax = new Ajax.Request(
-          datasource + toCompleteVal,
+          complete_url,
           {asynchronous: true,
+           method: http_method,
+           postBody: this.http_method == 'post' ? Object.toJSON(additional_params) : null,
+           contentType: "text/javascript",
            onSuccess: function(xhr) {
               autocompleter._runningAjax = null;
               autocompleter.choices = eval("(" + xhr.responseText + ")");
@@ -177,7 +238,7 @@ GvaScript.AutoCompleter.prototype = {
            onComplete: function(xhr) {
               Element.removeClassName(autocompleter.inputElement, 
                                       autocompleter.classes.loading);
-           }
+           },
           });
         return true; // asynchronous
       };
@@ -424,6 +485,14 @@ GvaScript.AutoCompleter.prototype = {
   _mkDropdownDiv : function() {
     this._removeDropdownDiv();
 
+    // if observed element for scroll, reposition
+    var movedUpBy = 0;
+    var movedLeftBy = 0;
+    if (this.observed_scroll) {
+        movedUpBy = this.observed_scroll.scrollTop;
+        movedLeftBy = this.observed_scroll.scrollLeft;
+    }
+
     // create div
     var div    = document.createElement('div');
     div.className = this.classes.dropdown;
@@ -431,11 +500,11 @@ GvaScript.AutoCompleter.prototype = {
     // positioning
     var coords = Position.cumulativeOffset(this.inputElement);
     var dim    = Element.getDimensions(this.inputElement);
-    div.style.left      = (coords[0]+this.options.offsetX) + "px";
-    div.style.top       = coords[1] + dim.height + "px";
+    div.style.left      = coords[0] + this.options.offsetX - movedLeftBy + "px";
+    div.style.top       = coords[1] + dim.height -movedUpBy + "px";
     div.style.maxHeight = this.options.maxHeight + "px";
     div.style.minWidth  = this.options.minWidth + "px";
-    div.style.zIndex    = 32767; //Seems to be the highest valide value
+    div.style.zIndex    = 32767; //Seems to be the highest valid value
 
     // insert into DOM
     document.body.appendChild(div);
