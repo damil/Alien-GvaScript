@@ -128,6 +128,8 @@ Laurent Dami, C<< <laurent.d...@etat.ge.ch> >>
 
 Jean_Christophe Durand, C<< <jean-christophe.d.....@etat.ge.ch> >>
 
+Sébastien Cuendet, C<< <sebastien.c.....@etat.ge.ch> >>
+
 =head1 BUGS
 
 Please report any bugs or feature requests to

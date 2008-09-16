@@ -287,10 +287,10 @@ GvaScript.AutoCompleter.prototype = {
     // check if this is a "real" blur, or just a clik on dropdownDiv
     if (this.dropdownDiv) {
       var targ;
-      var e = window.event;
+      var e = event;
       if (e.target) targ = e.target;
       else if (e.srcElement) targ = e.srcElement;
-      if (targ.nodeType == 3) // defeat Safari bug
+      if (targ.nodeType && targ.nodeType == 3) // defeat Safari bug
           targ = targ.parentNode;
       var x = Event.pointerX(e) || Position.cumulativeOffset(targ)[0];
       var y = Event.pointerY(e) || Position.cumulativeOffset(targ)[1];
