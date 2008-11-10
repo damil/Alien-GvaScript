@@ -64,7 +64,7 @@ GvaScript.AutoCompleter = function(datasource, options) {
   this.default_separator_char = " "; //character used when the values are joined
 
   if (this.options.multivalued && this.options.strict) {
-    throw new Error("not allowed to have a mutlivalued autocompleter in strict mode");
+    throw new Error("not allowed to have a multivalued autocompleter in strict mode");
   }
 
   this.dropdownDiv = null;
@@ -228,7 +228,11 @@ GvaScript.AutoCompleter.prototype = {
            contentType: "text/javascript",
            onSuccess: function(xhr) {
               autocompleter._runningAjax = null;
-              autocompleter.choices = eval("(" + xhr.responseText + ")");
+
+              // do nothing if aborted by the onblur handler
+              if(xhr.transport.status == 0) return;
+
+              autocompleter.choices = xhr.responseJSON;
               autocompleter._displayChoices();
            },
            onFailure: function(xhr) {
@@ -354,7 +358,8 @@ GvaScript.AutoCompleter.prototype = {
         this.inputElement.style.backgroundColor = this.options.colorIllegal;
       }
     }
-        
+
+    if(this._runningAjax) this._runningAjax.transport.abort();
     this.fireEvent("Leave", this.inputElement);
     this.inputElement = null;
   },
@@ -415,7 +420,7 @@ GvaScript.AutoCompleter.prototype = {
     // OK, we really have to check the value now
     this._timeLastCheck = now;
     var value = this.inputElement.value; //normal case
-    if (this.options.mutlivalued) { 
+    if (this.options.multivalued) { 
         var vals = (this.inputElement.value).split(this.separator);
         var value = vals[-1];
     }
@@ -621,7 +626,8 @@ GvaScript.AutoCompleter.prototype = {
     // identify the selected line and handle it
     var num = parseInt(elem.id.match(/\.(\d+)$/)[1], 10);
     var choice = this.choices[num];
-    if (!choice && choice!="" && choice!=0) throw new Error("choice number is out of range : " + num);
+    if (!choice && choice!="" && choice!=0) 
+        throw new Error("choice number is out of range : " + num);
     var action = choice['action'];
     if (action) {
         this._removeDropdownDiv(); 

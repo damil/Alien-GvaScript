@@ -1,7 +1,31 @@
 Revision history for Alien-GvaScript
 
+1.11
+  added Seb in author list
+
 1.10
-  - double click on treeNavigator labels will ping the corresponding node
+  treeNavigator
+    - new option noPingOnFirstClick
+    - new option treeTabIndex
+    - by default, tree element gets tabIndex 0
+    - better focus management when quick navigation through keys
+    - doubleClick handler
+    - up/down at end of tree falls back to default navigator behaviour
+  choiceList
+    - new option choiceItemTagName
+  autoCompleter
+    - multivalued
+    - click handler on drowpdown lists
+    - new options : 
+           completeOnTab
+           actionItems      
+           multivalued      
+           multivalue_separator
+           choiceItemTagName
+           htmlWrapper      
+           observed_scroll  
+           additional_params
+           http_method      
 
 1.09
   - upgrade to prototype.js v1.6

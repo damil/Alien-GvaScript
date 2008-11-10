@@ -1,7 +1,3 @@
-/* OPEN BUG : MSIE strange interaction between tabindex/onfocus
-   => forceDoublePing / labelDblClickHandler only work if tabindex >= 0 */
-
-
 //-----------------------------------------------------
 // Constructor
 //-----------------------------------------------------
@@ -21,16 +17,17 @@ GvaScript.TreeNavigator = function(elem, options) {
   // default options
   var defaultOptions = {
     tabIndex            : -1,
+    treeTabIndex        :  0,
     flashDuration       : 200,     // milliseconds
     flashColor          : "red",
-    selectDelay         : 200,     // milliseconds
+    selectDelay         : 100,     // milliseconds
     selectOnButtonClick : false,
+    noPingOnFirstClick  : false,
+    selectFirstNode     : true,
     createButtons       : true,
     autoScrollPercentage: 20,
     classes             : {},
-    keymap              : null,
-    selectFirstNode     : true,
-    forceDoublePing     : false
+    keymap              : null
   };
 
   this.options = Class.checkOptions(defaultOptions, options);
@@ -88,6 +85,9 @@ GvaScript.TreeNavigator = function(elem, options) {
   var numHandler = this._chooseLevel.bindAsEventListener(this);
   $R(1, 9).each(function(num){keyHandlers["C_" + num] = numHandler});
 
+  // tabIndex for the tree element
+  elem.tabIndex = elem.tabIndex || this.options.treeTabIndex;
+
   if (options.keymap) {
     this.keymap = options.keymap;
     this.keymap.rules.push(keyHandlers);
@@ -95,15 +95,19 @@ GvaScript.TreeNavigator = function(elem, options) {
   else {
     this.keymap = new GvaScript.KeyMap(keyHandlers);
 
-    // if the tree labels have no tabIndex, only the document receives 
-    // keyboard events
-    var target = this.options.tabIndex < 0 ? document : elem;
+    // observe keyboard events on tree (preferred) or on document
+    var target = (elem.tabIndex  < 0) ? document : elem;
     this.keymap.observe("keydown", target, Event.stopNone);
   }
 
   // selecting the first node
-  if (this.options.selectFirstNode)
+  if (this.options.selectFirstNode) {
     this.select(this.firstSubNode());
+
+    // if labels do not take focus but tree does, then set focus on the tree
+    if (this.options.tabIndex < 0 && elem.tabIndex >= 0)
+      elem.focus();
+  }
 }
 
 
@@ -198,9 +202,8 @@ GvaScript.TreeNavigator.prototype = {
       if (!content) {
         content = document.createElement('div');
         content.className = this.classes.content;
-        if ( node.getAttribute('content_type') ) {
-            content.className += " " + node.getAttribute('content_type');
-        }
+        var content_type = node.getAttribute('content_type');
+        if (content_type) content.className += " " + content_type;
         content.innerHTML = "loading " + url;
         node.insertBefore(content, null); // null ==> insert at end of node
       }
@@ -217,7 +220,7 @@ GvaScript.TreeNavigator.prototype = {
   },
 
   select: function (node) {
-    var previousNode  = this.previousNode = this.selectedNode;
+    var previousNode = this.selectedNode;
 
     // re-selecting the current node is a no-op
     if (node == previousNode) return;
@@ -228,31 +231,35 @@ GvaScript.TreeNavigator.prototype = {
         if (label) Element.removeClassName(label, this.classes.selected);
     }
 
-    // register code to call the selection handlers after some delay
-    var now = (new Date()).getTime(); 
-    this._lastSelectTime = now;
-    if (! this._selectionTimeoutId) {
-      var callback = this._selectionTimeoutHandler.bind(this, previousNode);
-      this._selectionTimeoutId = 
-        setTimeout(callback, this.options.selectDelay);
-    }
 
     // select the new node
+    var now = (new Date()).getTime(); 
+    if (node)
+        this._lastSelectTime = now;
     this.selectedNode = node;
     if (node) {
       this._assertNodeOrLeaf(node, 'select node');
       var label = this.label(node);
-      if (label) {
+      if (!label) {
+        throw new Error("selected node has no label");
+      }
+      else {
         Element.addClassName(label, this.classes.selected);
 
         if (this.isVisible(label)) {
           if (this.options.autoScrollPercentage !== null)
-            Element.autoScroll(label, this.rootElement, this.options.autoScrollPercentage);
-          if (this.options.tabIndex >= 0)          
-            label.focus();
+            Element.autoScroll(label, 
+                               this.rootElement, 
+                               this.options.autoScrollPercentage);
         }
       }
-      else throw new Error("selected node has no label");
+    }
+
+    // register code to call the selection handlers after some delay
+    if (! this._selectionTimeoutId) {
+      var callback = this._selectionTimeoutHandler.bind(this, previousNode);
+      this._selectionTimeoutId = 
+        setTimeout(callback, this.options.selectDelay);
     }
   },
 
@@ -424,17 +431,30 @@ GvaScript.TreeNavigator.prototype = {
   },
   
   _labelClickHandler : function(event, label) {
-    var node = label.parentNode;
-    var was_selected = this.previousNode == node;
-    var event_stop_mode;
+    var node  = Element.navigateDom(label, 'parentNode',
+                                    this.classes.nodeOrLeaf);
 
+    // situation before the click
+    var was_selected = this.selectedNode == node;
+    var now = (new Date()).getTime(); 
+    var just_selected = (now - this._lastSelectTime < this.options.selectDelay);
+ 
+    // select node if necessary
     if (!was_selected) this.select(node);
 
-    var should_ping = was_selected || !this.options.forceDoublePing;
+    // should ping : depends on options.noPingOnFirstClick
+    var should_ping = (was_selected && !just_selected) 
+                    || !this.options.noPingOnFirstClick;
+
+    // do the ping if necessary
+    var event_stop_mode;
     if (should_ping)
       event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
 
-    this.should_ping_on_dblclick = !should_ping;
+    // avoid a second ping from the dblclick handler
+    this.should_ping_on_dblclick = !should_ping; 
+
+    // stop the event unless the ping_handler decided otherwise
     Event.detailedStop(event, event_stop_mode || Event.stopAll);
   },
 
@@ -447,6 +467,8 @@ GvaScript.TreeNavigator.prototype = {
       var node = label.parentNode;
       event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
     }
+
+    // stop the event unless the ping_handler decided otherwise
     Event.detailedStop(event, event_stop_mode || Event.stopAll);
   },
 
@@ -488,17 +510,44 @@ GvaScript.TreeNavigator.prototype = {
 
   _addTabbingBehaviour: function(labels) {
     if (this.options.tabIndex < 0) return; // no tabbing
-    var treeNavigator = this;
+
+    // focus and blur do not bubble, so we'll have to insert them
+    // in each label element
+
+    var treeNavigator = this; // handlers will be closures on this
+
+    // focus handler
     var focus_handler = function(event) {
       var label = Event.element(event);
+      label.setAttribute('hasFocus', true);
+
       var node  = Element.navigateDom(label, 'parentNode',
                                       treeNavigator.classes.nodeOrLeaf);
                                                  
-      if (node) treeNavigator.select(node); 
+      // Select, but only if focus was not the consequence of a select action!
+      // To distinguish, we use the timestamp of the last select.
+      var now = (new Date()).getTime(); 
+      var short_delay = 2 * treeNavigator.options.selectDelay;
+         // needed to multiply by 2 because focus() is called indirectly by 
+         // _selectionTimeoutHandler after selectDelay milliseconds
+      if (node && now - treeNavigator._lastSelectTime > short_delay)
+        treeNavigator.select(node); 
     };
+
+    // blur handler
     var blur_handler = function(event) {
-      treeNavigator.select(null);
+      var label = Event.element(event);
+      label.setAttribute('hasFocus', false);
+
+      // Deselect, but only if blur was not the consequence of a select action!
+      // To distinguish, we use the timestamp of the last select.
+      var now = (new Date()).getTime(); 
+      var short_delay = 2 * treeNavigator.options.selectDelay;
+      if (now - treeNavigator._lastSelectTime > short_delay)
+        treeNavigator.select(null);
     };
+
+    // apply to each label
     labels.each(function(label) {
                   label.tabIndex = treeNavigator.options.tabIndex;
                   Event.observe(label, "focus", focus_handler);
@@ -525,9 +574,23 @@ GvaScript.TreeNavigator.prototype = {
       this._selectionTimeoutId = 
         setTimeout(callback, deltaDelay + 100); // allow for 100 more milliseconds
     }
-    else { // do the real work
+
+    // else do the real work
+    else { 
       this._selectionTimeoutId = null;
       var newNode = this.selectedNode;
+
+      // set focus
+      if (newNode) {
+        var label = this.label(newNode);
+        if (label && this.options.tabIndex >= 0 
+                  && !label.getAttribute('hasFocus') 
+                  && this.isVisible(label)) {
+            label.focus();
+        }
+      }
+
+      // fire events
       if (previousNode != newNode) {
         if (previousNode) 
           this.fireEvent("Deselect", previousNode, this.rootElement);
@@ -550,10 +613,7 @@ GvaScript.TreeNavigator.prototype = {
         this.select(nextNode);
         Event.stop(event);
       }
-      else {
-        // this.flash(selectedNode); // commented: do nothing
-        // let default behaviour happen
-      }
+      // otherwise: do nothing and let default behaviour happen
     }
   },
 
@@ -565,10 +625,7 @@ GvaScript.TreeNavigator.prototype = {
         this.select(prevNode);
         Event.stop(event);
       }
-      else {
-        // this.flash(selectedNode); // commented: do nothing
-        // let default behaviour happen
-      }
+      // otherwise: do nothing and let default behaviour happen
     }
   },
 
