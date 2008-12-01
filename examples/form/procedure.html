@@ -14,7 +14,6 @@ function msg(msg) {
 var tree = {
   proc:{
     motif:[
-      undefined, 
       {C_MOTIF:"C1"}, 
       {C_MOTIF:"C2", TXT_MOTIF: true},
       {C_MOTIF:"C3", TXT_MOTIF:123},
@@ -22,11 +21,10 @@ var tree = {
       {C_MOTIF:"C5"}
       ],
     partie:[
-      undefined,
       {C_ROLE_PARTIE:"DEM", NOM_PRE_ROLE:"TOTO 1", 
-       avoc: [undefined, {CLE_AVOC: 1234}, {CLE_AVOC: 5678}]},
+       avoc: [{CLE_AVOC: 1234}, {CLE_AVOC: 5678}]},
       {C_ROLE_PARTIE:"DEF", NOM_PRE_ROLE:"TOTO 2", 
-       avoc: [undefined, {CLE_AVOC: 1111}, {CLE_AVOC: 2222}, {CLE_AVOC: 3333}]},
+       avoc: [{CLE_AVOC: 1111}, {CLE_AVOC: 2222}, {CLE_AVOC: 3333}]},
       {C_ROLE_PARTIE:"TEM", NOM_PRE_ROLE:"TOTO 3"}
       ]
   }
@@ -67,7 +65,7 @@ window.onload = setup;
   </tr>
   <tr repeat="motif" repeat-start="3" repeat-prefix="proc"
        onRepeat="event.target.style.background = 'yellow'">
-    <td>#{motif.ix}</td>
+    <td>#{motif.count}</td>
     <td><input name="#{motif.path}.C_MOTIF" size="4"></td>
     <td><input name="#{motif.path}.TXT_MOTIF" size="20"></td>
     </td>
@@ -77,7 +75,7 @@ window.onload = setup;
 
 <div repeat="partie" repeat-prefix="proc"
        onRepeat="event.target.style.border = '1px solid red'" >
-<h2>Partie #{partie.ix}</h2>
+<h2>Partie #{partie.count}</h2>
 
 <table>
   <tr><td>Rôle</td>
@@ -98,7 +96,7 @@ window.onload = setup;
   <tr><td>Avocats</td>
      <td><table>
           <tr repeat="avoc">
-            <td>#{avoc.ix}</td>
+            <td>#{avoc.count}</td>
             <td><input name="#{avoc.path}.CLE_AVOC"></td>
           </tr>
         </table>

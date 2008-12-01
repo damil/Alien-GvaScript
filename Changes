@@ -1,7 +1,9 @@
 Revision history for Alien-GvaScript
 
 1.11
-  added Seb in author list
+  - added Seb in author list
+  - repeat: ix starts at 0, count starts at 1
+            fix bug in removing "repeat" attrs
 
 1.10
   treeNavigator

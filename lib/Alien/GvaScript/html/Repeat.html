@@ -94,11 +94,11 @@
     <h2 class="TN_label">SYNOPSIS</h2>
     <div class="TN_content">
       <pre>  &lt;div repeat="foo"&gt;
-    &lt;h2&gt;Foo #{foo.ix}&lt;/h2&gt;
+    &lt;h2&gt;Foo #{foo.count}&lt;/h2&gt;
     This is the repeated foo section
     &lt;table&gt;
       &lt;tr repeat="bar"&gt;
-        &lt;td&gt;Item #{bar.ix}&lt;/td&gt;
+        &lt;td&gt;Item #{bar.count}&lt;/td&gt;
         &lt;td&gt;&lt;input name="#{bar.path}.buz"&gt;&lt;/td&gt;
       &lt;/tr&gt;
     &lt;/table&gt;
@@ -189,21 +189,21 @@ by their parent repetition element. Default is the empty string.</p>
       <p>The content of a repeat element may contain special markup
 for repetition variables, which will be replaced by values
 when the element is instanciated into a repetition block.</p>
-<p>Variables are written <code>#{&lt;repetition name&gt;.&lt;variable&gt;}</code>,
-like for example <code>#{foo.ix}</code> or <code>#{bar.path}</code>. The repetition
-name is the value of the <code>repeat</code> attribute of the repeat element,
-as explained above; in this namespace, the following variables
-are defined</p>
+<p>Variables are written <code>#{&lt;repetition name&gt;.&lt;variable&gt;}</code>, like for
+example <code>#{foo.ix}</code>, <code>#{foo.count}</code> or <code>#{bar.path}</code>. The
+repetition name is the value of the <code>repeat</code> attribute of the repeat
+element, as explained above; in this namespace, the following
+variables are defined</p>
 <ul>
+<li><a name="item_count"></a><b>count</b>
+<p>current number of repetition blocks for that repeat element, starting at 1.</p>
+</li>
 <li><a name="item_ix"></a><b>ix </b>
-<p>integer index of the current repetition block, starting at 1.</p>
+<p>integer index of the current repetition block, starting at 0.</p>
 </li>
 <li><a name="item_path"></a><b>path</b>
 <p>cumulated list of repetition name and repetition indices, separated
 by dots. </p>
-</li>
-<li><a name="item_count"></a><b>count</b>
-<p>current number of repetition blocks for that repeat element.</p>
 </li>
 <li><a name="item_min"></a><b>min</b>
 <p>value of the <code>repeat-min</code> attribute.</p>
@@ -216,7 +216,7 @@ by dots. </p>
 and therefore is typically used for ids or for
 names of input elements :</p>
 <pre>  &lt;tr repeat="bar"&gt;
-    &lt;td&gt;Item #{bar.ix}&lt;/td&gt;
+    &lt;td&gt;Item #{bar.count}&lt;/td&gt;
     &lt;td&gt;&lt;input name="#{bar.path}.buz"&gt;&lt;/td&gt;
   &lt;/tr&gt;</pre>
 

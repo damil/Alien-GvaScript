@@ -23,8 +23,8 @@ GvaScript.Repeat = {
       return;
 
     // increment the repetition block count and update path
-    var path_ini = repeat.path; // for restoring later; see end of block
-    repeat.ix    = ++repeat.count;
+    var path_ini = repeat.path;     // for restoring later; see end of block
+    repeat.ix    = repeat.count++;  // invariant: count == ix + 1
     repeat.path  = repeat.path + "." + repeat.ix;
 
     // regex substitutions to build html for the new repetition block (can't
@@ -101,20 +101,17 @@ GvaScript.Repeat = {
       element.id = "#{" + repeat.name + ".path}";
 
       // b) remove "repeat*" attributes (don't want them in the template)
-      for (var prop in element) {
-        if (prop.match(/^repeat/i))  element.removeAttribute(prop, 0);
+      var attrs = element.attributes;
+      var repeat_attrs = [];
+      for (var i = 0; i < attrs.length; i++) {
+        var name = attrs[i].name;
+        if (name.match(/^repeat/i)) repeat_attrs.push(name);
       }
+      repeat_attrs.each(function(name){element.removeAttribute(name, 0)});
 
-      // c) remove from DOM and keep it as a template string
-      // outerHTML would be simpler, but not supported by Gecko :-((
+      // c) keep it as a template string and remove from DOM
       repeat.template = Element.outerHTML(element);
       element.remove();
-
-//       var div = document.createElement("div");
-//       element = 
-//       div.appendChild(element);
-//       repeat.template = div.innerHTML;
-
     }
 
     // store all properties within the placeholder
@@ -122,7 +119,7 @@ GvaScript.Repeat = {
 
     // initial repetition blocks 
     var n_start = element.getAttribute('repeat-start') || repeat.min;
-    for (var i = 1; i <= n_start; i++) {
+    for (var i = 0; i < n_start; i++) {
       this.add(placeholder);
     }
   }

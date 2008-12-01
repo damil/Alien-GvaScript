@@ -113,6 +113,9 @@ GvaScript.AutoCompleter.prototype = {
                                              stopPropagation:false});
       Element.observe(elem, "blur", this.reuse.onblur);
       Element.observe(elem, "click", this.reuse.onclick);
+
+      // prevent browser builtin autocomplete behaviour
+      elem.setAttribute("autocomplete", "off");
     }
 
     // initialize time stamps

@@ -82,7 +82,7 @@ GvaScript.Form = {
 
 
   _fill_from_array: function(form, field_prefix, array) {
-    for (var i=1; i < array.length; i++) {
+    for (var i=0; i < array.length; i++) {
       var new_prefix = field_prefix + "." + i;
 
       // if form has a named element, fill it
@@ -100,7 +100,7 @@ GvaScript.Form = {
         if (!elem) { 
           var placeholder = $(field_prefix + ".placeholder");
           if (placeholder && placeholder.repeat) {
-            while (placeholder.repeat.count < i
+            while (placeholder.repeat.ix < i
                    && placeholder.repeat.count < placeholder.repeat.max) {
               GvaScript.Repeat.add(placeholder);
             }
@@ -122,39 +122,41 @@ GvaScript.Form = {
     if (!(val instanceof Array)) 
       val = [val]; // force into an array
 
-    if (elem.length !== undefined) { // if elem is a collection
-      for (var i=0; i < elem.length; i++) {
-        this._fill_from_value(elem.item(i), val);
-      }
-    }
-    else { // if elem is a single node
-      switch (elem.type) {
-        case "checkbox" :
-        case "radio":
-          elem.checked = val.include(elem.value);
-          break;
+    var elem_type = elem.type 
+                 || (elem.length !== undefined ? "collection" : "unknown");
 
-        case "text" :
-        case "textarea" :
-        case "hidden" :
-          elem.value = val.join(",");
-          break;
+    switch (elem_type) {
+      case "collection":
+        for (var i=0; i < elem.length; i++) {
+          this._fill_from_value(elem.item(i), val);
+        }
+        break;
 
-        case "select-one" :
-        case "select-multiple" :
-          $A(elem.options).each(function(opt){
-            opt.selected = val.include(opt.value);
-          });
-          break;
+      case "checkbox" :
+      case "radio":
+        elem.checked = val.include(elem.value);
+        break;
 
-        default:
-          alert("unexpected elem type : " + elem.type);
-      } // end switch
-    } // end if
+      case "text" :
+      case "textarea" :
+      case "hidden" :
+        elem.value = val.join(",");
+        break;
+
+      case "select-one" :
+      case "select-multiple" :
+        $A(elem.options).each(function(opt){
+          opt.selected = val.include(opt.value);
+        });
+        break;
+
+      default:
+        alert("unexpected elem type : " + elem.type);
+    } // end switch
   }, // end function
 
 
-  // javascript version of CGI::Expand::expand_hash
+  // javascript version of Perl  CGI::Expand::expand_hash
   expand_hash: function(flat_hash) {
     var tree = {};
 
