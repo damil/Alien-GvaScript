@@ -23,7 +23,7 @@ Geneva Cointrin International Airport).
 It is built on top of the B<prototype>
 object-oriented javascript framework (L<http://prototype.conio.net>).
 
-It contains three core components :
+It contains four core components :
 
 =over
 
@@ -45,9 +45,15 @@ L<keyMap|Alien::GvaScript::KeyMap> :
 managing maps of handlers for key events (similar
 in spirit to Emacs keymaps)
 
+=item *
+
+L<repeat|Alien::GvaScript::Repeat> : 
+managing repeated sections
+
+
 =back
 
-and three widgets:
+and four widgets:
 
 =over
 
@@ -65,6 +71,13 @@ autocompletion on form input fields
 
 L<treeNavigator|Alien::GvaScript::TreeNavigator> : 
 navigation in a tree structure, opening and closing nodes
+
+=item *
+
+L<form|Alien::GvaScript::Form> : 
+various extensions to HTML forms (working with data trees
+and repeated sections, automatic focus, etc.)
+
 
 =back
 
