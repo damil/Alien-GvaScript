@@ -1,24 +1,17 @@
-/* 
-TODO
+/* TODO
 
-  - submit
-
-     enctype attr
-     after_submit:
+   - submit attrs on buttons
+       - action / method / enctype / replace / target / novalidate
+  - after_submit:
         - 204 NO CONTENT : leave doc, apply metadata
         - 205 RESET CONTENT : reset form
-        - replace="document" (new page9
+        - replace="document" (new page)
         - replace="values" (fill form with new tree)
         - relace element
         - others ?
         - "onreceive" event (response after submit)
 
-   - submit attrs on buttons
-       - action / method / enctype / replace / target / novalidate
-
-
   - check prototype.js serialize on multivalues
-
 */
 
 GvaScript.Form = {
