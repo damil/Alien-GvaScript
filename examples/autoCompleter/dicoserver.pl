@@ -4,38 +4,53 @@ use warnings;
 use HTTP::Daemon;
 use HTTP::Status;
 use URI::Escape;
+use JSON;
 
 my @dico = <DATA>;
 chomp foreach @dico;
 
-my $port = $ARGV[0] || 8080;
+my $port = $ARGV[0] || 8081;
 
-my $d = HTTP::Daemon->new(LocalPort => $port) || die;
-print "Please contact me at: <URL:", $d->url, ">\n";
-while (my $c = $d->accept) {
-  while (my $req = $c->get_request) {
+my $consonnes = qr/[bcdfghjklmnpqrstvwxyz]/;
+
+my $daemon = HTTP::Daemon->new(LocalPort => $port) || die;
+print "Please contact me at: <URL:", $daemon->url, ">\n";
+while (my $client_connection = $daemon->accept) {
+  while (my $req = $client_connection->get_request) {
     my $path_info = substr(uri_unescape($req->url->path), 1);
     print STDERR "REQUEST: $path_info\n";
 
+    $client_connection->force_last_request;
+
     if ($path_info =~ s[^word/][]) {
       my @words = grep /^$path_info/, @dico;
-      my $json = join ",", map {qq{"$_"}} @words;
+      my @choices = map { {value     => $_, 
+                           consonnes => join("", $_ =~ /$consonnes/g),
+                           initiale  => uc(substr($_, 0, 1)) } } @words;
+
+      my $json = to_json(\@choices, {ascii => 1});
+#      my $json = to_json(\@words);# {ascii => 1});
+
+#      my $json = join ",", map {qq{"$_"}} @words;
+#      $json = "[$json]";
+
+      print STDERR "RESPONSE: $json\n";
       
-      my $response = HTTP::Response->new;
+      my $response = HTTP::Response->new(RC_OK);
       $response->header(
         'Content-Type'  => 'text/javascript; charset=ISO-8859-1',
         'Cache-Control' => 'no-cache, must-revalidate, max-age=0',
         'Pragma'        => 'no-cache',
         'Expires'       => '0');
-      $response->content("[$json]");
-      $c->send_response($response);
+      $response->content($json);
+      $client_connection->send_response($response);
     }
     else {
-      $c->send_file_response("../../$path_info");
+      $client_connection->send_file_response("../../$path_info");
     } 
   }
-  $c->close;
-  undef($c);
+  $client_connection->close;
+  undef($client_connection);
 }
 
 __DATA__

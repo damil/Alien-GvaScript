@@ -35,11 +35,12 @@ GvaScript.fireEvent = function(/* type, elem1, elem2, ... */) {
       currentTarget = this;
 
   if (handler) {
-    // build context 
+    // build context and copy into event structure
     var controller = this;
-    event.target = event.srcElement = target;
-    event.currentTarget = currentTarget;
-    event.controller    = controller;
+    if (!event.target)        event.target        = target;
+    if (!event.srcElement)    event.srcElement    = target;
+    if (!event.currentTarget) event.currentTarget = currentTarget;
+    if (!event.controller)    event.controller    = controller;
 
     if (typeof(handler) == "string") {
       // string will be eval-ed in a closure context where 'this', 'event',

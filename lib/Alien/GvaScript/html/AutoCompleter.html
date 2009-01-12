@@ -96,6 +96,14 @@
   <div class="TN_content"></div>
 </div>
 <div class="TN_leaf">
+  <a class="TN_label" href="#onLegalValue">onLegalValue</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#onIllegalValue">onIllegalValue</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
   <a class="TN_label" href="#onHighlight">onHighlight</a>
   <div class="TN_content"></div>
 </div>
@@ -158,7 +166,7 @@ be <i>bound</i> to one or several input fields in a form (but only one at
 a time), and will take care of capturing user input, navigating in the
 suggestion list, and filling the field with the chosen value.</p>
 <p>An event model is associated with the autocompleter, so that
-client code can insert its own hooks to various steps of
+client code can insert hooks to various steps of
 the autocompletion behaviour.</p>
 <p>The list of suggestions may contain arbitrary HTML, including rich
 formatting options.</p>
@@ -357,6 +365,50 @@ Default is <code>AC_message</code>.</p>
 </li>
 </ul>
 </li>
+<li><a name="item_additional_params"></a><b>additional_params</b>
+<p>Other parameters to be added in the Ajax query for autocompletion.
+Can be either an array or an already encoded string (see <code>Ajax.Options</code> in
+<code>prototype.js</code>).
+[TODO: should be camelCase to be consistent with other options; 
+check dependencies in DMWeb].</p>
+</li>
+<li><a name="item_dependentFields"></a><b>dependentFields</b>
+<pre>  var ac =  new GvaScript.Autocompleter(url, {
+              dependentFields : {
+                foo : "firstname",
+                bar : "lastname",
+                id  : "id"
+              } } );</pre>
+
+<p>Inline object that specifies dependencies between the field
+controlled by the autocompleter, and other fields in the same form.
+When leaving the autocompleted field (<code>onBlur</code>), the dependent fields
+will be updated automatically. This only works for autocompleters
+in strict mode.</p>
+<p>Each key in the inline object specifies the name of a field related
+to the autocompleted field. If field names are in dotted notation, 
+then the related field is taken as a path relative to the autocompleted
+field : so for example if the autocompleted field has name
+<code>some.very.3.long.2.path</code>, then the <code>foo</code> entry in
+<code>dependentFields</code> will refer to field <code>some.very.3.long.2.foo</code>.</p>
+<p>The corresponding value (in our example above: <code>firstname</code>) is
+the name of a property to extract from the <code>choice</code> member
+that validated the current input. However, the autocompleted field
+may also contain an empty value (in which case the related fields
+are also emptied), or an illegal value (in which case the related
+fields are filled with string <code>ILLEGAL_***</code>, where <code>***</code> is the 
+key from the inline object).</p>
+<p>The dependent fields structure might also be specified as
+an HTML attribute <code>ac:dependentFields</code>, instead of an option 
+to the Javascript object :</p>
+<pre>  &lt;input name="some.very.3.long.2.path"
+         onfocus="ac.autocomplete(this)"
+         ac:dependentFields="{foo:'firstname',bar:'lastname',id:'id'}" /&gt;
+  ...
+  &lt;input type="hidden"
+         name="some.very.3.long.2.id" /&gt;</pre>
+
+</li>
 </ul>
 
     </div>
@@ -374,20 +426,22 @@ Default is <code>AC_message</code>.</p>
 an input field, i.e.</p>
 <pre>  &lt;input name="someInput" onfocus="myAutoCompleter.complete(this)"&gt;</pre>
 
-<p>The autocompleter will automatically register an
-<code>onblur</code> handler on the same field, so avoid
+<p>The autocompleter will automatically register 
+<code>onblur</code>, <code>onclick</code> and <code>onkeydown</code> handlers on the same field, so avoid
 setting your own, which may cause unpredictable interactions.
-However the autocompleter has its own event model with an
-<code>onLeave</code> event to which you can bind your handling code.</p>
+However the autocompleter has its own event model 
+to which you can bind your handling code
+(see the <i>EVENTS</i> section below).</p>
 
     </div>
   </div>
   <div class="TN_node" id="detach_inputField_">
     <h3 class="TN_label">detach(inputField)</h3>
     <div class="TN_content">
-      <p>Detaches the autocomplete object from the input field
+      <p>Permanently detaches the input field from the autocompleter object
 (i.e. remove <code>onblur</code> and <code>onkeypress</code> handlers
-that were previously set by the <code>autocomplete</code> method).</p>
+that were previously set by the first invocation of the 
+<code>autocomplete</code> method).</p>
 
     </div>
   </div>
@@ -437,18 +491,53 @@ calls the <a href="#autocomplete">/"autocomplete"</a> method.</p>
     <div class="TN_content">
       <p>This event is triggered whenever the autocompleter object 
 cuts the association with an input field; typically this
-occurs when the input field loses focus (
-calls the <a href="#autocomplete">/"autocomplete"</a> method.</p>
+occurs when the input field loses focus.</p>
+<p>If in strict mode, the autocompleter object will also
+check if the final value is legal or illegal with respect
+to the list of available choices. This may require an
+additional Ajax call, so the <code>onLeave</code> event may be
+triggered <i>before</i> the <code>onLegalValue</code> or <code>onIllegalValue</code> events.</p>
 
     </div>
   </div>
   <div class="TN_node" id="onComplete">
     <h3 class="TN_label">onComplete</h3>
     <div class="TN_content">
-      <p>This event is triggered whenever the user has chosen
+      <p>[OBSOLETE; use <code>onLegalValue</code> or <code>onIllegalValue</code> instead]</p>
+<p>This event is triggered whenever the user has chosen
 an item in the displayed suggestion list.
 The event handler may use <code>event.index</code> to know the index of the
 selected choice.</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="onLegalValue">
+    <h3 class="TN_label">onLegalValue</h3>
+    <div class="TN_content">
+      <p>This event is triggered when the autocompleter is in strict mode,
+the input field has just been left (<code>onBlur</code> event), and the 
+autocompleter was able to verify that the current input value
+belongs to the list of available choices.</p>
+<p>The event contains a <code>value</code> property (current value in the 
+input element), and a <code>choice</code> property (member of the 
+<code>choices</code> array that matches the current value).
+The <code>controller</code> property is null because the event may
+occur after the autocompleter object has been detached from the input
+field and has been perhaps already bound to another field, so interacting 
+with the autocompleter from the event handler would lead to inconsistencies.</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="onIllegalValue">
+    <h3 class="TN_label">onIllegalValue</h3>
+    <div class="TN_content">
+      <p>This event is triggered when the autocompleter is in strict mode,
+the input field has just been left (<code>onBlur</code> event), and the 
+autocompleter was not able to verify that the current input value
+belongs to the list of available choices.</p>
+<p>The event only contains a <code>value</code> property (current value in the 
+input element). The <code>controller</code> property is null (same reasons
+as <code>onLegalValue</code> above).</p>
 
     </div>
   </div>
