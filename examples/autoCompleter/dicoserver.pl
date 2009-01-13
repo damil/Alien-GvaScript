@@ -23,17 +23,12 @@ while (my $client_connection = $daemon->accept) {
     $client_connection->force_last_request;
 
     if ($path_info =~ s[^word/][]) {
-      my @words = grep /^$path_info/, @dico;
+      my @words = grep /^$path_info/i, @dico;
       my @choices = map { {value     => $_, 
                            consonnes => join("", $_ =~ /$consonnes/g),
                            initiale  => uc(substr($_, 0, 1)) } } @words;
 
       my $json = to_json(\@choices, {ascii => 1});
-#      my $json = to_json(\@words);# {ascii => 1});
-
-#      my $json = join ",", map {qq{"$_"}} @words;
-#      $json = "[$json]";
-
       print STDERR "RESPONSE: $json\n";
       
       my $response = HTTP::Response->new(RC_OK);

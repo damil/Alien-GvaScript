@@ -1,6 +1,9 @@
 <html>
   <head>
 
+<script language="javascript" type="text/javascript" 
+        src="d:/temp/firebug_lite/firebug-lite.js"></script>
+
     <link href="../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css">
     <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
     <script src="../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
@@ -19,11 +22,13 @@
 
         ac_strict = new GvaScript.AutoCompleter(url, {
          minimumChars : 2,
+         labelField:'value',
          strict       : true
         });
 
         ac_noblank = new GvaScript.AutoCompleter(url, {
          minimumChars : 2,
+         labelField:'value',
          strict       : true,
          blankOK      : false
         });
@@ -31,9 +36,11 @@
 
         ac_strict_nosuggest = new GvaScript.AutoCompleter(url, {
          minimumChars : 2,
+         labelField:'value',
          strict       : true,
          autoSuggest  : false
         });
+
 
       }
 

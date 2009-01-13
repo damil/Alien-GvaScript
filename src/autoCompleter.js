@@ -190,7 +190,7 @@ GvaScript.AutoCompleter.prototype = {
   // DMWeb (root\src\tab_composition\form.tt2:43)
   setAdditionalParams : function(params, method) {
     this.additional_params = params;           
-    this.options.http_method = method;
+    if (method) this.options.http_method = method;
   },
 
   addAdditionalParam : function(param, value) {
@@ -297,7 +297,6 @@ GvaScript.AutoCompleter.prototype = {
                                   autocompleter.classes.loading);
        }
       });
-    return true; // asynchronous
   },
 
   _updateChoicesFromCallback : function(continuation) {
@@ -326,11 +325,8 @@ GvaScript.AutoCompleter.prototype = {
     }
   },
 
-
   _blurHandler: function(event) { // does the reverse of "autocomplete()"
 
-
-    
     // check if this is a "real" blur, or just a clik on dropdownDiv
     if (this.dropdownDiv) {
       var targ;
@@ -359,9 +355,15 @@ GvaScript.AutoCompleter.prototype = {
     if (this.options.strict) {
         var value = this._getValueToComplete();
 
+        // if value has changed, invalidate previous list of choices
+        if (value != this.lastValue) {
+            this.choices = null; 
+        }
+
         // if choices are known, just inspect status
-        if (this.choices)            
+        if (this.choices) {            
             this.fireFinalStatus(this.inputElement, this.choices);
+        }
 
         // if blank and blankOK, this is a legal value
         else if (!value && this.options.blankOK) {
@@ -379,8 +381,9 @@ GvaScript.AutoCompleter.prototype = {
         }
 
         // otherwise get choices and then inspect status (maybe asynchronous)
-        else 
+        else  {
             this.updateChoices(this.fireFinalStatus.bind(this, this.inputElement));
+        }
     }
 
     this.fireEvent("Leave", this.inputElement);
@@ -392,43 +395,59 @@ GvaScript.AutoCompleter.prototype = {
   // called asynchronously, after "this" has been detached from the input
   // element and the choices array, so we cannot call the object properties.
 
-    var input_val = inputElement.value;
+    var input_val = this._getValueToComplete(inputElement.value);
+
+    var index = null;
+
+    // inspect the choice list to automatically choose the appropriate candidate
     for (var i=0; i < choices.length; i++) {
-        var choice = this.choices[i];
-        var val = (typeof choice == "string") ? choice 
-                                              : choice[this.options.valueField];
-        if (val == input_val 
-            || (!this.options.caseSensitive &&
-                  val.toUpperCase() == input_val.toUpperCase())) {
-
-            // for backwards compatibility, we generate a "Complete" event, but
-            // with a fake controller (as the real controller might be in a 
-            // diffent state).
-            this.fireEvent({ type      : "Complete",
-                             index     : i,
-                             controller: {choices: choices} }, inputElement);
-
-            // update dependent fields
-            this._updateDependentFields(inputElement, choice);
-
-            // for new code : generate a "LegalValue" event
-            this.fireEvent({ type       : "LegalValue", 
-                             value      : val, 
-                             choice     : choice,
-                             controller : null  }, inputElement);
-
-            // matched a legal value, so abort the loop and return
-            return; 
+        var val = this._valueFromChoiceItem(choices[i]);
+        
+        if (val == input_val) {
+            index = i;
+            break; // break the loop because this is the best choice
+        }
+        else if (val.toUpperCase() == input_val.toUpperCase()) {
+            index = i;  // is a candidate, but we may find a better one
         }
     }
 
-    // if we reach here, the value was illegal
-    inputElement.style.backgroundColor = this.options.colorIllegal;
-    this._updateDependentFields(inputElement, null);
-    this.fireEvent({ type       : "IllegalValue", 
-                     value      : val, 
-                     controller : null  }, inputElement);
-   },
+    // if void and not blankOK and single menu item, force it into the field
+    if (index === null && !input_val && !this.options.blankOK && choices.length == 1) 
+        index = 0;
+        
+    if (index !== null) {
+        var choice = choices[index];
+        var val = this._valueFromChoiceItem(choice);
+
+        // put canonical value back into input field
+        inputElement.value = val;
+
+        // for backwards compatibility, we generate a "Complete" event, but
+        // with a fake controller (as the real controller might be in a 
+        // diffent state).
+        this.fireEvent({ type      : "Complete",
+                         index     : index,
+                         controller: {choices: choices} }, inputElement);
+
+        // update dependent fields
+        this._updateDependentFields(inputElement, choice);
+
+        // for new code : generate a "LegalValue" event
+        this.fireEvent({ type       : "LegalValue", 
+                         value      : val, 
+                         choice     : choice,
+                         controller : null  }, inputElement);
+
+    }
+    else {
+        inputElement.style.backgroundColor = this.options.colorIllegal;
+        this._updateDependentFields(inputElement, null);
+        this.fireEvent({ type       : "IllegalValue", 
+                         value      : input_val, 
+                         controller : null  }, inputElement);
+    }
+  },
 
   _updateDependentFields: function(inputElement, choice) {
         // "choice" might be 
@@ -455,8 +474,6 @@ GvaScript.AutoCompleter.prototype = {
             }
         }
     },
-
-
 
   // if clicking in the 20px right border of the input element, will display
   // or hide the drowpdown div (like pressing ARROWDOWN or ESC)
@@ -544,8 +561,10 @@ GvaScript.AutoCompleter.prototype = {
   },
 
   // return the value to be completed; added for multivalued autocompleters                  
-  _getValueToComplete : function() {
-    var value = this.inputElement.value;
+  _getValueToComplete : function(value) {
+        // NOTE: the explicit value as argument is only used from fireFinalStatus(), 
+        // when we can no longer rely on this.inputElement.value
+    value = value || this.inputElement.value;
     if (this.options.multivalued) {
       var vals = value.split(this.separator);
       value    = vals[vals.length-1];
@@ -656,6 +675,8 @@ GvaScript.AutoCompleter.prototype = {
 
     if (this.choices.length > 0) {
       var ac = this;
+
+      // create a choiceList
       var cl = this.choiceList = new GvaScript.ChoiceList(this.choices, {
         labelField        : this.options.labelField,
         scrollCount       : this.options.scrollCount,
@@ -686,9 +707,8 @@ GvaScript.AutoCompleter.prototype = {
       cl.fillContainer(this._mkDropdownDiv());
 
       // catch keypress on TAB while choiceList has focus
-      var autocompleter = this;
       cl.keymap.rules[0].TAB = cl.keymap.rules[0].S_TAB = function(event) {
-        if (!autocompleter.options.completeOnTab)
+        if (!ac.options.completeOnTab)
             return;
         var index = cl.currentHighlightedIndex;
         if (index != undefined) {
@@ -735,11 +755,16 @@ GvaScript.AutoCompleter.prototype = {
 
 
   _valueFromChoice: function(index) {
-    if (!this.choices || this.choices.length < 1) return null;
+    if (!this.choices) return null;
     var choice = this.choices[index];
+    return (choice !== null) ? this._valueFromChoiceItem(choice) : null;
+  },
+
+  _valueFromChoiceItem: function(choice) {
     return (typeof choice == "string") ? choice 
                                        : choice[this.options.valueField];
   },
+
 
 
   //triggered by the onPing event on the choicelist, i.e. when the user selects
@@ -747,9 +772,6 @@ GvaScript.AutoCompleter.prototype = {
   _completeFromChoiceElem: function(elem) {
     // identify the selected line and handle it
     var num = parseInt(elem.id.match(/\.(\d+)$/)[1], 10);
-    var choice = this.choices[num];
-    if (!choice && choice!="" && choice!=0) 
-        throw new Error("choice number is out of range : " + num);
 
     // LEGACY CODE
 //     var action = choice['action'];
