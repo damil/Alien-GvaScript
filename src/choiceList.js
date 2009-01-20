@@ -139,6 +139,10 @@ GvaScript.ChoiceList.prototype = {
   //----------------------------------------------------------------------
 
   _highlightChoiceNum: function(newIndex, autoScroll) {
+
+    // do nothing if newIndex is invalid
+    if (newIndex > this.choices.length - 1) return;
+
     Element.removeClassName(this._choiceElem(this.currentHighlightedIndex), 
                             this.classes.choiceHighlight);
     this.currentHighlightedIndex = newIndex;

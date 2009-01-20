@@ -1,8 +1,6 @@
 <html>
   <head>
 
-<script language="javascript" type="text/javascript" 
-        src="d:/temp/firebug_lite/firebug-lite.js"></script>
 
     <link href="../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css">
     <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
@@ -17,6 +15,13 @@
         ac = new GvaScript.AutoCompleter(url, {
          minimumChars: 2,
          maxHeight:170,
+         labelField:'value'
+        });
+
+        ac_notypeahead = new GvaScript.AutoCompleter(url, {
+         minimumChars: 2,
+         maxHeight:170,
+         typeAhead: false,
          labelField:'value'
         });
 
@@ -41,6 +46,13 @@
          autoSuggest  : false
         });
 
+        ac_strict_notypeahead = new GvaScript.AutoCompleter(url, {
+         minimumChars : 2,
+         labelField:'value',
+         strict       : true,
+         autoSuggest  : true,
+         typeAhead  : false
+        });
 
       }
 
@@ -80,8 +92,8 @@ Normal : <input value="just a normal field">
 
 <p>
 
-Autocomplete 2 : <input  onfocus="ac.autocomplete(this)">
-      (same autocompleter object)
+Autocomplete 2 : <input  onfocus="ac_notypeahead.autocomplete(this)">
+      (no typeahead)
     
 <p>
 
@@ -105,6 +117,14 @@ Autocomplete 5 : <input  name="foo.bar.3.tst"
   <input  name="foo.bar.3.c" size=4 readonly>
 <p>
 
+
+Autocomplete 6 : <input  name="foo.bar.4.tst"
+                         onfocus="ac_strict_notypeahead.autocomplete(this)"
+                         ac:dependentFields="{i:'initiale',c:'consonnes'}" >
+      (strict, blank OK, no typeahead, dependent fields)
+  <input  name="foo.bar.4.i" size=1 readonly>
+  <input  name="foo.bar.4.c" size=4 readonly>
+<p>
 
 <input type=submit value="placehoder for submit">
 

@@ -5,6 +5,8 @@ use HTTP::Daemon;
 use HTTP::Status;
 use URI::Escape;
 use JSON;
+use Encode qw/decode_utf8/;
+
 
 my @dico = <DATA>;
 chomp foreach @dico;
@@ -17,7 +19,8 @@ my $daemon = HTTP::Daemon->new(LocalPort => $port) || die;
 print "Please contact me at: <URL:", $daemon->url, ">\n";
 while (my $client_connection = $daemon->accept) {
   while (my $req = $client_connection->get_request) {
-    my $path_info = substr(uri_unescape($req->url->path), 1);
+    my $path_info = decode_utf8(substr(uri_unescape($req->url->path), 1));
+
     print STDERR "REQUEST: $path_info\n";
 
     $client_connection->force_last_request;
