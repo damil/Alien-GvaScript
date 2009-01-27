@@ -313,6 +313,15 @@ are also emptied), or an illegal value (in which case the related
 fields are filled with string C<ILLEGAL_***>, where C<***> is the 
 key from the inline object).
 
+If the C<choice> member is not an object, but just a string,
+then that string is copied to the dependent field, therefore ignoring
+the hash value (C<firstname> in our example).
+
+As a special case, if the hash value is an empty string,
+then the dependent field is emptied, ignoring whatever
+information may be in the C<choice> element.
+
+
 The dependent fields structure might also be specified as
 an HTML attribute C<ac:dependentFields>, instead of an option 
 to the Javascript object :

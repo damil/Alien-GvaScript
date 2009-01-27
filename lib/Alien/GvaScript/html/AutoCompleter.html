@@ -398,6 +398,12 @@ may also contain an empty value (in which case the related fields
 are also emptied), or an illegal value (in which case the related
 fields are filled with string <code>ILLEGAL_***</code>, where <code>***</code> is the 
 key from the inline object).</p>
+<p>If the <code>choice</code> member is not an object, but just a string,
+then that string is copied to the dependent field, therefore ignoring
+the hash value (<code>firstname</code> in our example).</p>
+<p>As a special case, if the hash value is an empty string,
+then the dependent field is emptied, ignoring whatever
+information may be in the <code>choice</code> element.</p>
 <p>The dependent fields structure might also be specified as
 an HTML attribute <code>ac:dependentFields</code>, instead of an option 
 to the Javascript object :</p>

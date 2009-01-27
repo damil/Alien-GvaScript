@@ -377,8 +377,10 @@ GvaScript.AutoCompleter.prototype = {
       // if blank and blankOK, this is a legal value
       if (!value && this.options.blankOK) {
         this._updateDependentFields(this.inputElement, "");
-        this.fireEvent({type: "LegalValue", value: value}, 
-                       this.inputElement);
+        this.fireEvent({ type       : "LegalValue", 
+                         value      : "", 
+                         choice     : null,
+                         controller : null  }, this.inputElement);
       }
 
       // if choices are known, just inspect status
@@ -444,7 +446,9 @@ GvaScript.AutoCompleter.prototype = {
         // with a fake controller (as the real controller might be in a 
         // diffent state).
         this.fireEvent({ type      : "Complete",
+                         referrer  : "blur",    // input blur fired this event 
                          index     : index,
+                         choice    : choice,
                          controller: {choices: choices} }, inputElement);
 
         // update dependent fields
@@ -472,7 +476,8 @@ GvaScript.AutoCompleter.prototype = {
         //   - an empty string              ==> clear dependent fields
         //   - null                         ==> put "ILLEGAL_***" 
         var attr       = inputElement.getAttribute('ac:dependentFields');
-        var dep_fields = attr ? eval("("+attr+")") : this.options.dependentFields;
+        var dep_fields = attr ? eval("("+attr+")") 
+                              : this.options.dependentFields;
         if (!dep_fields) return;
 
         var form       = inputElement.form;
@@ -480,12 +485,14 @@ GvaScript.AutoCompleter.prototype = {
         
         for (var k in dep_fields) {
             name_parts[name_parts.length - 1] = k;
-            var related_name  = name_parts.join('.');
-            var related_field = form[related_name];
+            var related_name    = name_parts.join('.');
+            var related_field   = form[related_name];
+            var value_in_choice = dep_fields[k];
             if (related_field) {
                 related_field.value
-                    = (choice === null)              ? "!!ILLEGAL_" + k + "!!"
-                    : (typeof choice == "object")    ? choice[dep_fields[k]]
+                    = (value_in_choice == "")        ? ""
+                    : (choice === null)              ? "!!ILLEGAL_" + k + "!!"
+                    : (typeof choice == "object")    ? choice[value_in_choice]
                     : (typeof choice == "string")    ? choice
                     : "!!UNEXPECTED SOURCE FOR RELATED FIELD!!";
             }
@@ -569,7 +576,8 @@ GvaScript.AutoCompleter.prototype = {
 
     this._timeLastCheck = now;
     var value = this._getValueToComplete();
-    if (window.console) console.log('_checkNewValue ... real work ', 
+    if (window.console) 
+        console.log('_checkNewValue ... real work [value = %o]  - [lastValue = %o] ', 
                              value, this.lastValue);
     this.lastValue = this.lastTypedValue = value;
 
@@ -826,7 +834,12 @@ GvaScript.AutoCompleter.prototype = {
       if (!this.options.multivalued) {
         this.inputElement.select();
       } 
-      this.fireEvent({type: "Complete", index: num}, elem, this.inputElement); 
+
+      this.fireEvent({ type      : "Complete",
+                       referrer  : "select",    // choice selection fired this event 
+                       index     : num,
+                       choice    : this.choices[num],
+                       controller: {choices: this.choices} }, elem, this.inputElement);
     }
   }
 
