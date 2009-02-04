@@ -157,6 +157,7 @@ GvaScript.AutoCompleter.prototype = {
     // click on the dropdownDiv
     if (!this.dropdownDiv) {
       this.lastTypedValue = this.lastValue = "";
+      this.choices = null;
       this.fireEvent("Bind", elem);
     }
 
