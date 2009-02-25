@@ -378,23 +378,13 @@ GvaScript.TreeNavigator.prototype = {
   },
 
 
-  // set node background to red for 200 milliseconds
-  flash: function (node, milliseconds, color) {
+  // flash the node
+  flash: function (node) {
+    var label = this.label(node);
 
-    if (this._isFlashing) return;
-    this._isFlashing = true;
-
-    var label         = this.label(node);
     ASSERT(label, "node has no label");
-    var previousColor = label.style.backgroundColor;
-    var treeNavigator = this;
-    var endFlash      = function() {
-      treeNavigator._isFlashing = false;
-      label.style.backgroundColor = previousColor;
-    };
-    setTimeout(endFlash, milliseconds || this.options.flashDuration);
 
-    label.style.backgroundColor = color || this.options.flashColor;
+    label.flash({duration: 200});
   },
 
   fireEvent: function(eventName, elem) {
@@ -753,6 +743,11 @@ GvaScript.TreeNavigator.prototype = {
   _chooseLevel: function(event) {
     var level = event.keyCode - "0".charCodeAt(0);
     this.openAtLevel(this.rootElement, level);
+    
+    // stop the default Ctrl-num event
+    // FF: jump to tab#num
+    // IE: Ctrl-5 Select-All
+    Event.stop(event);
   },
 
   _showAll: function(event, toggle) {
