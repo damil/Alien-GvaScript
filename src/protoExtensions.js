@@ -157,7 +157,7 @@ function ASSERT (cond, msg) {
 // detects if a global CSS_PREFIX has been set
 // if yes, use it to prefix the css classes
 function CSSPREFIX () {
-    if(typeof CSS_PREFIX != 'undefine') {
+    if(typeof CSS_PREFIX != 'undefined') {
         return (CSS_PREFIX)? CSS_PREFIX + '-' : '';
     }
     return '';
