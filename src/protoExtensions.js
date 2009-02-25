@@ -4,6 +4,32 @@
 if (!window.Prototype)
   throw  new Error("Prototype library is not loaded");
 
+// adds the method flash to SPAN, DIV, INPUT, BUTTON elements
+// flashes an element by adding a classname for a brief moment of time
+// options: {classname: // classname to add (default: flash)
+//           duration:  // duration in ms to keep the classname (default: 100ms)}
+Element.addMethods(['SPAN', 'DIV', 'INPUT', 'BUTTON'], {
+    flash: function(element, options) {
+        if (element._IS_FLASHING) return;
+        element = $(element);
+
+        options = options || {}; 
+        var duration  = options.duration  || 100;
+        var classname = options.classname || 'flash';
+
+        element._IS_FLASHING = true;
+        
+        var endFlash  = function() {
+            this.removeClassName(classname);
+            this._IS_FLASHING = false;
+        };
+
+        element.addClassName(classname);
+        setTimeout(endFlash.bind(element), duration);
+    }
+});
+
+
 Object.extend(Element, {
 
   classRegExp : function(wanted_classes) {
@@ -128,3 +154,11 @@ function ASSERT (cond, msg) {
     throw new Error("Violated assertion: " + msg);
 }
 
+// detects if a global CSS_PREFIX has been set
+// if yes, use it to prefix the css classes
+function CSSPREFIX () {
+    if(typeof CSS_PREFIX != 'undefine') {
+        return (CSS_PREFIX)? CSS_PREFIX + '-' : '';
+    }
+    return '';
+}
