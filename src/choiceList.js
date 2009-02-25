@@ -16,7 +16,8 @@ GvaScript.ChoiceList = function(choices, options) {
     grabfocus        : false,
     scrollCount      : 5,
     choiceItemTagName: "div",
-    htmlWrapper      : function(html) {return html;}
+    htmlWrapper      : function(html) {return html;},
+    paginator        : null
   };
 
 
@@ -28,6 +29,15 @@ GvaScript.ChoiceList = function(choices, options) {
   };
   this.classes = Class.checkOptions(defaultClasses, this.options.classes);
 
+  // handy vars
+  this.hasPaginator = this.options.paginator != null;
+  this.pageSize = (
+                    // the step size of the paginator if any
+                    (this.hasPaginator && this.options.paginator.options.step) 
+                    ||  
+                    // scroll count
+                    this.options.scrollCount
+                  );
 
   // prepare some stuff to be reused when binding to inputElements
   this.reuse = {
@@ -36,16 +46,31 @@ GvaScript.ChoiceList = function(choices, options) {
     navigationRules: {
       DOWN:      this._highlightDelta.bindAsEventListener(this, 1),
       UP:        this._highlightDelta.bindAsEventListener(this, -1),
-      PAGE_DOWN: this._highlightDelta.bindAsEventListener(this, 
-                                    this.options.scrollCount),
-      PAGE_UP:   this._highlightDelta.bindAsEventListener(this, 
-                                    -this.options.scrollCount),
-      HOME:      this._highlightDelta.bindAsEventListener(this, -99999),
-      END:       this._highlightDelta.bindAsEventListener(this, 99999),
+
+      PAGE_DOWN: this._highlightDelta.bindAsEventListener(this, this.pageSize), 
+      PAGE_UP:   this._highlightDelta.bindAsEventListener(this, -this.pageSize),
+
+      HOME:      this._jumpToIndex.bindAsEventListener(this, 0),
+      END:       this._jumpToIndex.bindAsEventListener(this, 99999), 
+
       RETURN:    this._returnHandler .bindAsEventListener(this),
       ESCAPE:    this._escapeHandler .bindAsEventListener(this)
     }
   };
+  
+  if(this.hasPaginator) {
+    // next/prev page
+    this.reuse.navigationRules.RIGHT  
+        = this._highlightDelta.bindAsEventListener(this, this.pageSize)
+    this.reuse.navigationRules.LEFT   
+        = this._highlightDelta.bindAsEventListener(this, -this.pageSize);
+
+    // first/last page
+    this.reuse.navigationRules.C_HOME
+        = this._jumpToPage.bindAsEventListener(this, 0);
+    this.reuse.navigationRules.C_END  
+        = this._jumpToPage.bindAsEventListener(this, 99999);
+  }
 };
 
 
@@ -147,6 +172,10 @@ GvaScript.ChoiceList.prototype = {
                             this.classes.choiceHighlight);
     this.currentHighlightedIndex = newIndex;
     var elem = this._choiceElem(newIndex);
+    // not to throw an arrow when user is holding an UP/DN keys while 
+    // paginating
+    if(! $(elem)) return;
+
     Element.addClassName(elem, this.classes.choiceHighlight);
 
     if (autoScroll) 
@@ -155,21 +184,51 @@ GvaScript.ChoiceList.prototype = {
     this.fireEvent({type: "Highlight", index: newIndex}, elem, this.container);
   },
 
-
-  _highlightDelta: function(event, delta) {
-    var currentIndex = this.currentHighlightedIndex;
-    var nextIndex    = currentIndex + delta;
-    if (nextIndex < 0) 
-      nextIndex = 0;
-    if (nextIndex >= this.choices.length) 
-      nextIndex = this.choices.length -1;
-
+  // this method restricts navigation to the current page
+  _jumpToIndex: function(event, nextIndex) {
     var autoScroll = event && event.keyName; // autoScroll only for key events
-    this._highlightChoiceNum(nextIndex, autoScroll);
+
+    this._highlightChoiceNum(
+        Math.max(0, Math.min(this.choices.length-1, nextIndex)), 
+        autoScroll
+    );
                              
     if (event) Event.stop(event);
   },
 
+  
+  // TODO: jump to page numbers would be a nice addition 
+  _jumpToPage: function(event, pageIndex) {
+    if(pageIndex <=1) return this.options.paginator.getFirstPage();
+    if(pageIndex == 99999) return this.options.paginator.getLastPage();
+    
+    if (event) Event.stop(event);
+  },
+
+  // would navigate through pages if index goes out of bound
+  _highlightDelta: function(event, deltax, deltay) {
+    var currentIndex = this.currentHighlightedIndex;
+    var nextIndex    = currentIndex + deltax;
+    
+    // first try to flip a page
+    // if first page -> go top of list
+    if (nextIndex < 0) {
+        if(this.hasPaginator) {
+            if(this.options.paginator.getPrevPage()) return;
+        }
+        nextIndex = 0;
+    }
+
+    if (nextIndex >= this.choices.length) {
+        if(this.hasPaginator) {
+            if(this.options.paginator.getNextPage()) return; 
+        }
+        nextIndex = this.choices.length -1;
+    }
+    
+    // we're still on the same page
+    this._jumpToIndex(event, nextIndex);
+  },
 
   //----------------------------------------------------------------------
   // navigation 
