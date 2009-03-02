@@ -256,7 +256,7 @@ GvaScript.TreeNavigator.prototype = {
     }
 
     // register code to call the selection handlers after some delay
-    if (! this._selectionTimeoutId) {
+    if (! this._selectionTimeoutId && previousNode ) {
       var callback = this._selectionTimeoutHandler.bind(this, previousNode);
       this._selectionTimeoutId = 
         setTimeout(callback, this.options.selectDelay);
@@ -427,6 +427,7 @@ GvaScript.TreeNavigator.prototype = {
     // situation before the click
     var was_selected = this.selectedNode == node;
     var now = (new Date()).getTime(); 
+    // TODO: why not leverage the hasFocus attribute ?
     var just_selected = (now - this._lastSelectTime < this.options.selectDelay);
  
     // select node if necessary
