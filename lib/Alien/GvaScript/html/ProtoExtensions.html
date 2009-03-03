@@ -46,6 +46,10 @@
   <div class="TN_content"><div class="TN_node">
   <a class="TN_label" href="#Element_extensions">Element extensions</a>
   <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#flash">flash</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
   <a class="TN_label" href="#hasAnyClass">hasAnyClass</a>
   <div class="TN_content"></div>
 </div>
@@ -89,6 +93,10 @@
 </div>
 <div class="TN_leaf">
   <a class="TN_label" href="#ASSERT">ASSERT</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#CSSPREFIX">CSSPREFIX</a>
   <div class="TN_content"></div>
 </div>
 </div>
@@ -135,7 +143,17 @@ prototype.js.</p>
         <div class="TN_node" id="Element_extensions">
     <h3 class="TN_label">Element extensions</h3>
     <div class="TN_content">
-        <div class="TN_node" id="hasAnyClass">
+        <div class="TN_node" id="flash">
+    <h4 class="TN_label">flash</h4>
+    <div class="TN_content">
+      <p>only applied to ['SPAN', 'DIV', 'INPUT', 'BUTTON'] elements.</p>
+<p>used to set a classname to the element for a brief moment of time.</p>
+<pre>  Element.flash(elem, {duration: I&lt;time_mes&gt;, classname: I&lt;classname_to_set&gt;});</pre>
+
+
+    </div>
+  </div>
+  <div class="TN_node" id="hasAnyClass">
     <h4 class="TN_label">hasAnyClass</h4>
     <div class="TN_content">
       <pre>  if (Element.hasAnyClass(elem, ["class1", "class2", ...]) {...}  </pre>
@@ -283,6 +301,16 @@ in <code>ctorOptions</code> take precedence over values in
 
 <p>Checks if <code>cond</code> is true, and if not, generates an error 
 with message <code>msg</code>.</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="CSSPREFIX">
+    <h3 class="TN_label">CSSPREFIX</h3>
+    <div class="TN_content">
+      <pre>  CSSPREFIX ();</pre>
+
+<p>Returns value of <code>CSS_PREFIX</code> global variable if found. If not, default to 'gva'.</p>
+<p>This value is used to prefix css classnames of html elements that are derived in some GvaScript classes.</p>
 
     </div>
   </div>

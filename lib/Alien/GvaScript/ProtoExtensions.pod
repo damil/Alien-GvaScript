@@ -23,6 +23,14 @@ prototype.js.
 
 =head2 Element extensions
 
+=head3 flash
+
+only applied to ['SPAN', 'DIV', 'INPUT', 'BUTTON'] elements.
+
+used to set a classname to the element for a brief moment of time.
+
+  Element.flash(elem, {duration: I<time_mes>, classname: I<classname_to_set>});
+
 =head3 hasAnyClass
 
   if (Element.hasAnyClass(elem, ["class1", "class2", ...]) {...}  
@@ -146,3 +154,11 @@ C<defaultOptions>).
 
 Checks if C<cond> is true, and if not, generates an error 
 with message C<msg>.
+
+=head2 CSSPREFIX
+
+  CSSPREFIX ();
+
+Returns value of C<CSS_PREFIX> global variable if found. If not, default to 'gva'.
+
+This value is used to prefix css classnames of html elements that are derived in some GvaScript classes.
