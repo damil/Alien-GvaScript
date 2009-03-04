@@ -1,6 +1,6 @@
 =head1 NAME
 
-CustomButtons - Manage buttons creation, styling and keyboard navigation
+GvaScript.CustomButtons - Manage buttons creation, styling and keyboard navigation
 
 =head1 SYNOPSIS
 
@@ -31,7 +31,7 @@ Classes that take care of rendering and displaying application buttons.
 Displayed buttons will support hovering effects through custom css classnames
 and keyboard navigation using RIGHT and LEFT arrows.
 
-Buttons in there different states (idle, focus and hover) are easily styled using css classes.
+Buttons in their different states (idle, focus and hover) are easily styled using css classes.
 
 =head1 GvaScript.CustomButtons.Button 
 
