@@ -71,6 +71,14 @@ Toolbar is displayed with the help of C<GvaScript.CustomButtons> and C<GvaScript
 
 =back
 
+=head2 GvaScript.Grids 
+
+interface that provides one useful method:
+
+=head3 GvaScript.Grids.get(id)
+
+finds and returns the Grid instance where id is the unique id of the grid. 
+
 =head1 BEHAVIOUR
 
 Grid's display is based on a C<GvaScript.ChoiceList> object and thus has the behaviour of that of a choice list.
@@ -81,12 +89,12 @@ Grid's display is based on a C<GvaScript.ChoiceList> object and thus has the beh
 
 =item C<DOWN> / C<UP> 
 
-navigate by record
+navigate by recordCustomButtons
 
 =item C<HOME> / C<END> 
 
 start/end of current page
-
+CustomButtons
 =item C<RETURN> 
 
 fires onPing event handler
@@ -150,7 +158,7 @@ this object will be stored and referenced later via C<grid.rights> for grid acti
 
 =head2 id
 
-A unique id to identify a Grid.  Might be later used in Grids.get(id) to retrieve the grid instance.
+A unique id to identify a Grid.  Might be later used in C<GvaScript.Grids.get(id)> to retrieve the grid instance.
 
 =head2 url
 

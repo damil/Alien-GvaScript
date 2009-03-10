@@ -41,9 +41,17 @@
   <a class="TN_label" href="#DEPENDENCIES">DEPENDENCIES</a>
   <div class="TN_content"></div>
 </div>
-<div class="TN_leaf">
+<div class="TN_node">
   <a class="TN_label" href="#DESCRIPTION">DESCRIPTION</a>
+  <div class="TN_content"><div class="TN_node">
+  <a class="TN_label" href="#GvaScript_Grids_">GvaScript.Grids </a>
+  <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#GvaScript_Grids_get_id_">GvaScript.Grids.get(id)</a>
   <div class="TN_content"></div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="TN_node">
   <a class="TN_label" href="#BEHAVIOUR">BEHAVIOUR</a>
@@ -206,6 +214,20 @@ Result is displayed with the help of <code>GvaScript.ChoiceList</code>.</p>
 Toolbar is displayed with the help of <code>GvaScript.CustomButtons</code> and <code>GvaScript.Paginator</code></p>
 </li>
 </ul>
+  <div class="TN_node" id="GvaScript_Grids_">
+    <h3 class="TN_label">GvaScript.Grids </h3>
+    <div class="TN_content">
+      <p>interface that provides one useful method:</p>
+  <div class="TN_node" id="GvaScript_Grids_get_id_">
+    <h4 class="TN_label">GvaScript.Grids.get(id)</h4>
+    <div class="TN_content">
+      <p>finds and returns the Grid instance where id is the unique id of the grid. </p>
+
+    </div>
+  </div>
+
+    </div>
+  </div>
 
     </div>
   </div>
@@ -218,12 +240,12 @@ Toolbar is displayed with the help of <code>GvaScript.CustomButtons</code> and <
     <div class="TN_content">
       <ul>
 <li><a name="item__code_DOWN__code_____code_UP__code_"></a><b><code>DOWN</code> / <code>UP</code> </b>
-<p>navigate by record</p>
+<p>navigate by recordCustomButtons</p>
 </li>
 <li><a name="item__code_HOME__code_____code_END__code_"></a><b><code>HOME</code> / <code>END</code> </b>
-<p>start/end of current page</p>
-</li>
-<li><a name="item__code_RETURN__code_"></a><b><code>RETURN</code> </b>
+<p>start/end of current page
+CustomButtons
+=item <code>RETURN</code> </p>
 <p>fires onPing event handler</p>
 </li>
 <li><a name="item__code_ESC__code_"></a><b><code>ESC</code> </b>
@@ -285,7 +307,7 @@ this object will be stored and referenced later via <code>grid.rights</code> for
   <div class="TN_node" id="id">
     <h3 class="TN_label">id</h3>
     <div class="TN_content">
-      <p>A unique id to identify a Grid.  Might be later used in Grids.get(id) to retrieve the grid instance.</p>
+      <p>A unique id to identify a Grid.  Might be later used in <code>GvaScript.Grids.get(id)</code> to retrieve the grid instance.</p>
 
     </div>
   </div>
