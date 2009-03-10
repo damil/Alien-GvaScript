@@ -16,11 +16,13 @@ Composed of three subclasses
 
 =back
 
-Depends on 
+=head1 DEPENDENCIES
+
+This class depends on other GvaScript classes:
 
 =over 12
 
-=item B<GvaScript.KeyMap>
+=item GvaScript.KeyMap
 
 =back
 
