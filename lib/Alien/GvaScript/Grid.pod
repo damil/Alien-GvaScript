@@ -269,6 +269,34 @@ optional - defaulted to "Problème de connexion. Réessayer et si le problème pers
 
 =back
 
+=head1 PROPERTIES
+
+Here's a list of useful properties of the Grid Object.
+
+=head2 grid_container
+
+  grid.grid_container
+
+C<HTMLElement> container of the grid list 
+
+=head2 toolbar_container
+
+  grid.toolbar_container
+
+C<HTMLElement> container of the toolbar (pagination links + action buttons)
+
+=head2 paginatorbar_container
+
+  grid.paginatorbar_container 
+
+C<HTMLElement> container of the pagination links
+
+=head2 actionsbar_container
+
+ grid.actionsbar_container 
+
+C<HTMLElement> container of the action buttons
+
 =head1 METHODS
 
 =head2 clearResult
@@ -283,11 +311,24 @@ This method clears the grid result container and displays C<msg> instead.
 
 This methods clears the grid toolbar container.
 
+=head2 clearActionButtons
+
+  grid.clearActionButtons()
+
+This method clears the action buttons container and thus removes the buttons
+
 =head2 clear
 
   grid.clear(msg)
 
 This method is equivalent to C<grid.clearResult(msg)> and C<grid.clearToolbar()>
+
+=head2 addActionButtons
+
+  grid.addActionButtons()
+
+This method renders the action buttons based on the grids actions. 
+NOTE that the actions conditions will be re-evaluated.
 
 =head1 EVENTS
 

@@ -82,6 +82,26 @@
 </div>
 </div>
 <div class="TN_node">
+  <a class="TN_label" href="#PROPERTIES">PROPERTIES</a>
+  <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#grid_container">grid_container</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#toolbar_container">toolbar_container</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#paginatorbar_container">paginatorbar_container</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#actionsbar_container">actionsbar_container</a>
+  <div class="TN_content"></div>
+</div>
+</div>
+</div>
+<div class="TN_node">
   <a class="TN_label" href="#METHODS">METHODS</a>
   <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#clearResult">clearResult</a>
@@ -92,7 +112,15 @@
   <div class="TN_content"></div>
 </div>
 <div class="TN_leaf">
+  <a class="TN_label" href="#clearActionButtons">clearActionButtons</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
   <a class="TN_label" href="#clear">clear</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#addActionButtons">addActionButtons</a>
   <div class="TN_content"></div>
 </div>
 </div>
@@ -396,6 +424,49 @@ Ex: <code>value: function(e) {return e.fname + ' ' + e.lname}</code></p>
 
     </div>
   </div>
+  <div class="TN_node" id="PROPERTIES">
+    <h2 class="TN_label">PROPERTIES</h2>
+    <div class="TN_content">
+      <p>Here's a list of useful properties of the Grid Object.</p>
+  <div class="TN_node" id="grid_container">
+    <h3 class="TN_label">grid_container</h3>
+    <div class="TN_content">
+      <pre>  grid.grid_container</pre>
+
+<p><code>HTMLElement</code> container of the grid list </p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="toolbar_container">
+    <h3 class="TN_label">toolbar_container</h3>
+    <div class="TN_content">
+      <pre>  grid.toolbar_container</pre>
+
+<p><code>HTMLElement</code> container of the toolbar (pagination links + action buttons)</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="paginatorbar_container">
+    <h3 class="TN_label">paginatorbar_container</h3>
+    <div class="TN_content">
+      <pre>  grid.paginatorbar_container </pre>
+
+<p><code>HTMLElement</code> container of the pagination links</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="actionsbar_container">
+    <h3 class="TN_label">actionsbar_container</h3>
+    <div class="TN_content">
+      <pre> grid.actionsbar_container </pre>
+
+<p><code>HTMLElement</code> container of the action buttons</p>
+
+    </div>
+  </div>
+
+    </div>
+  </div>
   <div class="TN_node" id="METHODS">
     <h2 class="TN_label">METHODS</h2>
     <div class="TN_content">
@@ -417,12 +488,31 @@ Ex: <code>value: function(e) {return e.fname + ' ' + e.lname}</code></p>
 
     </div>
   </div>
+  <div class="TN_node" id="clearActionButtons">
+    <h3 class="TN_label">clearActionButtons</h3>
+    <div class="TN_content">
+      <pre>  grid.clearActionButtons()</pre>
+
+<p>This method clears the action buttons container and thus removes the buttons</p>
+
+    </div>
+  </div>
   <div class="TN_node" id="clear">
     <h3 class="TN_label">clear</h3>
     <div class="TN_content">
       <pre>  grid.clear(msg)</pre>
 
 <p>This method is equivalent to <code>grid.clearResult(msg)</code> and <code>grid.clearToolbar()</code></p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="addActionButtons">
+    <h3 class="TN_label">addActionButtons</h3>
+    <div class="TN_content">
+      <pre>  grid.addActionButtons()</pre>
+
+<p>This method renders the action buttons based on the grids actions. 
+NOTE that the actions conditions will be re-evaluated.</p>
 
     </div>
   </div>
