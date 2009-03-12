@@ -217,9 +217,9 @@ string value representing the column's default value if no value was found in th
 
 optional.
 
-=item css I<(string)>
+=item css I<(string|Array)>
 
-a space-separated list of css classes to be given to the column cells.
+a single css class or and array of css classes to be given to the column cells.
 
 optional.
 
