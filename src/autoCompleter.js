@@ -101,6 +101,9 @@ GvaScript.AutoCompleter = function(datasource, options) {
   }
 
   this.dropdownDiv = null;
+  // array to store running ajax requests
+  // of same autocompleter but for different input element
+  this._runningAjax = [];
 
   this.setdatasource(datasource);
 
@@ -261,12 +264,14 @@ GvaScript.AutoCompleter.prototype = {
     var inputElement  = this.inputElement;
 
     inputElement.style.backgroundColor = ""; // remove colorIllegal
-    if (this._runningAjax)
-      this._runningAjax.transport.abort();
+
+    // abort prev ajax request on this input element 
+    if (this._runningAjax[inputElement.name])
+      this._runningAjax[inputElement.name].transport.abort();
     Element.addClassName(inputElement, this.classes.loading);
     
     var complete_url = this._datasource + val_to_complete;
-    this._runningAjax = new Ajax.Request(
+    this._runningAjax[inputElement.name] = new Ajax.Request(
       complete_url,
       {asynchronous: true,
        method: this.options.http_method,
@@ -285,12 +290,12 @@ GvaScript.AutoCompleter.prototype = {
           // aborted by the onblur handler
           if(xhr.transport.status == 0) return;
           
-          autocompleter._runningAjax = null;
+          autocompleter._runningAjax[inputElement.name] = null;
           if (xhr.responseJSON)
               continuation(xhr.responseJSON);
        },
        onFailure: function(xhr) {
-          autocompleter._runningAjax = null;
+          autocompleter._runningAjax[inputElement.name] = null;
           autocompleter.displayMessage("pas de réponse du serveur");
        },
        onComplete: function(xhr) {
@@ -360,9 +365,10 @@ GvaScript.AutoCompleter.prototype = {
 
     if (window.console) console.log('blurHandler', value);    
 
-    // abort any pending ajax call
-    if (this._runningAjax) {
-      this._runningAjax.transport.abort();
+    // abort any pending ajax call on this input element
+    if (this._runningAjax[this.inputElement.name]) {
+      this._runningAjax[this.inputElement.name].transport.abort();
+      this._runningAjax[this.inputElement.name] = null;
       Element.removeClassName(this.inputElement, this.classes.loading);
     }
 

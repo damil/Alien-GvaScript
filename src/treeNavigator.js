@@ -228,15 +228,14 @@ GvaScript.TreeNavigator.prototype = {
     // deselect the previously selected node
     if (previousNode) {
         var label = this.label(previousNode);
-        if (label) Element.removeClassName(label, this.classes.selected);
+        if (label) {
+          Element.removeClassName(label, this.classes.selected);
+        }
     }
 
 
-    // select the new node
-    var now = (new Date()).getTime(); 
-    if (node)
-        this._lastSelectTime = now;
     this.selectedNode = node;
+    // select the new node
     if (node) {
       this._assertNodeOrLeaf(node, 'select node');
       var label = this.label(node);
@@ -247,6 +246,10 @@ GvaScript.TreeNavigator.prototype = {
         Element.addClassName(label, this.classes.selected);
 
         if (this.isVisible(label)) {
+          // focus has not yet been given to label
+          if(! label.hasAttribute('hasFocus'))
+            label.focus();
+            
           if (this.options.autoScrollPercentage !== null)
             Element.autoScroll(label, 
                                this.rootElement, 
@@ -255,12 +258,13 @@ GvaScript.TreeNavigator.prototype = {
       }
     }
 
+    // cancel if there was any select execution pending
+    if (this._selectionTimeoutId) clearTimeout(this._selectionTimeoutId);
+
     // register code to call the selection handlers after some delay
-    if (! this._selectionTimeoutId) {
-      var callback = this._selectionTimeoutHandler.bind(this, previousNode);
-      this._selectionTimeoutId = 
-        setTimeout(callback, this.options.selectDelay);
-    }
+    var callback = this._selectionTimeoutHandler.bind(this, previousNode);
+    this._selectionTimeoutId = 
+      setTimeout(callback, this.options.selectDelay);
   },
 
 
@@ -424,17 +428,15 @@ GvaScript.TreeNavigator.prototype = {
     var node  = Element.navigateDom(label, 'parentNode',
                                     this.classes.nodeOrLeaf);
 
-    // situation before the click
-    var was_selected = this.selectedNode == node;
-    var now = (new Date()).getTime(); 
-    var just_selected = (now - this._lastSelectTime < this.options.selectDelay);
- 
-    // select node if necessary
-    if (!was_selected) this.select(node);
+    // situation before the mousedown
+    var is_selected    = (this.selectedNode == node);
+    var is_first_click = !is_selected;
+
+    // select node if it wasn't
+    if (!is_selected) this.select(node);
 
     // should ping : depends on options.noPingOnFirstClick
-    var should_ping = (was_selected && !just_selected) 
-                    || !this.options.noPingOnFirstClick;
+    var should_ping = (!is_first_click) || !this.options.noPingOnFirstClick;
 
     // do the ping if necessary
     var event_stop_mode;
@@ -482,7 +484,7 @@ GvaScript.TreeNavigator.prototype = {
         label,  "mouseout",  
         this._labelMouseOutHandler.bindAsEventListener(this, label));
       Event.observe(
-        label,  "click",
+        label,  "mousedown",
         this._labelClickHandler.bindAsEventListener(this, label));
       Event.observe(
         label,  "dblclick",
@@ -509,25 +511,20 @@ GvaScript.TreeNavigator.prototype = {
     // focus handler
     var focus_handler = function(event) {
       var label = Event.element(event);
-      label.setAttribute('hasFocus', true);
+      label.writeAttribute('hasFocus', 'hasFocus');
 
       var node  = Element.navigateDom(label, 'parentNode',
                                       treeNavigator.classes.nodeOrLeaf);
                                                  
-      // Select, but only if focus was not the consequence of a select action!
-      // To distinguish, we use the timestamp of the last select.
-      var now = (new Date()).getTime(); 
-      var short_delay = 2 * treeNavigator.options.selectDelay;
-         // needed to multiply by 2 because focus() is called indirectly by 
-         // _selectionTimeoutHandler after selectDelay milliseconds
-      if (node && now - treeNavigator._lastSelectTime > short_delay)
+      // not yet been selected
+      if(node && !label.hasClassName(treeNavigator.classes.selected))
         treeNavigator.select(node); 
     };
 
     // blur handler
     var blur_handler = function(event) {
       var label = Event.element(event);
-      label.setAttribute('hasFocus', false);
+      label.removeAttribute('hasFocus');
 
       // Deselect, but only if blur was not the consequence of a select action!
       // To distinguish, we use the timestamp of the last select.
@@ -551,43 +548,19 @@ GvaScript.TreeNavigator.prototype = {
 //-----------------------------------------------------
 
   _selectionTimeoutHandler: function(previousNode) {
-    var now = (new Date()).getTime();
-    var deltaDelay = this.options.selectDelay - (now - this._lastSelectTime);
-
-    // if _lastSelectTime is too recent, re-schedule the same handler for later
-    if (deltaDelay > 0) {
-      var treeNavigator = this;
-      var callback = function () {
-        treeNavigator._selectionTimeoutHandler(previousNode);
-      };
-
-      this._selectionTimeoutId = 
-        setTimeout(callback, deltaDelay + 100); // allow for 100 more milliseconds
-    }
-
-    // else do the real work
-    else { 
       this._selectionTimeoutId = null;
-      var newNode = this.selectedNode;
 
-      // set focus
-      if (newNode) {
-        var label = this.label(newNode);
-        if (label && this.options.tabIndex >= 0 
-                  && !label.getAttribute('hasFocus') 
-                  && this.isVisible(label)) {
-            label.focus();
-        }
-      }
+      var newNode = this.selectedNode;
 
       // fire events
       if (previousNode != newNode) {
-        if (previousNode) 
+        if (previousNode) { 
           this.fireEvent("Deselect", previousNode, this.rootElement);
-        if (newNode)
+        }
+        if (newNode) {
           this.fireEvent("Select", newNode, this.rootElement);
+        }
       }
-    }
   },
 
 
