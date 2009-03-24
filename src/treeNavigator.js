@@ -526,12 +526,8 @@ GvaScript.TreeNavigator.prototype = {
       var label = Event.element(event);
       label.removeAttribute('hasFocus');
 
-      // Deselect, but only if blur was not the consequence of a select action!
-      // To distinguish, we use the timestamp of the last select.
-      var now = (new Date()).getTime(); 
-      var short_delay = 2 * treeNavigator.options.selectDelay;
-      if (now - treeNavigator._lastSelectTime > short_delay)
-        treeNavigator.select(null);
+      // deselect currrent selectedNode
+      treeNavigator.select(null);
     };
 
     // apply to each label
