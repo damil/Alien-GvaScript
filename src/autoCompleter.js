@@ -842,6 +842,8 @@ GvaScript.AutoCompleter.prototype = {
         this.inputElement.select();
       } 
 
+      this._updateDependentFields(this.inputElement, this.choices[num]);
+
       this.fireEvent({ type      : "Complete",
                        referrer  : "select",    // choice selection fired this event 
                        index     : num,
