@@ -314,7 +314,7 @@ GvaScript.AutoCompleter.prototype = {
     if (this.options.ignorePrefix)
         continuation(this._datasource);
     else {
-      var regex = new RegExp("^" + val_to_complete,
+      var regex = new RegExp("^" + RegExp.escape(val_to_complete),
                              this.options.caseSensitive ? "" : "i");
       var matchPrefix = function(choice) {
         var value;
@@ -845,6 +845,13 @@ GvaScript.AutoCompleter.prototype = {
       this._updateDependentFields(this.inputElement, this.choices[num]);
 
       this.fireEvent({ type      : "Complete",
+                       referrer  : "select",    // choice selection fired this event 
+                       index     : num,
+                       choice    : this.choices[num],
+                       controller: {choices: this.choices} }, elem, this.inputElement);
+
+      // for new code : generate a "LegalValue" event
+      this.fireEvent({ type      : "LegalValue", 
                        referrer  : "select",    // choice selection fired this event 
                        index     : num,
                        choice    : this.choices[num],

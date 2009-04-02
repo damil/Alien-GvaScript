@@ -148,7 +148,6 @@ Object.extend(Event, {
 
 });
 
-
 function ASSERT (cond, msg) {
   if (!cond) 
     throw new Error("Violated assertion: " + msg);
@@ -162,4 +161,10 @@ function CSSPREFIX () {
         return (CSS_PREFIX)? CSS_PREFIX : 'gva';
     }
     return 'gva';
+}
+
+// escaping RegEx special characters .*+?|()[]{}\
+RegExp.escape = function(str) {
+    var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g");
+    return str.replace(specials, "\\$&");
 }
