@@ -4,11 +4,11 @@ GvaScript.CustomButtons = {};
 
 GvaScript.CustomButtons.Button = Class.create();
 // Renders Buttons in the following HTML structure
-// <span class="dmweb-btn-container">
+// <span class="gva-btn-container">
 //         <span class="left"/>
 //         <span class="center">
-//                 <button accesskey="c" class="btn" style="width: auto;" id="btn_1227001526005">
-//                         Créer un nouveau justiciable
+//                 <button class="btn" style="width: auto;" id="btn_1227001526005">
+//                         Créer
 //                 </button>
 //         </span>
 //         <span class="right"/>
@@ -62,18 +62,20 @@ Object.extend(GvaScript.CustomButtons.Button.prototype, function() {
             this.options = Object.extend(defaults, options || {});
             
             if(_evalCondition(this.options.condition)) {
-                this.container = $(container);
-                this.container.insert(_render(this.options));
-                this.btnContainer = $(this.options.id); // the outer <span/>
+                try {
+                    this.container = $(container);
+                    this.container.insert(_render(this.options));
+                    this.btnContainer = $(this.options.id); // the outer <span/>
 
-                this.btnElt = this.btnContainer.down('.btn'); // the <button/>
+                    this.btnElt = this.btnContainer.down('.btn'); // the <button/>
 
-                // setting inline style on the button container
-                if(typeof this.options.style != 'undefined') {
-                    this.btnContainer.setStyle(this.options.style);
-                }
-                
-                this.btnElt.observe('click', this.options.callback.bind(this.btnElt));
+                    // setting inline style on the button container
+                    if(typeof this.options.style != 'undefined') {
+                        this.btnContainer.setStyle(this.options.style);
+                    }
+
+                    this.btnElt.observe('click', this.options.callback.bind(this.btnElt));
+                } catch (e) {}
             }
         }
     }
@@ -82,6 +84,8 @@ Object.extend(GvaScript.CustomButtons.Button.prototype, function() {
 GvaScript.CustomButtons.ButtonNavigation = Class.create();
 Object.extend(GvaScript.CustomButtons.ButtonNavigation.prototype, function() {
         // private members
+        var bcss = CSSPREFIX();
+
         function _leftHandler(event) {
             var selectedBtn = this.selectedBtn;
             if (selectedBtn) {
@@ -131,7 +135,7 @@ Object.extend(GvaScript.CustomButtons.ButtonNavigation.prototype, function() {
                 var btn;
                 // if the button is a GvaScript.CustomButtons.BUTTON, then the actual <button> element 
                 // will be embedded and selectable via .btn classname:
-                // <span class="dmweb_btn-container">
+                // <span class="gva-btn-container">
                 //         <span class="left"/>
                 //         <span class="center">
                 //                 <button accesskey="r" class="btn" style="width: auto;" id="btn_1226916357164">
@@ -169,7 +173,7 @@ Object.extend(GvaScript.CustomButtons.ButtonNavigation.prototype, function() {
                     flashClassName      : 'flash',
                     keymap              : null,
                     selectFirstBtn      : true,
-                    className           : 'BN_button'
+                    className           : bcss+'-button'
                 };
                 this.options   = Object.extend(defaults, options || {});
                 this.container = $(container); 

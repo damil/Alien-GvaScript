@@ -131,6 +131,7 @@ Object.extend(GvaScript.Grid.prototype, function() {
             // recycle the previously created choiceList
             else {
                 this.choiceList = recycled;
+                this.choiceList.options.htmlWrapper = this.recordSetTableWrapper.bind(this);
                 this.choiceList.options.paginator = this.paginator;
                 this.choiceList_initialized = true;
             }

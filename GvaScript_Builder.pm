@@ -34,6 +34,7 @@ sub generate_js { # concatenates sources below into "GvaScript.js"
 
   my @sources = qw/protoExtensions event keyMap 
                    treeNavigator choiceList autoCompleter
+                   customButtons paginator grid
                    repeat form/;
   my $dest = "lib/Alien/GvaScript/lib/GvaScript.js";
   chmod 0777, $dest;

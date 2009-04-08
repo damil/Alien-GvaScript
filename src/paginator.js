@@ -166,6 +166,7 @@ Object.extend(GvaScript.Paginator.prototype, function() {
                 }.bind(this),
                 // on s'attend à avoir du JSON en retour
                 onFailure: function(req) {
+                    this._executing = false;
                     var answer = req.responseJSON;
                     var msg = answer.error.message || this.options.errorMsg;
                     this.list_container.update(msg);
@@ -175,9 +176,6 @@ Object.extend(GvaScript.Paginator.prototype, function() {
                     
                     var answer = req.responseJSON;
                     if(answer) {
-                        // can be != step if a record's height depend 
-                        // on its content
-                        // ex: interprete -> records height depend on interprete languages
                         var nb_displayed_records = this.options.onSuccess(answer);
                         this.total     = answer.total; // total number of records
 
