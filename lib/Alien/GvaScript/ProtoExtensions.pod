@@ -21,6 +21,12 @@ prototype.js.
 
 =head1 METHODS
 
+=head2 String extensions
+
+=head3 chomp
+
+Strips any trailing line breaks (\r\n) from a String.
+
 =head2 Element extensions
 
 =head3 flash
