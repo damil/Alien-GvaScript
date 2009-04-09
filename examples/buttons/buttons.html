@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//FR" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+
+    <link href="../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">var CSS_PREFIX = 'gva';</script>
+    <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
+    <script src="../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
+    
+  </head>
+
+  <body>
+    <h1>Tst CustomButtons</h1>
+    <div class="content">
+      
+      <form name="zform" onreset="alert('form has been reset!')">
+        <label>form field</label>
+        <input type="text" value="field value" name="field"/>
+        <br/>
+        <div id="buttons_placeholder"></div>
+      </form>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    new GvaScript.CustomButtons.ActionsBar('buttons_placeholder', {
+      selectfirst: true,
+      actions: [
+          {
+              label: 'Submit Form',
+              type: 'submit'
+          },
+          {
+              label: 'Reset Form',
+              type: 'reset'
+          },
+          {
+              id: 'hello_kitty',
+              label: 'Custom Action',
+              type: 'button',
+              callback: function(event) {
+                alert('Custom Action clicked!');
+              }
+          }
+      ]
+    });
+  </script>
+
+</html>

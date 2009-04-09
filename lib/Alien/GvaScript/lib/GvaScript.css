@@ -118,3 +118,33 @@
   background-color: #183E6C;
   color: #ecf2ff;
 }
+
+
+/* CUSTOM BUTTONS */
+.flash {background-color:red !important;}
+.flash .btn {color:red !important}
+
+.gva-actionsbar {background-color:#E8E8E8;border:1px solid #8c8c8c;border-width:1px 0px;height:25px;padding:4px 0 1px;}
+.gva-btn-container {display:inline;}
+.gva-btn-container .btn {margin:0 3px;font-size:12px;cursor:pointer;}
+.gva-btn-container .btn {
+    font-family:verdana,geneva,lucida,'lucida grande',arial,helvetica,sans-serif;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:1px 2px;
+    color:#000;
+    background-color:transparent !important;
+}
+.gva-btn-container .btn {float:left;}
+.gva-btn-container.btn-focus .btn {color:#aa0000;}
+.gva-btn-container span {display:block;float:left;height:21px;}
+.gva-btn-container span.left {background:transparent url(btn_sprite.gif) no-repeat scroll 0 0;padding:0 1px 0 2px;margin-left:4px;}
+.gva-btn-container span.center {background:transparent url(btn_sprite.gif) repeat-x scroll 0 -42px;padding:0 2px}
+.gva-btn-container span.right {background:transparent url(btn_sprite.gif) no-repeat scroll 0 -21px;padding:0 1px 0 2px;}
+.gva-btn-container.btn-hover span.left {background-position:0 -63px;}
+.gva-btn-container.btn-hover span.center {background-position:0 -105px;}
+.gva-btn-container.btn-hover span.right {background-position:0 -84px;}
+.gva-btn-container.btn-focus span.left {background-position:0 -63px;}
+.gva-btn-container.btn-focus span.center {background-position:0 -126px;}
+.gva-btn-container.btn-focus span.right {background-position:0 -84px;}
