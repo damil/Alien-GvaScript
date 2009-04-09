@@ -29,6 +29,11 @@ Element.addMethods(['SPAN', 'DIV', 'INPUT', 'BUTTON'], {
     }
 });
 
+Object.extend(String.prototype, {
+  chomp: function() {
+    return this.replace(/(\n|\r)+$/, '');
+  }
+});
 
 Object.extend(Element, {
 
