@@ -156,7 +156,9 @@ Object.extend(GvaScript.Paginator.prototype, function() {
             
             this.links_container.hide(); // hide 'em. (one click at a time)
             this.list_container.update(new Element('div', {'class': bcss+'-loading'}));
-            var myAjax = new Ajax.Request(url, { 
+
+            new Ajax.Request(url, { 
+                evalJSON: 'force',  // force evaluation of response into responseJSON
                 method: this.options.method,
                 parameters: this.options.parameters,
                 requestTimeout: this.options.timeoutAjax * 1000,

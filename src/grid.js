@@ -21,10 +21,10 @@ Object.extend(GvaScript.Grid.prototype, function() {
     }
     function _compileWidth(column) {
         switch (typeof column.width) {
-            case 'number': return ' width="'+column.width+'px"';
+        case 'number': return ' style="width: '+column.width+'px"';
             case 'string':  
-                if(isNaN(column.width)) return ' width="'+column.width+'"';
-                else                    return ' width="'+column.width+'px"';
+                if(isNaN(column.width)) return ' style="width: '+column.width+'"';
+                else                    return ' style="width: '+column.width+'px"';
             default: return '';
         }
     }
