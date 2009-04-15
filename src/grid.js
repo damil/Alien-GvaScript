@@ -55,6 +55,7 @@ Object.extend(GvaScript.Grid.prototype, function() {
                 gridheight     : 'auto',  // available space
                 recordheight   : 19,      // default record height in pixels
                 requestTimeout : 15,
+                method         : 'post',  // default XHR method
                 errorMsg       : "Problème de connexion. Réessayer et si le problème persiste, contacter un administrateur.",
                 onPing         : Prototype.emptyFunction,
                 onEmpty        : Prototype.emptyFunction,
@@ -108,6 +109,7 @@ Object.extend(GvaScript.Grid.prototype, function() {
                     list_container  : this.grid_container, 
                     links_container : this.paginatorbar_container,
 
+                    method      : this.options.method,
                     onSuccess   : this.receiveRequest.bind(this),
                     parameters  : this.dto,
                     step        : this.limit, 
