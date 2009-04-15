@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../../lib/Alien/GvaScript/lib/GvaScript.css" />
+    <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
+    <script src="../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
+
+    <title>GvaScript Grid Example</title>
+  </head>
+
+  <body>
+      <h1>Grid with dico</h1>
+
+      <p>This grid example is bound to a dictionary containing all french words starting with 'a' or 'b'.</p>
+
+      <p>
+        <em>First start the server with <tt>perl dicoserver.pl</tt> in this
+          directory. 
+            Then go to page <a href="http://localhost:8081/examples/grid/simplegrid.html">
+                http://localhost:8081/examples/grid/simplegrid.html</a>
+        </em>
+      </p>    
+      <div id="wrapper" style="height:500px">
+        <div id="grid_container" tabIndex="0"></div>
+        <div id="toolbar_container" style="height:28px"></div>
+      </div>
+  </body>
+
+  <script type="text/javascript" language="javascript" charset="iso-8859-1">
+     var url = "http://localhost:8081/word/";
+     new GvaScript.Grid("my_grid", url, {
+        grid_container: 'grid_container',
+        toolbar_container: 'toolbar_container',
+        columns: [
+            {label: 'initiale',    value: function(e) {return '['+e.initiale+']'}},
+            {label: 'value',       value: 'value'}
+        ],
+        actions: [
+          {label:'Grid Action', condition: function() {return true;}, callback: function() {alert('grid action fired');}},
+          {label:'CONDITION FALSE', condition: false}
+        ],
+        grabfocus: true,
+        onEmpty: function() {
+          this.clearResult('huh no word!');
+        },        
+        onPing: function(target) {
+          alert('Ping\n'+$H(target).inspect());
+        }, 
+        onCancel: function() {alert('ESC has been pressed')}
+    });
+  </script>
+
+</html>
