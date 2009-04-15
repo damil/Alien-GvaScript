@@ -2,23 +2,23 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
     <meta http-equiv="Content-Type" content='text/html; charset=iso-8859-1' />
-    <link rel="stylesheet" href="test.css" type="text/css" media="screen" charset="utf-8" />
-    <link rel="stylesheet" href="../lib/Alien/GvaScript/lib/GvaScript.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="../test.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="../../lib/Alien/GvaScript/lib/GvaScript.css" type="text/css" media="screen" charset="utf-8" />
 
-    <script src="../lib/Alien/GvaScript/lib/prototype.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../lib/Alien/GvaScript/lib/unittest.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../lib/Alien/GvaScript/lib/GvaScript.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../lib/Alien/GvaScript/lib/prototype.js" type="text/javascript"></script>
+    <script src="../../lib/Alien/GvaScript/lib/unittest.js" type="text/javascript"></script>
+    <script src="../../lib/Alien/GvaScript/lib/GvaScript.js" type="text/javascript"></script>
     <title>GvaScript Unit Tests</title>
   </head>
   <body>
     <h1>Unit Tests :: GvaScript/customButtons.js </h1>
     <p>Tests for CustomButtons/ActionsBar functionalities</p>
     
-    <textarea id="custom"></textarea>
-    <div id="actions_bar"></div>
-
     <!-- Test Log output -->
     <div id="testlog">...</div>
+
+    <div id="actions_bar"></div>
+    <div id="custom"></div>
 
     <script type="text/javascript" language="javascript" charset="iso-8859-1">
     // <![CDATA[
@@ -71,7 +71,7 @@
 
                 Event.simulateMouse($('custom_button').down('.btn'), 'click');
 
-                assertEqual('custom clicked', $F('custom'));
+                assertEqual('custom clicked', $('custom').innerHTML);
             }});
         }},
         

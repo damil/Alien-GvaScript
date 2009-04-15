@@ -176,7 +176,7 @@ table {padding:0;margin: 0;border-collapse:collapse;}
 .gva-paginatorbar span.gva-btn-container {display:block;margin-right:4px;}
 
 /* grid table */
-.gva-grid {width:100%;}
+.gva-grid {width:100%;font-size:12px}
 .gva-grid th.grid-header {
   text-align:center;
   padding:2px;
