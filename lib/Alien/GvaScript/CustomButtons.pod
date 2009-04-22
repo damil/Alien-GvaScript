@@ -67,6 +67,12 @@ unique identifier of the button - will be set to the <button> element.
 
 optional - system will provide one if none provided.
 
+=item tabindex I<(numeric)>
+
+numeric value of the tabindex to set on the generated button element.
+
+optional - button will not have tabindex attribute if none provided.
+
 =item callback I<(function)>
 
 onclick handler of the <button> element - will execute in the B<button context>.
