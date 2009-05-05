@@ -334,7 +334,7 @@ GvaScript.AutoCompleter.prototype = {
   _updateChoices : function (continuation) {
     var value = this._getValueToComplete();
 
-    if (window.console) console.log('updateChoices', value);
+//     if (window.console) console.log('updateChoices', value);
 
     this._updateChoicesHandler(value, continuation);
   },
@@ -363,7 +363,7 @@ GvaScript.AutoCompleter.prototype = {
     }
 
 
-    if (window.console) console.log('blurHandler', value);    
+//     if (window.console) console.log('blurHandler', value);    
 
     // abort any pending ajax call on this input element
     if (this._runningAjax[this.inputElement.name]) {
@@ -543,7 +543,7 @@ GvaScript.AutoCompleter.prototype = {
     if (this._timeoutId) clearTimeout(this._timeoutId);
 
     this._timeLastKeyDown = (new Date()).getTime(); 
-    if (window.console) console.log('keyDown', this._timeLastKeyDown, event.keyCode); 
+//     if (window.console) console.log('keyDown', this._timeLastKeyDown, event.keyCode); 
     this._timeoutId = setTimeout(this._checkNewValue.bind(this), 
                                  this.options.checkNewValDelay);
 
@@ -558,15 +558,17 @@ GvaScript.AutoCompleter.prototype = {
         
     // abort if the timeout occurs after a blur (no input element)
     if (!this.inputElement) {
-      if (window.console) console.log('_checkNewValue ... no input elem');
+//       if (window.console) console.log('_checkNewValue ... no input elem');
       return; 
     }
 
     // several calls to this function may be queued by setTimeout,
     // so we perform some checks to avoid doing the work twice
     if (this._timeLastCheck > this._timeLastKeyDown) {
-      if (window.console) console.log('_checkNewValue ... done already ', 
-                  this._timeLastCheck, this._timeLastKeyDown);
+
+//       if (window.console) console.log('_checkNewValue ... done already ', 
+//                   this._timeLastCheck, this._timeLastKeyDown);
+
       return; // the work was done already
     }
 
@@ -575,17 +577,19 @@ GvaScript.AutoCompleter.prototype = {
     var deltaTime = now - this._timeLastKeyDown;
     if (deltaTime + this.options.deltaTime_tolerance 
           <  this.options.checkNewValDelay) {
-      if (window.console) console.log('_checkNewValue ... too young ',
-                                      now, this._timeLastKeyDown);
+
+//       if (window.console) console.log('_checkNewValue ... too young ',
+//                                       now, this._timeLastKeyDown);
+
       return; // too young, let olders do the work
     }
 
 
     this._timeLastCheck = now;
     var value = this._getValueToComplete();
-    if (window.console) 
-        console.log('_checkNewValue ... real work [value = %o]  - [lastValue = %o] ', 
-                             value, this.lastValue);
+//     if (window.console) 
+//         console.log('_checkNewValue ... real work [value = %o]  - [lastValue = %o] ', 
+//                              value, this.lastValue);
     this.lastValue = this.lastTypedValue = value;
 
     // create a list of choices if we have enough chars
@@ -596,9 +600,9 @@ GvaScript.AutoCompleter.prototype = {
 
           // if, meanwhile, another keyDown occurred, then abort
           if (this._timeLastKeyDown > this._timeLastCheck) {
-            if (window.console) 
-              console.log('after updateChoices .. abort because of keyDown',
-                          now, this._timeLastKeyDown);
+//             if (window.console) 
+//               console.log('after updateChoices .. abort because of keyDown',
+//                           now, this._timeLastKeyDown);
             return;
           }
           
