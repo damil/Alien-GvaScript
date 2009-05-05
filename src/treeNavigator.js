@@ -49,7 +49,14 @@ GvaScript.TreeNavigator = function(elem, options) {
 
   // connect to the root element
   this.rootElement = elem;
+
+  // add buttons and tabIndex to labels
   this.initSubTree(elem);
+
+  // tree-wide navigation handlers
+  this._addHandlers();
+  // tree-wide tabbing handlers
+  this._addTabbingBehaviour();
 
   // initializing the keymap
   var keyHandlers = {
@@ -117,11 +124,27 @@ GvaScript.TreeNavigator.prototype = {
 // Public methods
 //-----------------------------------------------------
 
+  initSubTree: function (tree_root) {
+    // get the labels of the sub tree
+    var labels = tree_root.select('.'+this.classes.label);
 
-  initSubTree: function (elem) {
-    var labels = Element.getElementsByClassNames(elem, this.classes.label);
-    this._addButtonsAndHandlers(labels); 
-    this._addTabbingBehaviour(labels);
+    // add tabIndex per label
+    if (this.options.tabIndex >= 0) {
+      _idx = this.options.tabIndex;
+      labels.each(function(label) {
+        label.tabIndex = _idx;
+      });
+    }
+
+    // add tree navigation buttons per label
+    if (this.options.createButtons) {
+      var button = document.createElement("span");
+      button.className = this.classes.button;
+          
+      labels.each(function(label) {
+        label.parentNode.insertBefore(button.cloneNode(true), label);
+      });
+    }
   },
 
   isClosed: function (node) {
@@ -140,6 +163,12 @@ GvaScript.TreeNavigator.prototype = {
     return (elem === this.rootElement);
   },
 
+  isLabel: function(elem) {
+    if(elem.hasClassName(this.classes.label)) 
+      return elem;
+    else 
+      return Element.navigateDom(elem, 'parentNode', this.classes.label); 
+  },
 
   close: function (node) {
     if (this.isLeaf(node))
@@ -413,21 +442,81 @@ GvaScript.TreeNavigator.prototype = {
     ASSERT(elem && Element.hasAnyClass(elem, this.classes.nodeOrLeaf), msg);
   },
 
+  _addHandlers: function() {
+    Event.observe(
+      this.rootElement,  "mouseover", 
+      this._treeMouseOverHandler.bindAsEventListener(this));
+    
+    Event.observe(
+      this.rootElement,  "mouseout",  
+      this._treeMouseOutHandler.bindAsEventListener(this));
 
-  _labelMouseOverHandler: function(event, label) {
-      Element.addClassName(label, this.classes.mouse);
-      Event.stop(event);
+    Event.observe(
+      this.rootElement,  "mousedown",  
+      this._treeClickHandler.bindAsEventListener(this));
+
+    Event.observe(
+      this.rootElement,  "dblclick",  
+      this._treeDblClickHandler.bindAsEventListener(this));
   },
 
-  _labelMouseOutHandler: function(event, label) {
-    Element.removeClassName(label, this.classes.mouse);
-    Event.stop(event);
-  },
-  
-  _labelClickHandler : function(event, label) {
-    var node  = Element.navigateDom(label, 'parentNode',
-                                    this.classes.nodeOrLeaf);
+  _treeClickHandler : function(event) {
+    var target = Event.element(event);
 
+    // ignore right mousedown 
+    if(!Event.isLeftClick(event)) return;
+
+    // button clicked
+    if(target.hasClassName(this.classes.button)) 
+        return this._buttonClicked(target.parentNode);
+
+    // label (or one of its childElements) clicked
+    if(label = this.isLabel(target)) {
+        return this._labelClicked(label.parentNode, event);
+    }
+  },
+
+  _treeDblClickHandler : function(event) {
+    var target = Event.element(event);
+
+    // only consider doubleclicks on labels
+    if(!(label = this.isLabel(target))) return;
+
+    var event_stop_mode;
+
+    // should_ping_on_dblclick was just set within _labelClicked
+    if (this.should_ping_on_dblclick) {
+      event_stop_mode = this.fireEvent("Ping", label.parentNode, this.rootElement);
+    }
+
+    // stop the event unless the ping_handler decided otherwise
+    Event.detailedStop(event, event_stop_mode || Event.stopAll);
+  },
+
+  _treeMouseOverHandler: function(event) {
+      var target = Event.element(event);
+      if(label = this.isLabel(target)) {
+        Element.addClassName(label, this.classes.mouse);
+        Event.stop(event);
+      }
+  },
+
+  _treeMouseOutHandler: function(event) {
+      var target = Event.element(event);
+      if(label = this.isLabel(target)) {
+        Element.removeClassName(label, this.classes.mouse);
+        Event.stop(event);
+      }
+  },
+
+  _buttonClicked : function(node) {
+    var method = this.isClosed(node) ? this.open : this.close;
+    method.call(this, node);
+    if (this.options.selectOnButtonClick)
+      this.select(node);
+  },
+
+  _labelClicked : function(node, event) {
     // situation before the mousedown
     var is_selected    = (this.selectedNode == node);
     var is_first_click = !is_selected;
@@ -441,7 +530,7 @@ GvaScript.TreeNavigator.prototype = {
     // do the ping if necessary
     var event_stop_mode;
     if (should_ping)
-      event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
+    event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
 
     // avoid a second ping from the dblclick handler
     this.should_ping_on_dblclick = !should_ping; 
@@ -450,57 +539,7 @@ GvaScript.TreeNavigator.prototype = {
     Event.detailedStop(event, event_stop_mode || Event.stopAll);
   },
 
-
-  _labelDblClickHandler : function(event, label) {
-    var event_stop_mode;
-
-    // should_ping_on_dblclick was just set within _labelClickHandler
-    if (this.should_ping_on_dblclick) {
-      var node = label.parentNode;
-      event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
-    }
-
-    // stop the event unless the ping_handler decided otherwise
-    Event.detailedStop(event, event_stop_mode || Event.stopAll);
-  },
-
-
-  _buttonClickHandler : function(event) {
-    var node = Event.element(event).parentNode;
-    var method = this.isClosed(node) ? this.open : this.close;
-    method.call(this, node);
-    if (this.options.selectOnButtonClick)
-      this.select(node);
-    Event.stop(event);
-  },
-
-  _addButtonsAndHandlers: function(labels) {
-    for (var i = 0; i < labels.length; i++) {
-      var label = labels[i];
-      Event.observe(
-        label,  "mouseover", 
-        this._labelMouseOverHandler.bindAsEventListener(this, label));
-      Event.observe(
-        label,  "mouseout",  
-        this._labelMouseOutHandler.bindAsEventListener(this, label));
-      Event.observe(
-        label,  "mousedown",
-        this._labelClickHandler.bindAsEventListener(this, label));
-      Event.observe(
-        label,  "dblclick",
-        this._labelDblClickHandler.bindAsEventListener(this, label));
-      if (this.options.createButtons) {
-        var button = document.createElement("span");
-        button.className = this.classes.button;
-        label.parentNode.insertBefore(button, label);
-        Event.observe(
-          button, "click",     
-          this._buttonClickHandler.bindAsEventListener(this, label));
-      }
-    }
-  },
-
-  _addTabbingBehaviour: function(labels) {
+  _addTabbingBehaviour: function() {
     if (this.options.tabIndex < 0) return; // no tabbing
 
     // focus and blur do not bubble, so we'll have to insert them
@@ -511,31 +550,37 @@ GvaScript.TreeNavigator.prototype = {
     // focus handler
     var focus_handler = function(event) {
       var label = Event.element(event);
-      label.writeAttribute('hasFocus', 'hasFocus');
+      if(label.hasClassName(this.classes.label)) {
+        label.writeAttribute('hasFocus', 'hasFocus');
 
-      var node  = Element.navigateDom(label, 'parentNode',
-                                      treeNavigator.classes.nodeOrLeaf);
-                                                 
-      // not yet been selected
-      if(node && !label.hasClassName(treeNavigator.classes.selected))
-        treeNavigator.select(node); 
+        var node  = Element.navigateDom(label, 'parentNode',
+                                        treeNavigator.classes.nodeOrLeaf);
+                                                    
+        // not yet been selected
+        if(node && !label.hasClassName(treeNavigator.classes.selected))
+            treeNavigator.select(node); 
+      }
     };
 
     // blur handler
     var blur_handler = function(event) {
       var label = Event.element(event);
-      label.removeAttribute('hasFocus');
+      if(label.hasClassName(this.classes.label)) {
+        label.removeAttribute('hasFocus');
 
-      // deselect currrent selectedNode
-      treeNavigator.select(null);
+        // deselect currrent selectedNode
+        treeNavigator.select(null);
+      }
     };
 
-    // apply to each label
-    labels.each(function(label) {
-                  label.tabIndex = treeNavigator.options.tabIndex;
-                  Event.observe(label, "focus", focus_handler);
-                  Event.observe(label, "blur", blur_handler);
-                });
+    if(Prototype.Browser.IE) {
+        Event.observe(this.rootElement, "focusin", focus_handler.bind(this));
+        Event.observe(this.rootElement, "focusout",  blur_handler.bind(this));
+    }
+    else {
+        this.rootElement.addEventListener('focus', focus_handler.bind(this), true);
+        this.rootElement.addEventListener('blur',  blur_handler.bind(this),  true);
+    }
   },
 
 
@@ -622,7 +667,6 @@ GvaScript.TreeNavigator.prototype = {
     }
   },
 
-
   _tabHandler: function (event) {
     var selectedNode = this.selectedNode;
     if (selectedNode && this.isClosed(selectedNode)) {
@@ -656,6 +700,129 @@ GvaScript.TreeNavigator.prototype = {
     nodes.each(function(node) {treeNavigator.open(node)});
     Event.stop(event);
   },
+  _treeClickHandler : function(event) {
+    var target = Event.element(event);
+
+    // ignore right mousedown 
+    if(!Event.isLeftClick(event)) return;
+
+    // button clicked
+    if(target.hasClassName(this.classes.button)) 
+        return this._buttonClicked(target.parentNode);
+
+    // label (or one of its childElements) clicked
+    if(label = this.isLabel(target)) {
+        return this._labelClicked(label.parentNode, event);
+    }
+  },
+
+  _treeDblClickHandler : function(event) {
+    var target = Event.element(event);
+
+    // only consider doubleclicks on labels
+    if(!(label = this.isLabel(target))) return;
+
+    var event_stop_mode;
+
+    // should_ping_on_dblclick was just set within _labelClicked
+    if (this.should_ping_on_dblclick) {
+      event_stop_mode = this.fireEvent("Ping", label.parentNode, this.rootElement);
+    }
+
+    // stop the event unless the ping_handler decided otherwise
+    Event.detailedStop(event, event_stop_mode || Event.stopAll);
+  },
+
+  _treeMouseOverHandler: function(event) {
+      var target = Event.element(event);
+      if(label = this.isLabel(target)) {
+        Element.addClassName(label, this.classes.mouse);
+        Event.stop(event);
+      }
+  },
+
+  _treeMouseOutHandler: function(event) {
+      var target = Event.element(event);
+      if(label = this.isLabel(target)) {
+        Element.removeClassName(label, this.classes.mouse);
+        Event.stop(event);
+      }
+  },
+
+  _buttonClicked : function(node) {
+    var method = this.isClosed(node) ? this.open : this.close;
+    method.call(this, node);
+    if (this.options.selectOnButtonClick)
+      this.select(node);
+  },
+
+  _labelClicked : function(node, event) {
+    // situation before the mousedown
+    var is_selected    = (this.selectedNode == node);
+    var is_first_click = !is_selected;
+
+    // select node if it wasn't
+    if (!is_selected) this.select(node);
+
+    // should ping : depends on options.noPingOnFirstClick
+    var should_ping = (!is_first_click) || !this.options.noPingOnFirstClick;
+
+    // do the ping if necessary
+    var event_stop_mode;
+    if (should_ping)
+    event_stop_mode = this.fireEvent("Ping", node, this.rootElement);
+
+    // avoid a second ping from the dblclick handler
+    this.should_ping_on_dblclick = !should_ping; 
+
+    // stop the event unless the ping_handler decided otherwise
+    Event.detailedStop(event, event_stop_mode || Event.stopAll);
+  },
+
+  _addTabbingBehaviour: function() {
+    if (this.options.tabIndex < 0) return; // no tabbing
+
+    // focus and blur do not bubble, so we'll have to insert them
+    // in each label element
+
+    var treeNavigator = this; // handlers will be closures on this
+
+    // focus handler
+    var focus_handler = function(event) {
+      var label = Event.element(event);
+      if(label.hasClassName(this.classes.label)) {
+        label.writeAttribute('hasFocus', 'hasFocus');
+
+        var node  = Element.navigateDom(label, 'parentNode',
+                                        treeNavigator.classes.nodeOrLeaf);
+                                                    
+        // not yet been selected
+        if(node && !label.hasClassName(treeNavigator.classes.selected))
+            treeNavigator.select(node); 
+      }
+    };
+
+    // blur handler
+    var blur_handler = function(event) {
+      var label = Event.element(event);
+      if(label.hasClassName(this.classes.label)) {
+        label.removeAttribute('hasFocus');
+
+        // deselect currrent selectedNode
+        treeNavigator.select(null);
+      }
+    };
+
+    if(Prototype.Browser.IE) {
+        Event.observe(this.rootElement, "focusin", focus_handler.bind(this));
+        Event.observe(this.rootElement, "focusout",  blur_handler.bind(this));
+    }
+    else {
+        this.rootElement.addEventListener('focus', focus_handler.bind(this), true);
+        this.rootElement.addEventListener('blur',  blur_handler.bind(this),  true);
+    }
+  },
+
 
   _kpSlashHandler: function (event) {
     var treeNavigator = this;
