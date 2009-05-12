@@ -78,6 +78,7 @@ GvaScript.TreeNavigator = function(elem, options) {
     C_PAGE_UP  : this._ctrlPgUpHandler  .bindAsEventListener(this),
     C_PAGE_DOWN: this._ctrlPgDownHandler.bindAsEventListener(this),
 
+    REGEX      : [[ "", /^\w$/, this._charHandler.bindAsEventListener(this) ]],  
 
     // to think : do these handlers really belong to Tree.Navigator?
     PAGE_DOWN:function(event){window.scrollBy(0, document.body.clientHeight/2);
@@ -94,6 +95,8 @@ GvaScript.TreeNavigator = function(elem, options) {
 
   // tabIndex for the tree element
   elem.tabIndex = Math.max(elem.tabIndex, this.options.treeTabIndex);
+
+  this._clear_quick_navi();
 
   if (options.keymap) {
     this.keymap = options.keymap;
@@ -145,6 +148,10 @@ GvaScript.TreeNavigator.prototype = {
         label.parentNode.insertBefore(button.cloneNode(true), label);
       });
     }
+
+    // labels_array needed for keyboard navigation
+    // in the tree
+    this.labels_array = labels;
   },
 
   isClosed: function (node) {
@@ -406,10 +413,9 @@ GvaScript.TreeNavigator.prototype = {
 
   enclosingNode:  function (elem) {
     return Element.navigateDom(
-      $(elem), 'parentNode', this.classes.node, 
+      $(elem), 'parentNode', this.classes.nodeOrLeaf, 
       this.isRootElement.bind(this));
   },
-
 
   // flash the node
   flash: function (node) {
@@ -433,6 +439,17 @@ GvaScript.TreeNavigator.prototype = {
 //-----------------------------------------------------
 // Private methods
 //-----------------------------------------------------
+  // quick navigation initialization:
+  // - exit navi_mode
+  // - clear navi_word
+  // - clear match result
+  _clear_quick_navi: function() {
+    if(this._quick_navi_mode !== false) 
+      window.clearTimeout(this._quick_navi_mode);
+
+    this._quick_navi_mode  = false;  // quick_navi mode active (navi timer)
+    this._quick_navi_word  = "";     // word to navigate to 
+  },
 
   _assertNode: function(elem, msg) {
     ASSERT(elem && Element.hasAnyClass(elem, this.classes.node), msg);
@@ -608,6 +625,55 @@ GvaScript.TreeNavigator.prototype = {
 //-----------------------------------------------------
 // Key handlers
 //-----------------------------------------------------
+  _charHandler: function (event) {
+    var selectedNode = this.selectedNode;
+    if(! selectedNode) return;
+
+    this._quick_navi_word += event.keyName; // always uppercase
+    var is_quick_navi_mode = (this._quick_navi_mode !== false);
+
+    // drop the previous timer
+    if(is_quick_navi_mode) {
+      window.clearTimeout(this._quick_navi_mode);
+    }
+    // activate a new timer
+    this._quick_navi_mode = window.setTimeout(function() {
+      this._clear_quick_navi();
+    }.bind(this), 800);    
+
+    var selectedLabel = this.label(selectedNode);
+    var selectedIndex = this.labels_array.indexOf(selectedLabel);
+    // partitions the labels array into 2 arrays
+    // 1: preceeding labels & selectedNode if not in quick_navi_mode
+    // 2: following labels  & selectedNode if in quick_navi_mode 
+    var labels = this.labels_array.partition(function(l, index) {
+        // quick-navi mode
+        if(is_quick_navi_mode) return index < selectedIndex;
+        else                   return index <= selectedIndex;
+    });
+
+    // returns first label found to start with word.
+    var find_match = function(labels, word) {
+        var match = labels.find(function(label) {
+            return label.innerHTML.toUpperCase().startsWith(word);
+        });
+        return match;
+    }
+
+    // first look ahead then look back
+    var matching_label  =  find_match(labels[1], this._quick_navi_word) 
+                        || find_match(labels[0], this._quick_navi_word);
+
+    // found a match -> make it visible and select it
+    if(matching_label) {
+      this.openEnclosingNodes(matching_label);
+      this.select(this.enclosingNode(matching_label));
+    }
+    // no match -> flash the selected label
+    else {
+      this.label(this.selectedNode).flash();
+    }
+  },
 
   _downHandler: function (event) {
     var selectedNode = this.selectedNode;
