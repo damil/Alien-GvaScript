@@ -306,8 +306,7 @@ GvaScript.TreeNavigator.prototype = {
   scrollTo: function(node) {
     window.scrollTo(0, 
                     node.cumulativeOffset().top - 
-                    document.viewport.getHeight()/2 - 
-                    node.getHeight()/2);
+                    document.viewport.getHeight()/2); 
   },
 
   label: function(node) {
@@ -586,8 +585,10 @@ GvaScript.TreeNavigator.prototype = {
                                         treeNavigator.classes.nodeOrLeaf);
                                                     
         // not yet been selected
-        if(node && !label.hasClassName(treeNavigator.classes.selected))
-            treeNavigator.select(node); 
+        if(node && !label.hasClassName(treeNavigator.classes.selected)) {
+          treeNavigator.scrollTo(node); 
+          treeNavigator.select  (node); 
+        }
       }
     };
 
@@ -679,7 +680,10 @@ GvaScript.TreeNavigator.prototype = {
     // found a match -> make it visible and select it
     if(matching_label) {
       this.openEnclosingNodes(matching_label);
-      this.select(this.enclosingNode(matching_label));
+
+      var znode = this.enclosingNode(matching_label);
+      this.scrollTo(znode);
+      this.select  (znode);
     }
     // no match -> flash the selected label
     else {
@@ -692,7 +696,8 @@ GvaScript.TreeNavigator.prototype = {
     if (selectedNode) {
       var nextNode = this.nextDisplayedNode(selectedNode);
       if (nextNode) {
-        this.select(nextNode);
+        this.scrollTo(nextNode);
+        this.select  (nextNode);
         Event.stop(event);
       }
       // otherwise: do nothing and let default behaviour happen
@@ -704,7 +709,8 @@ GvaScript.TreeNavigator.prototype = {
     if (selectedNode) {
       var prevNode = this.previousDisplayedNode(selectedNode);
       if (prevNode) {
-        this.select(prevNode);
+        this.scrollTo(prevNode);
+        this.select  (prevNode);
         Event.stop(event);
       }
       // otherwise: do nothing and let default behaviour happen
@@ -718,9 +724,11 @@ GvaScript.TreeNavigator.prototype = {
         this.close(selectedNode);
       } 
       else {
-        var parent = this.parentNode(selectedNode); 
-        if (parent) 
-          this.select(parent); 
+        var zparent = this.parentNode(selectedNode); 
+        if (zparent) { 
+          this.scrollTo(zparent); 
+          this.select  (zparent); 
+        }
         else
           this.flash(selectedNode); 
       }
@@ -736,8 +744,10 @@ GvaScript.TreeNavigator.prototype = {
         this.open(selectedNode);
       else {
         var subNode = this.firstSubNode(selectedNode); 
-        if (subNode) 
-          this.select(subNode);
+        if (subNode) { 
+          this.scrollTo(subNode);
+          this.select  (subNode);
+        }
         else
           this.flash(selectedNode);
       }
@@ -806,28 +816,38 @@ GvaScript.TreeNavigator.prototype = {
 
   _homeHandler: function (event) {
     if (this.selectedNode) {
-        this.select(this.firstSubNode());
-        Event.stop(event);
+      var znode = this.firstSubNode();
+      this.scrollTo(znode);
+      this.select  (znode);
+      Event.stop(event);
     }
   },
 
   _endHandler: function (event) {
     if (this.selectedNode) {
-        this.select(this.lastVisibleSubnode());
-        Event.stop(event);
+      var znode = this.lastVisibleSubnode();
+      this.scrollTo(znode);
+      this.select  (znode);
+      Event.stop(event);
     }
   },
 
   _ctrlPgUpHandler: function (event) {
     var node = this.enclosingNode(Event.element(event));
-    if (node) this.select(node);
+    if (node) {
+      this.scrollTo(node);
+      this.select  (node);
+    }
   },
 
   _ctrlPgDownHandler: function (event) {
     var node = this.enclosingNode(Event.element(event));
     if (node) {
       node = this.nextDisplayedNode(node);
-      if (node) this.select(node);
+      if (node) {
+        this.scrollTo(node);
+        this.select  (node);
+      }
     }
   },
 

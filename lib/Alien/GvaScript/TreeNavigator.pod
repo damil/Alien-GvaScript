@@ -475,6 +475,10 @@ If there was a selected node, unselect it; then select the argument
 node. The argument can be C<null>, in which case the tree no longer
 has any selected node.
 
+=item C<scrollTo(node)>
+
+Positions the node in the middle of the screen
+
 =item C<flash(node, duration, color)>
 
 
