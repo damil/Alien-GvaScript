@@ -305,7 +305,7 @@ GvaScript.TreeNavigator.prototype = {
 
   scrollTo: function(node) {
     window.scrollTo(0, 
-                    node.cumulativeOffset().top - 
+                    Element.cumulativeOffset(node).top - 
                     document.viewport.getHeight()/2); 
   },
 
@@ -570,9 +570,6 @@ GvaScript.TreeNavigator.prototype = {
   _addTabbingBehaviour: function() {
     if (this.options.tabIndex < 0) return; // no tabbing
 
-    // focus and blur do not bubble, so we'll have to insert them
-    // in each label element
-
     var treeNavigator = this; // handlers will be closures on this
 
     // focus handler
@@ -603,6 +600,8 @@ GvaScript.TreeNavigator.prototype = {
       }
     };
 
+    // focus and blur do not bubble 
+    // workaround per browser
     if(Prototype.Browser.IE) {
         Event.observe(this.rootElement, "focusin", focus_handler.bind(this));
         Event.observe(this.rootElement, "focusout",  blur_handler.bind(this));
