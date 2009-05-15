@@ -487,6 +487,9 @@ GvaScript.TreeNavigator.prototype = {
 //-----------------------------------------------------
   _treeClickHandler : function(event) {
     var target = Event.element(event);
+    // IE: click on disabled input will fire the event
+    // with event.srcElement null
+    if(target.nodeType != 1) return; 
 
     // ignore right mousedown 
     if(!Event.isLeftClick(event)) return;
@@ -503,6 +506,7 @@ GvaScript.TreeNavigator.prototype = {
 
   _treeDblClickHandler : function(event) {
     var target = Event.element(event);
+    if(target.nodeType != 1) return;
 
     // only consider doubleclicks on labels
     if(!(label = this.isLabel(target))) return;
@@ -519,19 +523,23 @@ GvaScript.TreeNavigator.prototype = {
   },
 
   _treeMouseOverHandler: function(event) {
-      var target = Event.element(event);
-      if(label = this.isLabel(target)) {
-        Element.addClassName(label, this.classes.mouse);
-        Event.stop(event);
-      }
+    var target = Event.element(event);
+    if(target.nodeType != 1) return; 
+
+    if(label = this.isLabel(target)) {
+      Element.addClassName(label, this.classes.mouse);
+      Event.stop(event);
+    }
   },
 
   _treeMouseOutHandler: function(event) {
-      var target = Event.element(event);
-      if(label = this.isLabel(target)) {
-        Element.removeClassName(label, this.classes.mouse);
-        Event.stop(event);
-      }
+    var target = Event.element(event);
+    if(target.nodeType != 1) return; 
+
+    if(label = this.isLabel(target)) {
+      Element.removeClassName(label, this.classes.mouse);
+      Event.stop(event);
+    }
   },
 
   _buttonClicked : function(node) {
