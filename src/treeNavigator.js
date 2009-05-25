@@ -128,6 +128,7 @@ GvaScript.TreeNavigator.prototype = {
 //-----------------------------------------------------
 
   initSubTree: function (tree_root) {
+    tree_root = $(tree_root);
     // get the labels of the sub tree
     var labels = tree_root.select('.'+this.classes.label);
 
