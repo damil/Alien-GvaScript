@@ -99,7 +99,6 @@ lib/Alien/GvaScript/lib/minus.gif
 lib/Alien/GvaScript/lib/plus.gif
 lib/Alien/GvaScript/lib/prototype.js
 lib/Alien/GvaScript/lib/unittest.js
-src/autoCompleter.dmweb.js
 src/autoCompleter.js
 src/base.js
 src/choiceList.js
