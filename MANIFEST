@@ -100,15 +100,12 @@ lib/Alien/GvaScript/lib/plus.gif
 lib/Alien/GvaScript/lib/prototype.js
 lib/Alien/GvaScript/lib/unittest.js
 src/autoCompleter.js
-src/base.js
 src/choiceList.js
 src/customButtons.js
 src/event.js
 src/form.js
 src/grid.js
 src/keyMap.js
-src/media_wiki.js
-src/msie_console.js
 src/paginator.js
 src/protoExtensions.js
 src/repeat.js
