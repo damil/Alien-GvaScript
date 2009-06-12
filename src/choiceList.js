@@ -14,6 +14,7 @@ GvaScript.ChoiceList = function(choices, options) {
     idForChoices     : "CL_choice",
     keymap           : null,
     grabfocus        : false,
+    mouseovernavi    : true,
     scrollCount      : 5,
     choiceItemTagName: "div",
     htmlWrapper      : function(html) {return html;},
@@ -88,7 +89,9 @@ GvaScript.ChoiceList.prototype = {
     Element.update(this.container, this.htmlForChoices());
 
     // mouse events on choice items will bubble up to the container
-    Event.observe(this.container, "mouseover", this.reuse.onmouseover);
+    if(this.options.mouseovernavi) {
+        Event.observe(this.container, "mouseover", this.reuse.onmouseover);
+    }
     Event.observe(this.container, "click"    , this.reuse.onclick);
 
     if (this.options.keymap) {
@@ -256,11 +259,20 @@ GvaScript.ChoiceList.prototype = {
   _clickHandler: function(event) {
     var elem = this._findChoiceItem(event);
     if (elem) {
-      var toStop = this.fireEvent({type : "Ping", 
-                                   index: this._choiceIndex(elem)}, 
-                                  elem, 
-                                  this.container);
-      Event.detailedStop(event, toStop || Event.stopAll);
+      var newIndex = this._choiceIndex(elem);
+      // check if choice is selected
+      if (this.currentHighlightedIndex == newIndex) {
+        // selected -> fire ping event
+        var toStop = this.fireEvent({type : "Ping", 
+                                    index: this._choiceIndex(elem)}, 
+                                    elem, 
+                                    this.container);
+        Event.detailedStop(event, toStop || Event.stopAll);
+      }
+      else {
+        // not selected -> select
+        this._highlightChoiceNum(newIndex, false);
+      }
     }
   },
 

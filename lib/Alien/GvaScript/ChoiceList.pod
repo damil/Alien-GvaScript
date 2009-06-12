@@ -82,6 +82,11 @@ How many items to skip when hitting the
 C<PAGE_UP> or C<PAGE_DOWN> keys. 
 Default is 5
 
+=item mouseovernavi 
+
+Boolean indicating whether the choices would be selected/deselected with the 
+mouseover event.
+Default is C<true>
 
 =item classes
 

@@ -122,6 +122,7 @@ Object.extend(GvaScript.Grid.prototype, function() {
             if(! (recycled = this.grid_container.choiceList) ) {
                 this.choiceList = new GvaScript.ChoiceList([], {
                     paginator         : this.paginator,
+                    mouseovernavi     : false,
                     classes           : {'choiceHighlight': "liste_highlight"},
                     choiceItemTagName : "tr",
                     grabfocus         : false,
