@@ -718,17 +718,9 @@ GvaScript.AutoCompleter.prototype = {
     // insert into DOM
     document.body.appendChild(div);
 
-    // simulate maxHeight/minWidth on old MSIE (must be AFTER appendChild())
+    // simulate minWidth on old MSIE (must be AFTER appendChild())
+    // maxHeight cannot be simulated untill displayChoices
     if (navigator.userAgent.match(/\bMSIE [456]\b/)) {
-      div.style.setExpression("height", 
-        "this.scrollHeight>" + this.options.maxHeight + "?" 
-                             + this.options.maxHeight + ":'auto'");
-
-      // code below would seem to make sense but loops forever in MSIE 6
-//       div.style.setExpression("width", 
-//         "this.scrollWidth<" + this.options.minWidth + "?" 
-//                             + this.options.minWidth + ":'auto'");
-      // so a simple fallback solution 
       div.style.width  = this.options.minWidth + "px"; 
     }
 
@@ -773,9 +765,18 @@ GvaScript.AutoCompleter.prototype = {
       cl.onCancel = function(event) {
         ac._removeDropdownDiv();
       };
-
-      // fill container now so that the keymap gets initialized
-      cl.fillContainer(this._mkDropdownDiv());
+        
+      // append div to DOM
+      var choices_div = this._mkDropdownDiv();
+      // fill div now so that the keymap gets initialized
+      cl.fillContainer(choices_div);
+      // set height of div for IE6 (no suppport for maxHeight!)
+      if (navigator.userAgent.match(/\bMSIE [456]\b/)) {
+        choices_div.style.height = 
+          (choices_div.scrollHeight > this.options.maxHeight)?
+            this.options.maxHeight + 'px' :
+            'auto';
+      }
 
       // catch keypress on TAB while choiceList has focus
       cl.keymap.rules[0].TAB = cl.keymap.rules[0].S_TAB = function(event) {
