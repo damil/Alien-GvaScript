@@ -305,9 +305,16 @@ GvaScript.TreeNavigator.prototype = {
   },
 
   scrollTo: function(node) {
+    // donot invoke scroll if scrolling is disabled
+    // on document body
+    if(document.body.style.overflow == 'hidden'
+      || document.body.style.overflowY == 'hidden'
+      || document.body.scroll == 'no') // IE 
+    return;
+    
     window.scrollTo(0, 
-                    Element.cumulativeOffset(node).top - 
-                    document.viewport.getHeight()/2); 
+                    Element.cumulativeOffset(node).top 
+                    - document.viewport.getHeight()/2); 
   },
 
   label: function(node) {
