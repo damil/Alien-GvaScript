@@ -657,6 +657,10 @@ GvaScript.TreeNavigator.prototype = {
     var selectedNode = this.selectedNode;
     if(! selectedNode) return;
 
+    // stop firefox quick search if enabled 
+    // via "accessibility.typeaheadfind" => 'true' 
+    Event.stop(event);
+
     this._quick_navi_word += event.keyName; // always uppercase
     var is_quick_navi_mode = (this._quick_navi_mode !== false);
 
