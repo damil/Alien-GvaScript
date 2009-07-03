@@ -332,7 +332,7 @@ Color for "flashing", expressed as standard CSS color; default is red.
 =head4 selectOnButtonClick
 
 If true, clicking on a "+/-" button next to a label will not only open
-or close the node, but will also select that node; default is false.
+or close the node, but will also select that node; default is true.
 
 =head4 noPingOnFirstClick
 

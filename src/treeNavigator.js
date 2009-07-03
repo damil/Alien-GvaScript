@@ -21,7 +21,7 @@ GvaScript.TreeNavigator = function(elem, options) {
     flashDuration       : 200,     // milliseconds
     flashColor          : "red",
     selectDelay         : 100,     // milliseconds
-    selectOnButtonClick : false,
+    selectOnButtonClick : true,
     noPingOnFirstClick  : false,
     selectFirstNode     : true,
     createButtons       : true,
@@ -179,15 +179,6 @@ GvaScript.TreeNavigator.prototype = {
       return;
     Element.addClassName(node, this.classes.closed);             
     this.fireEvent("Close", node, this.rootElement);
-
-    // if "selectedNode" is no longer visible, select argument node as current
-    var selectedNode = this.selectedNode;
-    var walkNode = selectedNode;
-    while (walkNode && walkNode !== node) {
-      walkNode = this.parentNode(walkNode);
-    }
-    if (walkNode && selectedNode !== node) 
-      this.select(node);
   },
 
   open: function (node) {
@@ -500,8 +491,12 @@ GvaScript.TreeNavigator.prototype = {
     if(!Event.isLeftClick(event)) return;
 
     // button clicked
-    if(target.hasClassName(this.classes.button)) 
+    if(target.hasClassName(this.classes.button)) {
+        // as not to fire blur_handler
+        // on treeNode
+        Event.stop(event);
         return this._buttonClicked(target.parentNode);
+    }
 
     // label (or one of its childElements) clicked
     if(label = this.isLabel(target)) {
@@ -600,6 +595,13 @@ GvaScript.TreeNavigator.prototype = {
           treeNavigator.select  (node); 
         }
       }
+      else {
+        // try to re-focus on the previously selected Node
+        if(_node = treeNavigator.selectedNode) {
+          treeNavigator.selectedNode = null;
+          treeNavigator.select(_node);
+        }
+      }
     };
 
     // blur handler
@@ -607,9 +609,7 @@ GvaScript.TreeNavigator.prototype = {
       var label = Event.element(event);
       if(label.hasClassName(this.classes.label)) {
         label.removeAttribute('hasFocus');
-
-        // deselect currrent selectedNode
-        treeNavigator.select(null);
+        label.removeClassName(treeNavigator.classes.selected);      
       }
     };
 
