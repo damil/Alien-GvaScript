@@ -545,8 +545,11 @@ GvaScript.TreeNavigator.prototype = {
   _buttonClicked : function(node) {
     var method = this.isClosed(node) ? this.open : this.close;
     method.call(this, node);
-    if (this.options.selectOnButtonClick)
-      this.select(node);
+    if (this.options.selectOnButtonClick) {
+        window.setTimeout(function() {
+            this.select(node);
+        }.bind(this), 0);
+    }
   },
 
   _labelClicked : function(node, event) {
@@ -595,14 +598,6 @@ GvaScript.TreeNavigator.prototype = {
           treeNavigator.select  (node); 
         }
       }
-      else {
-        // try to re-focus on the previously selected Node
-        if(_node = treeNavigator._selected_node_cache) {
-          treeNavigator.selectedNode = null;
-          treeNavigator.select(_node);
-          treeNavigator._selected_node_cache = null;
-        }
-      }
     };
 
     // blur handler
@@ -610,7 +605,8 @@ GvaScript.TreeNavigator.prototype = {
       var label = Event.element(event);
       if(label.hasClassName(this.classes.label)) {
         label.removeAttribute('hasFocus');
-        treeNavigator._selected_node_cache = treeNavigator.selectedNode;
+
+        // deselect the previously selected node
         treeNavigator.select(null);
       }
     };
