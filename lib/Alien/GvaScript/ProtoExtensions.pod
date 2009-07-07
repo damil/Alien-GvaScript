@@ -31,7 +31,7 @@ Strips any trailing line breaks (\r\n) from a String.
 
 =head3 flash
 
-only applied to ['SPAN', 'DIV', 'INPUT', 'BUTTON'] elements.
+only applied to ['SPAN', 'DIV', 'INPUT', 'BUTTON', 'TEXTAREA', 'A'] elements.
 
 used to set a classname to the element for a brief moment of time.
 

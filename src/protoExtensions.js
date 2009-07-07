@@ -8,7 +8,7 @@ if (!window.Prototype)
 // flashes an element by adding a classname for a brief moment of time
 // options: {classname: // classname to add (default: flash)
 //           duration:  // duration in ms to keep the classname (default: 100ms)}
-Element.addMethods(['SPAN', 'DIV', 'INPUT', 'BUTTON', 'TEXTAREA'], {
+Element.addMethods(['SPAN', 'DIV', 'INPUT', 'BUTTON', 'TEXTAREA', 'A'], {
     flash: function(element, options) {
         if (element._IS_FLASHING) return;
         element = $(element);
