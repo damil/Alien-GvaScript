@@ -721,10 +721,12 @@ GvaScript.TreeNavigator.prototype = {
       if (nextNode) {
         this.scrollTo(nextNode);
         this.select  (nextNode);
-        Event.stop(event);
       }
-      // otherwise: do nothing and let default behaviour happen
+      else this.flash(selectedNode);
+
+      Event.stop(event);
     }
+    // otherwise: do nothing and let default behaviour happen
   },
 
   _upHandler: function (event) {
@@ -734,10 +736,12 @@ GvaScript.TreeNavigator.prototype = {
       if (prevNode) {
         this.scrollTo(prevNode);
         this.select  (prevNode);
-        Event.stop(event);
       }
-      // otherwise: do nothing and let default behaviour happen
+      else this.flash(selectedNode);
+      
+      Event.stop(event);
     }
+    // otherwise: do nothing and let default behaviour happen
   },
 
   _leftHandler: function (event) {
