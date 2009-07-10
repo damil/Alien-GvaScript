@@ -151,6 +151,10 @@
             assertEqual('PUS', $F('gridlog'), 'Failed to fire Ping on KEY_RETURN');
             $('gridlog').update();
             
+            // CLICK to select
+            Event.simulateMouse($$('.gva-grid tbody tr')[3], 'click');
+            assert($$('.gva-grid tbody tr')[3].hasClassName('liste_highlight'));
+            
             // CLICK to Ping
             Event.simulateMouse($$('.gva-grid tbody tr')[3], 'click');
             assertEqual('GER', $F('gridlog'), 'Failed to fire Ping on click');
