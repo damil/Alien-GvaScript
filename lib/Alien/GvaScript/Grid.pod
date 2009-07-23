@@ -229,7 +229,7 @@ optional.
 
 =item css I<(string|Array)>
 
-a single css class or and array of css classes to be given to the column cells.
+a single css class or and array of css classes to be given to the column header/cells.
 
 optional.
 

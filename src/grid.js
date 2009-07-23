@@ -209,7 +209,7 @@ Object.extend(GvaScript.Grid.prototype, function() {
                         '<th class="grid-marker">&nbsp;</th>' + 
                         (this.columns.collect(function(e) {
                             if(_evalCondition(e, this))
-                            return '<th class="grid-header"'+_compileWidth(e)+'>'+e.label+'</th>'
+                            return '<th class="grid-header'+_compileCss(e)+'"'+_compileWidth(e)+'>'+e.label+'</th>'
                             else return '';
                         }, this).join('')) +
                     '</tr></thead>' +
