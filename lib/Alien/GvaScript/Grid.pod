@@ -8,6 +8,7 @@ GvaScript.Grid - ChoiceList based Grid with Pagination
   var grid_id = "my_unique_grid_id";
   
   var my_grid = new GvaScript.Grid(grid_id, my_url, {
+        css: 'grid-class-name',
         grid_container: 'grid_will_display_here',
         toolbar_container: 'grid_toolbar_will_display_here',
         dto: {VUE: 'JSON'},
@@ -25,6 +26,9 @@ GvaScript.Grid - ChoiceList based Grid with Pagination
             }
         ],
         grabfocus: true,
+        onShow: function() {
+        
+        },
         onEmpty: function() {
             $('grid_will_display_here').update('empty list was retrieved');
         },        
@@ -168,9 +172,15 @@ Url for AJAX request to retrieve current page dataset.
 
 =over
 
+=item css I<(String)>
+
+A string value of space seperated list of class names to be applied to the table element.
+
+optional - defaulted to ''
+
 =item dto I<(JSON Object)>
 
-Data trasfer Object to the AJAX request. C<Ex: {param1: 'value1', param2: 'value2'}>
+Data transfer Object to the AJAX request. C<Ex: {param1: 'value1', param2: 'value2'}>
 
 optional - defaulted to C<{VUE: 'JSON'}>
 
@@ -253,7 +263,7 @@ optional - defaulted to C<'auto'>
 
 height to set to the grid record.
 
-optional - defaulted to C<19>
+optional - defaulted to C<21>
 
 =item requestTimeout I<(numeric)>
 
@@ -331,6 +341,11 @@ This method renders the action buttons based on the grids actions.
 NOTE that the actions conditions will be re-evaluated.
 
 =head1 EVENTS
+
+=head2 onShow
+
+This event is triggered of the table is rendered and displayed.
+Useful for attaching custom events on table records/cells.
 
 =head2 onHighlight
 

@@ -47,16 +47,18 @@ Object.extend(GvaScript.Grid.prototype, function() {
     return {
         initialize: function(id, datasource, options) {
             var defaults = {
+                css            : '',
                 dto            : {},
                 columns        : [],
                 actions        : [],
                 grabfocus      : true,
                 pagesize       : 'auto',  // fill available grid height
                 gridheight     : 'auto',  // available space
-                recordheight   : 19,      // default record height in pixels
+                recordheight   : 21,      // default record height in pixels
                 requestTimeout : 15,
                 method         : 'post',  // default XHR method
                 errorMsg       : "Problème de connexion. Réessayer et si le problème persiste, contacter un administrateur.",
+                onShow         : Prototype.emptyFunction,
                 onPing         : Prototype.emptyFunction,
                 onEmpty        : Prototype.emptyFunction,
                 onCancel       : Prototype.emptyFunction
@@ -123,10 +125,10 @@ Object.extend(GvaScript.Grid.prototype, function() {
                 this.choiceList = new GvaScript.ChoiceList([], {
                     paginator         : this.paginator,
                     mouseovernavi     : false,
-                    classes           : {'choiceHighlight': "liste_highlight"},
+                    classes           : {'choiceHighlight': "hilite"},
                     choiceItemTagName : "tr",
                     grabfocus         : false,
-                    htmlWrapper       : this.recordSetTableWrapper.bind(this)
+                    htmlWrapper       : this.gridWrapper.bind(this)
 
                 });
                 this.choiceList_initialized = false;
@@ -134,7 +136,7 @@ Object.extend(GvaScript.Grid.prototype, function() {
             // recycle the previously created choiceList
             else {
                 this.choiceList = recycled;
-                this.choiceList.options.htmlWrapper = this.recordSetTableWrapper.bind(this);
+                this.choiceList.options.htmlWrapper = this.gridWrapper.bind(this);
                 this.choiceList.options.paginator = this.paginator;
                 this.choiceList_initialized = true;
             }
@@ -201,8 +203,8 @@ Object.extend(GvaScript.Grid.prototype, function() {
         },
         
         // wrapping the recordset in a table with column headers
-        recordSetTableWrapper: function(html) {
-           return '<table class="'+bcss+'-grid">' +
+        gridWrapper: function(html) {
+           return '<table class="'+bcss+'-grid '+this.options.css+'">' +
                     '<thead><tr>' +
                         '<th class="grid-marker">&nbsp;</th>' + 
                         (this.columns.collect(function(e) {
@@ -251,6 +253,8 @@ Object.extend(GvaScript.Grid.prototype, function() {
                 this.addActionButtons();
 
             if(!(this.total > 0)) this.options.onEmpty.apply(this);
+
+            (this.options.onShow || Prototype.emptyFunction).call();
 
             return this.records.length;
         }

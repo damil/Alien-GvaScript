@@ -128,6 +128,10 @@
 <div class="TN_node">
   <a class="TN_label" href="#EVENTS">EVENTS</a>
   <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#onShow">onShow</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
   <a class="TN_label" href="#onHighlight">onHighlight</a>
   <div class="TN_content"></div>
 </div>
@@ -181,6 +185,7 @@
   var grid_id = "my_unique_grid_id";
   
   var my_grid = new GvaScript.Grid(grid_id, my_url, {
+        css: 'grid-class-name',
         grid_container: 'grid_will_display_here',
         toolbar_container: 'grid_toolbar_will_display_here',
         dto: {VUE: 'JSON'},
@@ -198,6 +203,9 @@
             }
         ],
         grabfocus: true,
+        onShow: function() {
+        
+        },
         onEmpty: function() {
             $('grid_will_display_here').update('empty list was retrieved');
         },        
@@ -350,8 +358,12 @@ this object will be stored and referenced later via <code>grid.rights</code> for
     <h3 class="TN_label">options</h3>
     <div class="TN_content">
       <ul>
+<li><a name="item_css__i__String___i_"></a><b>css <i>(String)</i></b>
+<p>A string value of space seperated list of class names to be applied to the table element.</p>
+<p>optional - defaulted to ''</p>
+</li>
 <li><a name="item_dto__i__JSON_Object___i_"></a><b>dto <i>(JSON Object)</i></b>
-<p>Data trasfer Object to the AJAX request. <code>Ex: {param1: 'value1', param2: 'value2'}</code></p>
+<p>Data transfer Object to the AJAX request. <code>Ex: {param1: 'value1', param2: 'value2'}</code></p>
 <p>optional - defaulted to <code>{VUE: 'JSON'}</code></p>
 </li>
 <li><a name="item_method__i__String___i_"></a><b>method <i>(String)</i></b>
@@ -407,7 +419,7 @@ Ex: <code>value: function(e) {return e.fname + ' ' + e.lname}</code></p>
 </li>
 <li><a name="item_recordheight__i__numeric___i_"></a><b>recordheight <i>(numeric)</i></b>
 <p>height to set to the grid record.</p>
-<p>optional - defaulted to <code>19</code></p>
+<p>optional - defaulted to <code>21</code></p>
 </li>
 <li><a name="item_requestTimeout__i__numeric___i_"></a><b>requestTimeout <i>(numeric)</i></b>
 <p>time in seconds to wait before aborting the AJAX request.</p>
@@ -522,7 +534,15 @@ NOTE that the actions conditions will be re-evaluated.</p>
   <div class="TN_node" id="EVENTS">
     <h2 class="TN_label">EVENTS</h2>
     <div class="TN_content">
-        <div class="TN_node" id="onHighlight">
+        <div class="TN_node" id="onShow">
+    <h3 class="TN_label">onShow</h3>
+    <div class="TN_content">
+      <p>This event is triggered of the table is rendered and displayed.
+Useful for attaching custom events on table records/cells.</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="onHighlight">
     <h3 class="TN_label">onHighlight</h3>
     <div class="TN_content">
       <p>This event is triggered when a choice in the list is highlighted.
