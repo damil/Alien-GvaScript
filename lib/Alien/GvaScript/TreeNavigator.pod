@@ -44,6 +44,12 @@ the arrow keys or the C<TAB>
 key. To see the whole page at once (for example for
 printing), press the C<S<Ctrl-keypad *>> key.
 
+=head2 DESTRUCTOR
+
+  mytreenavigator.destroy();
+
+This method will remove all handlers assigned to tree navigator.
+Call this method when the tree navigator element is removed from the DOM.
 
 =head2 Tree structure
 

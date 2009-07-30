@@ -172,4 +172,189 @@ function CSSPREFIX () {
 RegExp.escape = function(str) {
     var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g");
     return str.replace(specials, "\\$&");
-}
+}; // do not remove ';'
+
+
+/**
+ * Event Delegation
+ * Based on http://code.google.com/p/protolicious/source/browse/trunk/src/event.register.js
+ * modified to support focus/blur event capturing
+ * [http://www.quirksmode.org/blog/archives/2008/04/delegating_the.html]
+ *
+ * Prototype core is supposed to have this in v 1.7 !
+ * Naming might differ, Event.register -> Event.delegate but at least
+ * will have the same syntax
+ */
+// wrap in an anonymous function to avoid any variable conflict
+(function() {
+  var rules = { };
+  var eventManager = function(o_id, event) {
+    // IE sometimes fires some events
+    // while reloading (after unregister)
+    if(! rules[o_id]) return;
+
+    var element = event.target;
+    do {
+      if (element.nodeType == 1) {
+        element = Element.extend(element);
+        for (var selector in rules[o_id][event.type]) {
+          if (_match = matches(rules[o_id][event.type][selector]._selector, element)) {
+            for (var i=0, handlers=rules[o_id][event.type][selector], l=handlers.length; i<l; ++i) {
+              handlers[i].call(element, Object.extend(event, { _target: element, _match: _match.expression }));
+            }
+          }
+        }
+      }
+    } while (element = element.parentNode)
+  }
+  var matches = function(selectors, element) {
+    for (var i=0, l=selectors.length; i<l; ++i) {
+      if (selectors[i].match(element)) return selectors[i];
+    }
+    return undefined;
+  }
+
+  Event.register = function(observer, selector, eventName, handler) {
+    var use_capture = (eventName == 'focus' || eventName == 'blur');
+    if(use_capture && Prototype.Browser.IE) {
+        eventName = (eventName == 'focus')? 'focusin' : 'focusout';
+    }
+    var observer_id = observer.identify ? observer.identify() : 'document'; 
+
+    // create entry in cache for rules per observer
+    if(! rules[observer_id]) {
+        rules[observer_id] = { };
+    }
+
+    // observe event only once on the same observer
+    if(! rules[observer_id][eventName]) {
+      rules[observer_id][eventName] = { };
+
+      if(use_capture) {
+        if(Prototype.Browser.IE)
+        Event.observe(observer, eventName, eventManager.curry(observer_id));
+        else
+        observer.addEventListener(eventName, eventManager.curry(observer_id), true); 
+      }
+      else
+      Event.observe(observer, eventName, eventManager.curry(observer_id));
+    }    
+
+    var _selector = [ ], expr = selector.strip();
+    // instantiate Selector's
+    Selector.split(selector).each(function(s) { _selector.push(new Selector(s)) })
+
+    // store instantiated Selector for faster matching
+    if (!rules[observer_id][eventName][expr]) {
+      rules[observer_id][eventName][expr] = Object.extend([ ], { _selector: _selector });
+    }
+
+    // associate handler with expression
+    rules[observer_id][eventName][expr].push(handler);
+  }
+    
+  // unregistering an event on an elemment
+  Event.unregister = function(elt, selector, eventName) {
+    var _id = (typeof elt == 'string')? elt :
+              (elt.identify)? elt.identify() : 'document'; 
+    // unregister event identified by name and selector
+    if (eventName) {
+      rules[_id][eventName][selector] = null;
+      delete rules[_id][eventName][selector];
+    } 
+    else {
+      for (var eventName in rules[_id]) {
+        // unregister all events identified by selector
+        if(selector) {
+          rules[_id][eventName][selector] = null;
+          delete rules[_id][eventName][selector];
+        }
+        // unregister all events
+        else {
+          rules[_id][eventName] = null;
+          delete rules[_id][eventName];
+        }
+      }
+    }
+  },
+
+  // unregister *all* events registered using 
+  // the Event.register method
+  Event.unregisterAll = function() {
+    for(var _id in rules) {
+        Event.unregister(_id);
+        delete rules[_id];
+    }
+  }
+
+  Event.observe(window, 'unload', Event.unregisterAll);
+  document.register = Event.register.curry(document);
+  Element.addMethods({register: Event.register, unregister: Event.unregister});
+})();
+
+/**
+ * Element storage API (extracted from prototype trunk)
+ * will be a part in the future prototype release
+ * v. 1.6.1
+ */
+Element.Storage = {
+  UID: 1
+};
+
+Element.addMethods({
+  getStorage: function(element) {
+    if (!(element = $(element))) return;
+
+    var uid;
+    if (element === window) {
+      uid = 0;
+    } else {
+      if (typeof element._prototypeUID === "undefined")
+        element._prototypeUID = [Element.Storage.UID++];
+      uid = element._prototypeUID[0];
+    }
+
+    if (!Element.Storage[uid])
+      Element.Storage[uid] = $H();
+
+    return Element.Storage[uid];
+  },
+
+  store: function(element, key, value) {
+    if (!(element = $(element))) return;
+
+    if (arguments.length === 2) {
+      Element.getStorage(element).update(key);
+    } else {
+      Element.getStorage(element).set(key, value);
+    }
+
+    return element;
+  },
+
+  retrieve: function(element, key, defaultValue) {
+    if (!(element = $(element))) return;
+    var hash = Element.getStorage(element), value = hash.get(key);
+
+    if (Object.isUndefined(value)) {
+      hash.set(key, defaultValue);
+      value = defaultValue;
+    }
+
+    return value;
+  },
+
+  clone: function(element, deep) {
+    if (!(element = $(element))) return;
+    var clone = element.cloneNode(deep);
+    clone._prototypeUID = void 0;
+    if (deep) {
+      var descendants = Element.select(clone, '*'),
+          i = descendants.length;
+      while (i--) {
+        descendants[i]._prototypeUID = void 0;
+      }
+    }
+    return Element.extend(clone);
+  }
+});

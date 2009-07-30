@@ -13,6 +13,13 @@ GvaScript.protoExtensions - Extensions to prototype.js
 
   this.options = Class.checkOptions(defaultOptions, receivedOptions);
 
+  Element.register(elem, 'input.active', 'mouseover', function(e) {
+    e._target.addClassName('hover');
+  });
+  Element.unregister(elem, 'input.active', 'mouseover');
+
+  Element.store(elem, key, value);
+  Element.retrieve(elem, key, default);
 
 =head1 DESCRIPTION
 
@@ -20,6 +27,18 @@ Some extensions to the basic abstractions supplied by
 prototype.js.
 
 =head1 METHODS
+
+=head2 Events delegation
+
+  Will be a part of prototype's core distribution starting version 1.7
+  as discussed here 
+  [https://prototype.lighthouseapp.com/projects/8886/tickets/435-eventdelegate-and-elementmethodsdelegate]
+
+=head2 Element Storage
+
+  Will be a part of prototype's core distribution starting version 1.6.1
+  as discussed here
+  [http://www.prototypejs.org/2009/3/27/prototype-1-6-1-rc2-ie8-compatibility-element-storage-and-bug-fixes]
 
 =head2 String extensions
 

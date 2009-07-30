@@ -50,6 +50,9 @@ Object.extend(GvaScript.CustomButtons.Button.prototype, function() {
         else                       return false;
     }
     return {
+        destroy: function() {
+            this.btnElt.stopObserving('click'); 
+        },
         initialize: function(container, options) {
             var defaults = {
                 id: 'btn_' + (new Date()).getTime(),
@@ -160,17 +163,23 @@ Object.extend(GvaScript.CustomButtons.ButtonNavigation.prototype, function() {
                 }
                 
                 if(typeof btn == 'undefined') return;
-                
-                btnContainer.observe("mouseover", (function() {btnContainer.addClassName("btn-hover")}));
-                btnContainer.observe("mouseout",  (function() {btnContainer.removeClassName("btn-hover")}));
 
-                btn.observe("focus", this.select.bind(this, btnContainer));
-                btn.observe("blur",  this.select.bind(this, null));
             }, this);
+
+            this.container.register('button.btn', 'focus', function(e) {
+                this.select.call(this, e._target.up('.'+bcss+'-btn-container'));
+            }.bind(this));
+            this.container.register('button.btn', 'blur', function(e) {
+                this.select.call(this, null);
+            }.bind(this));
         }
 
         // public members
         return {
+            destroy: function() {
+                this.container.unregister();
+                this.keymap.destroy();
+            },
             initialize: function(container, options) {
                 var defaults = {
                     preventListBlur     : false,
@@ -201,11 +210,11 @@ Object.extend(GvaScript.CustomButtons.ButtonNavigation.prototype, function() {
                 // get all buttons of designated className regardless of their
                 // visibility jump over hidden ones when navigating
                 this.buttons = this.container.select('.'+this.options.className);
-                _addHandlers.apply(this);
+                _addHandlers.call(this);
                 
                 if (this.options.selectFirstBtn) {
                     if(firstButObj = this.firstBtn()) {
-                        this.select.defer(firstButObj);
+                        this.select(firstButObj);
                     }
                     // set the focus on the container anyways so that the focus
                     // gets trasferred successfully to windows with empty
@@ -218,7 +227,7 @@ Object.extend(GvaScript.CustomButtons.ButtonNavigation.prototype, function() {
             },
             select: function (btn) {
                 var previousBtn = this.selectedBtn || null;
-                if (previousBtn == btn) return; // selection already handled
+                if (previousBtn === btn) return; // selection already handled
                 
                 // blur the previously selected button 
                 if (previousBtn) {
@@ -294,9 +303,22 @@ Object.extend(GvaScript.CustomButtons.ActionsBar.prototype, {
             new GvaScript.CustomButtons.Button(this.container, action_props);
         }, this);
         
-        new GvaScript.CustomButtons.ButtonNavigation(this.container, {
+        this.buttonNavigation = new GvaScript.CustomButtons.ButtonNavigation(this.container, {
             selectFirstBtn: this.options.selectfirst, 
             className: bcss+'-btn-container'
         });
+
+        this.container.store('widget', this);
+        this.container.addClassName(bcss+'-widget');
+    },
+    destroy: function() {
+        this.buttonNavigation.destroy();
     }
+});
+
+document.register('.'+CSSPREFIX()+'-btn-container', 'mouseover', function(e) {
+    e._target.addClassName('btn-hover');
+});
+document.register('.'+CSSPREFIX()+'-btn-container', 'mouseout', function(e) {
+    e._target.removeClassName('btn-hover');
 });

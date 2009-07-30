@@ -80,6 +80,9 @@ GvaScript.ChoiceList.prototype = {
 //----------------------------------------------------------------------
 // PUBLIC METHODS
 //----------------------------------------------------------------------
+  destroy: function() {
+    Event.stopObserving(this.container);
+  },
 
   fillContainer: function(containerElem) {
 

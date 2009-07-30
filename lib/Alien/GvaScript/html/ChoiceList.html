@@ -48,6 +48,12 @@
 <div class="TN_node">
   <a class="TN_label" href="#CONSTRUCTOR">CONSTRUCTOR</a>
   <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#DESTRUCTOR_choiceList_destroy_">DESTRUCTOR
+    
+    choiceList.destroy();</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
   <a class="TN_label" href="#Choices">Choices</a>
   <div class="TN_content"></div>
 </div>
@@ -60,6 +66,10 @@
 <div class="TN_node">
   <a class="TN_label" href="#METHODS">METHODS</a>
   <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#destroy">destroy</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
   <a class="TN_label" href="#fillContainer">fillContainer</a>
   <div class="TN_content"></div>
 </div>
@@ -130,6 +140,14 @@ with keys <code>DOWN</code>, <code>UP</code>, <code>HOME</code>, <code>END</code
     <div class="TN_content">
       <pre>  var choiceList = new GvaScript.ChoiceList(choices, options);</pre>
 
+  <div class="TN_node" id="DESTRUCTOR_choiceList_destroy_">
+    <h3 class="TN_label">DESTRUCTOR
+    
+    choiceList.destroy();</h3>
+    <div class="TN_content">
+      
+    </div>
+  </div>
   <div class="TN_node" id="Choices">
     <h3 class="TN_label">Choices</h3>
     <div class="TN_content">
@@ -205,7 +223,19 @@ open and close the table within the <code>htmlWrapper</code> callback).</p>
   <div class="TN_node" id="METHODS">
     <h2 class="TN_label">METHODS</h2>
     <div class="TN_content">
-        <div class="TN_node" id="fillContainer">
+        <div class="TN_node" id="destroy">
+    <h3 class="TN_label">destroy</h3>
+    <div class="TN_content">
+      <pre>  choiceList.destroy();</pre>
+
+<p>This method removes all handlers attached to different
+events on the choice list container.
+Call this method when the choice list container is removed
+from the DOM.</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="fillContainer">
     <h3 class="TN_label">fillContainer</h3>
     <div class="TN_content">
       <pre>  choiceList.fillContainer(someDiv);</pre>

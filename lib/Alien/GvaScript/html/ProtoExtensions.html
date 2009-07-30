@@ -43,7 +43,15 @@
 </div>
 <div class="TN_node">
   <a class="TN_label" href="#METHODS">METHODS</a>
-  <div class="TN_content"><div class="TN_node">
+  <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#Events_delegation">Events delegation</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#Element_Storage">Element Storage</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_node">
   <a class="TN_label" href="#String_extensions">String extensions</a>
   <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#chomp">chomp</a>
@@ -138,6 +146,14 @@
 
 <pre>  this.options = Class.checkOptions(defaultOptions, receivedOptions);</pre>
 
+<pre>  Element.register(elem, 'input.active', 'mouseover', function(e) {
+    e._target.addClassName('hover');
+  });
+  Element.unregister(elem, 'input.active', 'mouseover');</pre>
+
+<pre>  Element.store(elem, key, value);
+  Element.retrieve(elem, key, default);</pre>
+
 
     </div>
   </div>
@@ -152,7 +168,27 @@ prototype.js.</p>
   <div class="TN_node" id="METHODS">
     <h2 class="TN_label">METHODS</h2>
     <div class="TN_content">
-        <div class="TN_node" id="String_extensions">
+        <div class="TN_node" id="Events_delegation">
+    <h3 class="TN_label">Events delegation</h3>
+    <div class="TN_content">
+      <pre>  Will be a part of prototype's core distribution starting version 1.7
+  as discussed here 
+  [https://prototype.lighthouseapp.com/projects/8886/tickets/435-eventdelegate-and-elementmethodsdelegate]</pre>
+
+
+    </div>
+  </div>
+  <div class="TN_node" id="Element_Storage">
+    <h3 class="TN_label">Element Storage</h3>
+    <div class="TN_content">
+      <pre>  Will be a part of prototype's core distribution starting version 1.6.1
+  as discussed here
+  [http://www.prototypejs.org/2009/3/27/prototype-1-6-1-rc2-ie8-compatibility-element-storage-and-bug-fixes]</pre>
+
+
+    </div>
+  </div>
+  <div class="TN_node" id="String_extensions">
     <h3 class="TN_label">String extensions</h3>
     <div class="TN_content">
         <div class="TN_node" id="chomp">

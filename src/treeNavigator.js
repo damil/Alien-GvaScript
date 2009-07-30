@@ -10,7 +10,6 @@ GvaScript.TreeNavigator = function(elem, options) {
   try { document.execCommand("BackgroundImageCache",false,true); }
   catch(e) {}; 
 
-
   elem = $(elem); // in case we got an id instead of an element
   options = options || {};
 
@@ -110,6 +109,9 @@ GvaScript.TreeNavigator = function(elem, options) {
     this.keymap.observe("keydown", target, Event.stopNone);
   }
 
+  this.rootElement.store('widget', this);
+  this.rootElement.addClassName(CSSPREFIX() + '-widget');
+ 
   // selecting the first node
   if (this.options.selectFirstNode) {
     this.select(this.firstSubNode());
@@ -126,6 +128,9 @@ GvaScript.TreeNavigator.prototype = {
 //-----------------------------------------------------
 // Public methods
 //-----------------------------------------------------
+  destroy: function() {
+    this._removeHandlers();
+  },
 
   initSubTree: function (tree_root) {
     tree_root = $(tree_root);
@@ -478,6 +483,11 @@ GvaScript.TreeNavigator.prototype = {
       this._treeDblClickHandler.bindAsEventListener(this));
   },
 
+  _removeHandlers: function() {
+    this.rootElement.stopObserving();
+    this.rootElement.unregister();
+  },
+
 //-----------------------------------------------------
 // mouse handlers
 //-----------------------------------------------------
@@ -584,43 +594,36 @@ GvaScript.TreeNavigator.prototype = {
     var treeNavigator = this; // handlers will be closures on this
 
     // focus handler
-    var focus_handler = function(event) {
-      var label = Event.element(event);
-      if(label.hasClassName(this.classes.label)) {
-        label.writeAttribute('hasFocus', 'hasFocus');
+    var focus_handler = function(e) {
+      var label = e._target;
+      label.writeAttribute('hasFocus', 'hasFocus');
 
-        var node  = Element.navigateDom(label, 'parentNode',
-                                        treeNavigator.classes.nodeOrLeaf);
-                                                    
-        // not yet been selected
-        if(node && !label.hasClassName(treeNavigator.classes.selected)) {
-          treeNavigator.scrollTo(node); 
-          treeNavigator.select  (node); 
-        }
+      var node  = Element.navigateDom(label, 'parentNode',
+                                      treeNavigator.classes.nodeOrLeaf);
+                                                  
+      // not yet been selected
+      if(node && !label.hasClassName(treeNavigator.classes.selected)) {
+        treeNavigator.scrollTo(node); 
+        treeNavigator.select  (node); 
       }
     };
 
     // blur handler
-    var blur_handler = function(event) {
-      var label = Event.element(event);
-      if(label.hasClassName(this.classes.label)) {
-        label.removeAttribute('hasFocus');
+    var blur_handler = function(e) {
+      var label = e._target;
+      label.removeAttribute('hasFocus');
 
-        // deselect the previously selected node
-        treeNavigator.select(null);
-      }
+      // deselect the previously selected node
+      treeNavigator.select(null);
     };
 
     // focus and blur do not bubble 
     // workaround per browser
-    if(Prototype.Browser.IE) {
-        Event.observe(this.rootElement, "focusin", focus_handler.bind(this));
-        Event.observe(this.rootElement, "focusout",  blur_handler.bind(this));
-    }
-    else {
-        this.rootElement.addEventListener('focus', focus_handler.bind(this), true);
-        this.rootElement.addEventListener('blur',  blur_handler.bind(this),  true);
-    }
+    focus_handler = focus_handler.bindAsEventListener(this);
+    blur_handler  = blur_handler.bindAsEventListener(this);
+
+    this.rootElement.register('.'+this.classes.label, 'focus', focus_handler);
+    this.rootElement.register('.'+this.classes.label, 'blur',  blur_handler );
   },
 
 

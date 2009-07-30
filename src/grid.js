@@ -45,6 +45,11 @@ Object.extend(GvaScript.Grid.prototype, function() {
     }
  
     return {
+        destroy: function() {
+            GvaScript.Grids.unregister(this.id);
+            this.choiceList.destroy();
+            this.actionButtons.destroy();
+        },
         initialize: function(id, datasource, options) {
             var defaults = {
                 css            : '',
@@ -145,6 +150,9 @@ Object.extend(GvaScript.Grid.prototype, function() {
            this.choiceList.onPing   = this.pingWrapper.bind(this);
            
            this.paginator.loadContent();
+
+           this.grid_container.addClassName(bcss+'-widget');
+           this.grid_container.store('widget', this);
            
            GvaScript.Grids.register(this);
         },
@@ -194,12 +202,10 @@ Object.extend(GvaScript.Grid.prototype, function() {
             }, this);
         
             // activate the navigation over the action buttons
-            new GvaScript.CustomButtons.ButtonNavigation(this.actionsbar_container, {
+            this.actionButtons = new GvaScript.CustomButtons.ButtonNavigation(this.actionsbar_container, {
                 selectFirstBtn: false, 
                 className: bcss+'-btn-container'
             });
-
-            this.actionButtonsInitialized = true;
         },
         
         // wrapping the recordset in a table with column headers
@@ -249,7 +255,7 @@ Object.extend(GvaScript.Grid.prototype, function() {
                 catch(e) {}
             }
             
-            if(this.actionButtonsInitialized !== true) 
+            if(typeof this.actionButtons == 'undefined') 
                 this.addActionButtons();
 
             if(!(this.total > 0)) this.options.onEmpty.apply(this);

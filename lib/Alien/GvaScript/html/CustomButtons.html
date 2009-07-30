@@ -47,8 +47,12 @@
 </div>
 <div class="TN_node">
   <a class="TN_label" href="#GvaScript_CustomButtons_Button_">GvaScript.CustomButtons.Button </a>
-  <div class="TN_content"><div class="TN_node">
+  <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#Javascript">Javascript</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_node">
+  <a class="TN_label" href="#DESTRUCTOR">DESTRUCTOR</a>
   <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#button_properties">button properties</a>
   <div class="TN_content"></div>
@@ -63,8 +67,12 @@
 </div>
 <div class="TN_node">
   <a class="TN_label" href="#GvaScript_CustomButtons_ButtonNavigation">GvaScript.CustomButtons.ButtonNavigation</a>
-  <div class="TN_content"><div class="TN_node">
+  <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#Javascript">Javascript</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_node">
+  <a class="TN_label" href="#DESTRUCTOR">DESTRUCTOR</a>
   <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#navigation_properties">navigation properties</a>
   <div class="TN_content"></div>
@@ -79,8 +87,12 @@
 </div>
 <div class="TN_node">
   <a class="TN_label" href="#GvaScript_CustomButtons_ActionsBar_">GvaScript.CustomButtons.ActionsBar </a>
-  <div class="TN_content"><div class="TN_node">
+  <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#Javascript">Javascript</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_node">
+  <a class="TN_label" href="#DESTRUCTOR">DESTRUCTOR</a>
   <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#actionsbar_properties">actionsbar properties</a>
   <div class="TN_content"></div>
@@ -165,8 +177,19 @@ and keyboard navigation using RIGHT and LEFT arrows.</p>
   }
   
   // create a new button and display in container
-  new GvaScript.CustomButtons.Buttons(container, button_properties);</pre>
+  var mybutton = new GvaScript.CustomButtons.Buttons(container, button_properties);</pre>
 
+
+    </div>
+  </div>
+  <div class="TN_node" id="DESTRUCTOR">
+    <h3 class="TN_label">DESTRUCTOR</h3>
+    <div class="TN_content">
+      <pre>  mybutton.destory()</pre>
+
+<p>This method removes the click handler attached to the button.
+Call this method when the button is removed
+from the DOM.</p>
   <div class="TN_node" id="button_properties">
     <h4 class="TN_label">button properties</h4>
     <div class="TN_content">
@@ -249,7 +272,8 @@ string value <b>must</b> include the unit or else will be ignored.</p>
   <div class="TN_node" id="GvaScript_CustomButtons_ButtonNavigation">
     <h2 class="TN_label">GvaScript.CustomButtons.ButtonNavigation</h2>
     <div class="TN_content">
-      <p>For adding support of keyboard navigation over a list of buttons.</p>
+      <p>For adding support of keyboard navigation over a list of buttons.
+Mostly used internally with GvaScript.CustomButtons.ActionsBar class.</p>
 <p>The class searches for &lt;button&gt; or &lt;input type="button|submit|reset"&gt; elements that has a predefined classname 
 and that are contained in a provided container.</p>
 <p><i>This class is used implicitly by the ActionsBar class</i>.</p>
@@ -263,7 +287,7 @@ and that are contained in a provided container.</p>
   var className  = 'gva-btn-container';
   
   // initialize ButtonNavigation to activate keyboard map
-  new GvaScript.CustomButtons.ButtonNavigation(container, {
+  var mybuttonnavigator = new GvaScript.CustomButtons.ButtonNavigation(container, {
     selectFirstBtn  : true, 
     className       : className,
     preventListBlur : false,
@@ -271,6 +295,17 @@ and that are contained in a provided container.</p>
     flashDuration   : 100
   });</pre>
 
+
+    </div>
+  </div>
+  <div class="TN_node" id="DESTRUCTOR">
+    <h3 class="TN_label">DESTRUCTOR</h3>
+    <div class="TN_content">
+      <pre>  mybuttonnavigator.destroy()</pre>
+
+<p>This method removes the different handlers attached on the buttons container.
+Call this method when the buttons container is removed
+from the DOM.</p>
   <div class="TN_node" id="navigation_properties">
     <h4 class="TN_label">navigation properties</h4>
     <div class="TN_content">
@@ -327,8 +362,20 @@ navigation outside the button list.</p>
   }
   
   // create a new buttons list and display next to each other in container
-  new GvaScript.CustomButtons.ActionsBar(container, actionsbar_properties);</pre>
+  var myactionsbar = new GvaScript.CustomButtons.ActionsBar(container, actionsbar_properties);</pre>
 
+
+    </div>
+  </div>
+  <div class="TN_node" id="DESTRUCTOR">
+    <h3 class="TN_label">DESTRUCTOR</h3>
+    <div class="TN_content">
+      <pre>  myactionsbar.destory();</pre>
+
+<p>This method removes the different handlers attached on the 
+buttons and their container.
+Call this method when the buttons container is removed
+from the DOM.</p>
   <div class="TN_node" id="actionsbar_properties">
     <h4 class="TN_label">actionsbar properties</h4>
     <div class="TN_content">

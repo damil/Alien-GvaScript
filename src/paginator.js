@@ -47,6 +47,12 @@ Object.extend(GvaScript.Paginator.prototype, function() {
     }
     
     return {        
+        destroy: function() {
+            this.first.stopObserving();
+            this.last.stopObserving();
+            this.back.stopObserving();
+            this.forward.stopObserving();
+        },
         initialize: function(url, options) {
 
             var defaults = {
@@ -85,6 +91,9 @@ Object.extend(GvaScript.Paginator.prototype, function() {
             this.links_container.hide();
             // add the pagination elements (next/prev links + text)
             _addPaginationElts.apply(this);
+
+            this.links_container.addClassName(bcss+'-widget');
+            this.links_container.store('widget', this);
 
             // load content by XHR  
             if(!this.options.lazy) this.loadContent();
