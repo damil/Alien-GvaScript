@@ -100,6 +100,11 @@ Object.extend(GvaScript.Grid.prototype, function() {
 
                 this.limit = Math.floor((this.grid_container.getHeight()-22)/this.options.recordheight);
             }
+
+            // set tabindex on grid_container
+            // so that it would be able to recieve focus
+            this.grid_container.setAttribute('tabindex', '0');
+
             this.grid_container.setStyle({width: this.grid_container.up(0).getWidth()+'px'});
 
             this.toolbar_container.addClassName(bcss+'-grid-toolbar');
