@@ -46,9 +46,11 @@ Object.extend(GvaScript.Grid.prototype, function() {
  
     return {
         destroy: function() {
-            GvaScript.Grids.unregister(this.id);
-            this.choiceList.destroy();
-            this.actionButtons.destroy();
+            // do not destroy if not initialized !
+            if(GvaScript.Grids.unregister(this.id)) {
+                if(this.choiceList)    this.choiceList.destroy();
+                if(this.actionButtons) this.actionButtons.destroy();
+            }
         },
         initialize: function(id, datasource, options) {
             var defaults = {
@@ -284,10 +286,12 @@ GvaScript.Grids = {
         if(typeof grid == 'string') grid = this.get(grid);
         
         // nothing to unregister
-        if(!grid) return;
+        if(!grid) return false;
 
         // remove the reference from array
         this.grids = this.grids.reject(function(g) { return g.getId() == grid.getId() });
+
+        return true;
     },
 
     get: function(id) {

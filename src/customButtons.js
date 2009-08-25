@@ -51,7 +51,8 @@ Object.extend(GvaScript.CustomButtons.Button.prototype, function() {
     }
     return {
         destroy: function() {
-            this.btnElt.stopObserving('click'); 
+            // test that element still in DOM
+            if(this.btnElt) this.btnElt.stopObserving('click'); 
         },
         initialize: function(container, options) {
             var defaults = {
@@ -177,7 +178,8 @@ Object.extend(GvaScript.CustomButtons.ButtonNavigation.prototype, function() {
         // public members
         return {
             destroy: function() {
-                this.container.unregister();
+                // test that element still in DOM
+                if(this.container) this.container.unregister();
                 this.keymap.destroy();
             },
             initialize: function(container, options) {

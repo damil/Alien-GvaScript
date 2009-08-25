@@ -81,7 +81,8 @@ GvaScript.ChoiceList.prototype = {
 // PUBLIC METHODS
 //----------------------------------------------------------------------
   destroy: function() {
-    Event.stopObserving(this.container);
+    // test that element still in DOM
+    if(this.container) Event.stopObserving(this.container);
   },
 
   fillContainer: function(containerElem) {
