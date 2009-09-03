@@ -47,10 +47,6 @@
   <a class="TN_label" href="#Events_delegation">Events delegation</a>
   <div class="TN_content"></div>
 </div>
-<div class="TN_leaf">
-  <a class="TN_label" href="#Element_Storage">Element Storage</a>
-  <div class="TN_content"></div>
-</div>
 <div class="TN_node">
   <a class="TN_label" href="#String_extensions">String extensions</a>
   <div class="TN_content"><div class="TN_leaf">
@@ -83,6 +79,10 @@
 </div>
 <div class="TN_leaf">
   <a class="TN_label" href="#outerHTML">outerHTML</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#setValue">setValue</a>
   <div class="TN_content"></div>
 </div>
 </div>
@@ -174,16 +174,6 @@ prototype.js.</p>
       <pre>  Will be a part of prototype's core distribution starting version 1.7
   as discussed here 
   [https://prototype.lighthouseapp.com/projects/8886/tickets/435-eventdelegate-and-elementmethodsdelegate]</pre>
-
-
-    </div>
-  </div>
-  <div class="TN_node" id="Element_Storage">
-    <h3 class="TN_label">Element Storage</h3>
-    <div class="TN_content">
-      <pre>  Will be a part of prototype's core distribution starting version 1.6.1
-  as discussed here
-  [http://www.prototypejs.org/2009/3/27/prototype-1-6-1-rc2-ie8-compatibility-element-storage-and-bug-fixes]</pre>
 
 
     </div>
@@ -285,7 +275,17 @@ including tags and attributes. Implemented through
 the native <code>outerHTML</code> property, if present; otherwise
 constructs a string from tag name, attributes and 
 innerHTML property.
-   </p>
+   
+=head2 Form.Element extensions</p>
+
+    </div>
+  </div>
+  <div class="TN_node" id="setValue">
+    <h4 class="TN_label">setValue</h4>
+    <div class="TN_content">
+      <p>Form.Element.setValue method is wrapped to fire a
+'value:change' custom event with oldvalue and newvalue
+properties set in the event.memo</p>
 
     </div>
   </div>

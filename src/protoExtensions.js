@@ -1,8 +1,8 @@
 //-----------------------------------------------------
 // Some extensions to the prototype javascript framework
 //-----------------------------------------------------
-if (!window.Prototype)
-  throw  new Error("Prototype library is not loaded");
+if (typeof Prototype == 'undefined') throw 'Required Prototype library is not loaded.';
+if (Prototype.Version != '1.6.1')    throw 'Prototype v 1.6.1 is required.';
 
 // adds the method flash to SPAN, DIV, INPUT, BUTTON elements
 // flashes an element by adding a classname for a brief moment of time
@@ -28,6 +28,18 @@ Element.addMethods(['SPAN', 'DIV', 'INPUT', 'BUTTON', 'TEXTAREA', 'A'], {
         setTimeout(endFlash.bind(element), duration);
     }
 });
+
+// fire value:change event when setValue method
+// is used to change the value of a Form Element
+Form.Element.Methods.setValue = Form.Element.Methods.setValue.wrap(
+    function($p, element, value) {
+        var oldvalue = $F(element);
+        var _return = $p(element, value);
+        element.fire('value:change', {oldvalue: oldvalue, newvalue: value});
+        return _return;
+    }
+);
+Element.addMethods();
 
 Object.extend(String.prototype, {
   chomp: function() {
@@ -194,12 +206,13 @@ RegExp.escape = function(str) {
     if(! rules[o_id]) return;
 
     var element = event.target;
+    var eventType = (event.memo)? event.eventName : event.type;
     do {
       if (element.nodeType == 1) {
         element = Element.extend(element);
-        for (var selector in rules[o_id][event.type]) {
-          if (_match = matches(rules[o_id][event.type][selector]._selector, element)) {
-            for (var i=0, handlers=rules[o_id][event.type][selector], l=handlers.length; i<l; ++i) {
+        for (var selector in rules[o_id][eventType]) {
+          if (_match = matches(rules[o_id][eventType][selector]._selector, element)) {
+            for (var i=0, handlers=rules[o_id][eventType][selector], l=handlers.length; i<l; ++i) {
               handlers[i].call(element, Object.extend(event, { _target: element, _match: _match.expression }));
             }
           }
@@ -291,70 +304,3 @@ RegExp.escape = function(str) {
   document.register = Event.register.curry(document);
   Element.addMethods({register: Event.register, unregister: Event.unregister});
 })();
-
-/**
- * Element storage API (extracted from prototype trunk)
- * will be a part in the future prototype release
- * v. 1.6.1
- */
-Element.Storage = {
-  UID: 1
-};
-
-Element.addMethods({
-  getStorage: function(element) {
-    if (!(element = $(element))) return;
-
-    var uid;
-    if (element === window) {
-      uid = 0;
-    } else {
-      if (typeof element._prototypeUID === "undefined")
-        element._prototypeUID = [Element.Storage.UID++];
-      uid = element._prototypeUID[0];
-    }
-
-    if (!Element.Storage[uid])
-      Element.Storage[uid] = $H();
-
-    return Element.Storage[uid];
-  },
-
-  store: function(element, key, value) {
-    if (!(element = $(element))) return;
-
-    if (arguments.length === 2) {
-      Element.getStorage(element).update(key);
-    } else {
-      Element.getStorage(element).set(key, value);
-    }
-
-    return element;
-  },
-
-  retrieve: function(element, key, defaultValue) {
-    if (!(element = $(element))) return;
-    var hash = Element.getStorage(element), value = hash.get(key);
-
-    if (Object.isUndefined(value)) {
-      hash.set(key, defaultValue);
-      value = defaultValue;
-    }
-
-    return value;
-  },
-
-  clone: function(element, deep) {
-    if (!(element = $(element))) return;
-    var clone = element.cloneNode(deep);
-    clone._prototypeUID = void 0;
-    if (deep) {
-      var descendants = Element.select(clone, '*'),
-          i = descendants.length;
-      while (i--) {
-        descendants[i]._prototypeUID = void 0;
-      }
-    }
-    return Element.extend(clone);
-  }
-});
