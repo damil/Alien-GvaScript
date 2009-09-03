@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
     <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
@@ -7,7 +7,7 @@
 <script>
 
 function msg(msg) {
-  $('msgs').innerHTML += "<br>" + msg;
+  $('msgs').innerHTML += msg + "<br />" ;
 }
 
 
@@ -31,10 +31,44 @@ var tree = {
 };
 
 
+var procForm = null;
 function setup() {
-  var form = $('form');
+  new GvaScript.FormII('form', {
+      datatree   : tree,
 
-  GvaScript.Form.init(form, tree);
+      actionsbar : {
+          container :  'form.actionsbar',
+          actions   : [
+              {
+                  label : 'Submit Form',
+                  type  : 'submit'
+              },
+              {
+                  label : 'Stop Mouse over/out handlers',
+                  type  : 'button',
+                  callback : function() {
+                    GvaScript.Forms.get('form').stopWatching('input', 'mouseover');
+                    GvaScript.Forms.get('form').stopWatching('input', 'mouseout');
+                  }
+              }
+          ]
+      },
+      
+      submitMethod: submit_form,
+
+      watch: [
+        ['input',             'mouseover', function(event) {event.target.style.backgroundColor = 'pink'}],
+        ['input',             'mouseout',  function(event) {event.target.style.backgroundColor = 'transparent'}],
+        ['input.motif-code',  'change',    function(event, oldv, newv) {msg('motif code changed from '+oldv+' -> '+newv)}],
+        ['input.avocat-code', 'change',    function(event, oldv, newv) {msg('avocat code changed from '+oldv+' -> '+newv)}],
+        ['input.avocat-code', 'init',      function(event, newv) {msg('avocat code initialized to '+newv)}]
+      ],
+
+      onInit: function() { msg('form initialized. what do u wanna do?'); },
+      onBeforeSubmit: function() { return confirm('submit form??'); },
+      onAfterSubmit: function(obj) { alert('form submitted successfully');msg(Object.toJSON(obj)); },
+      onSubmitFailure: function(reason) { alert('form failed to submit:\n'+reason); } 
+    });
 }
 
 window.onload = setup;
@@ -43,15 +77,21 @@ function motif_on_add(event) {
   event.target.cells[3].innerHTML += " // " + event.target.id;
 }
 
-function save_form(form) {
-  var tree = GvaScript.Form.to_tree(form);
-  var json = Object.toJSON(tree);
+function submit_form(formII) {
+  var tree = GvaScript.Form.to_tree(formII.formobj);
 
-  var fso = new ActiveXObject("Scripting.FileSystemObject");
-  var file = fso.CreateTextFile(path, true);
-  file.Write(txt);
-  file.Close();
+  // some validation
+  if( (tree.proc.motif || []).length > 0) {
+    formII.notify('onAfterSubmit', tree);
+  }
+  else {
+    formII.notify('onSubmitFailure', 'please add at least one motif');
+  }
 
+//  var fso = new ActiveXObject("Scripting.FileSystemObject");
+//  var file = fso.CreateTextFile(path, true);
+//  file.Write(txt);
+//  file.Close();
 }
 
 
@@ -60,17 +100,21 @@ function save_form(form) {
   </head>
 
   <body>
-    <h1>Tst form with repeat</h1>
+    <h1>Tst form with repeat and event delegation</h1>
+    <ul>
+      <li>Mouseove the inputs.</li>
+      <li>Change Motifs Code.</li>
+      <li>Submit Form</li>
+      <li>Delete all Motifs, ReSubmit Form</li>
+    </ul> 
 
 
-
-
-<button onclick="save_form($('form'))">Save JSON</button>
-
+<div id="msgs" style="height:100px;overflow-y:auto;border:1px solid gold;font:8pt 'courier new'"></div>
 
 <form id="form" method="post">
 
 
+<div id="form.actionsbar"></div>
 
 <h2>Motifs</h2>
 
@@ -83,9 +127,9 @@ function save_form(form) {
   </tr>
   <tr repeat="motif" repeat-start="3" repeat-prefix="proc"
        onAdd="motif_on_add(event)"
-       onRemove="alert(event.target.id + ' is removed')">
+       onRemove="msg(event.target.id + ' is removed')">
     <td>#{motif.count}</td>
-    <td><input name="#{motif.path}.C_MOTIF" size="4" autofocus></td>
+    <td><input name="#{motif.path}.C_MOTIF" name="#{motif.path}.C_MOTIF" size="4" class="motif-code" autofocus></td>
     <td><input name="#{motif.path}.TXT_MOTIF" size="20"></td>
     <td><button onclick="GvaScript.Form.remove('#{motif.path}'); return false">
            Del
@@ -120,7 +164,7 @@ function save_form(form) {
      <td><table>
           <tr repeat="avoc" repeat-start="0">
             <td>#{avoc.count}</td>
-            <td><input name="#{avoc.path}.CLE_AVOC" autofocus></td>
+            <td><input name="#{avoc.path}.CLE_AVOC" class="avocat-code" autofocus></td>
           </tr>
         </table>
          <button onclick="GvaScript.Form.add('#{partie.path}.avoc'); return false">
@@ -142,16 +186,10 @@ function save_form(form) {
   Nouvelle partie
 </button>
 
-
-
-<br>
-<input type="submit" onclick="show_tree(this.form); return false">
-
 </form>
 
 
 
-<div id="msgs"></div>
 
 
 

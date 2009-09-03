@@ -34,12 +34,6 @@ prototype.js.
   as discussed here 
   [https://prototype.lighthouseapp.com/projects/8886/tickets/435-eventdelegate-and-elementmethodsdelegate]
 
-=head2 Element Storage
-
-  Will be a part of prototype's core distribution starting version 1.6.1
-  as discussed here
-  [http://www.prototypejs.org/2009/3/27/prototype-1-6-1-rc2-ie8-compatibility-element-storage-and-bug-fixes]
-
 =head2 String extensions
 
 =head3 chomp
@@ -118,7 +112,13 @@ the native C<outerHTML> property, if present; otherwise
 constructs a string from tag name, attributes and 
 innerHTML property.
    
+=head2 Form.Element extensions
 
+=head3 setValue
+
+Form.Element.setValue method is wrapped to fire a
+'value:change' custom event with oldvalue and newvalue
+properties set in the event.memo
 
 =head2 Event extensions
 

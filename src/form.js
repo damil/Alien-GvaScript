@@ -16,10 +16,10 @@
 
 GvaScript.Form = {
 
-  init: function(form, tree) {
+  init: function(form, tree, field_prefix) {
     GvaScript.Repeat.init(form);
     if (tree)
-      this.fill_from_tree(form, "", tree);
+      this.fill_from_tree(form, field_prefix || "", tree);
     this.autofocus(form);
   },
 
@@ -113,23 +113,27 @@ GvaScript.Form = {
     // get element type (might be a node list, which we call "collection")
     var elem_type = elem.type 
                  || (elem.length !== undefined ? "collection" : "unknown");
-
+    
+    elem = $(elem);
     switch (elem_type) {
       case "collection":
         for (var i=0; i < elem.length; i++) {
           this._fill_from_value(elem.item(i), val);
         }
+        elem.fire('value:init', {newvalue: elem.getValue()});
         break;
 
       case "checkbox" :
       case "radio":
         elem.checked = val.include(elem.value);
+        elem.fire('value:init', {newvalue: elem.getValue()});
         break;
 
       case "text" :
       case "textarea" :
       case "hidden" :
         elem.value = val.join(",");
+        elem.fire('value:init', {newvalue: elem.getValue()});
         break;
 
       case "select-one" :
@@ -138,6 +142,7 @@ GvaScript.Form = {
           var opt_value = Form.Element.Serializers.optionValue(opt);
           opt.selected = val.include(opt_value);
         });
+        elem.fire('value:init', {newvalue: elem.getValue()});
         break;
 
       default:
@@ -219,6 +224,281 @@ GvaScript.Form = {
                      catch(e){}
     }
   }
-
-
 };
+
+
+GvaScript.FormII = Class.create();
+Object.extend(GvaScript.FormII.prototype, function() {
+    // private method to initialize and add actions
+    // to form's actions bar
+    function _addActionButtons(_actionsbar) {
+        if(_actions_container = _actionsbar.get('container')) {
+            _actions_container = $(_actions_container);
+            _actions_list = _actionsbar.get('actions') || [];
+
+            new GvaScript.CustomButtons.ActionsBar(_actions_container, {
+                selectfirst: _actionsbar.get('selectfirst') ,
+                actions: _actions_list
+            });
+        }
+    }
+
+    return { 
+        initialize: function(formobj, options) {
+            this.formobj = $(formobj);
+
+            var defaults = {
+                datatree: {},                               // data object to init form with
+                dataprefix: '',                             // data prefix used on form elements
+
+
+                actionsbar: {},                             // form actions
+                watch: [],                                  // list of [elements_selector, event_name, event_handler]
+                
+                submitMethod    : Prototype.emptyFunction,  // method to call on form.submit
+
+                onInit          : Prototype.emptyFunction,  // called after form initialization
+                onBeforeSubmit  : Prototype.emptyFunction,  // called right after form.submit
+                onAfterSubmit   : Prototype.emptyFunction,  // submit method should notify this event when it succeeds
+                onSubmitFailure : Prototype.emptyFunction   // submit method should notify this event when it fails
+            }
+
+            this.options = Object.extend(defaults, options || {});
+
+            // attaching submitMethod to form.onsubmit event
+            this.formobj.onsubmit = function() {
+                if(this.notify('onBeforeSubmit')) {
+                    // submit method only called if
+                    // onBeforeSubmit handler doesnot 
+                    // return false
+                    this.options.submitMethod(this);
+                }
+                return false;
+            }.bind(this);
+
+            // initializing watchers
+            this.options.watch = $A(this.options.watch);
+            this.options.watch.each(function(w) {
+                this.watch(w[0], w[1], w[2]);
+            }, this);
+            
+            // workaround as change event doesnot bubble in IE
+            this.formobj.observe('value:change', function(event) {
+                if(event.memo.handler) {
+                    event.memo.handler(event, 
+                                       event.memo.oldvalue, 
+                                       event.memo.newvalue
+                    );
+                }
+                else {
+                    if(Prototype.Browser.IE) {
+                        var evt = document.createEventObject();
+                        event.target.fireEvent('onblur', evt)
+                    }
+                    else {
+                        var evt = document.createEvent("HTMLEvents");
+                        evt.initEvent('blur', true, true); // event type,bubbling,cancelable
+                        event.target.dispatchEvent(evt);
+                    }
+                }
+            });
+
+            // initializing form actions
+            _addActionButtons($H(this.options.actionsbar));
+
+            // initializing for with data
+            GvaScript.Form.init(this.formobj,    
+                                this.options.datatree, 
+                                this.options.dataprefix);
+
+            // declaring form as a widget
+            this.formobj.store('widget', this);
+            this.formobj.addClassName(CSSPREFIX()+'-widget');
+            
+            // register the instance
+            GvaScript.Forms.register(this);
+
+            // call onInit handler
+            this.notify('onInit');
+        },
+
+        // returns id of the form
+        getId: function() {
+            return this.formobj.identify();
+        },
+
+        /**
+         * registering events on form level.
+         * all handlers will recieve 'event' object as a first arguement.
+         * 'change' handler will also recieve input's oldvalue/newvalue as
+         * second and third arguements respectively.
+         * 'init' handler will also recieve input's newvalue as a 
+         * second arguemen.
+         *
+         * @param {string} query : css selector to match elements
+         *                         to watch
+         * @param {string} eventname : standard event name that can be triggered
+         *                             by form inputs + the custom 'init' event
+         *                             that is triggerd on form initialization
+         * @param {Function} handler : function to execute.
+         *
+         * @return undefined
+         */
+        watch: function(query, eventname, handler) {
+            switch(eventname) {
+                // change event doesnot bubble in IE
+                // rely on blur event to check for change
+                // and fire value:change event
+                case 'change':
+                    this.formobj.register(query, 'focus', function(event) {
+                        var elt = event._target;
+                        elt.store('value', elt.getValue());  
+                    });
+
+                    this.formobj.register(query, 'blur', function(event) {
+                        var elt      = event._target;
+                        var oldvalue = elt.retrieve('value');
+                        var newvalue = elt.getValue();
+
+                        if(oldvalue != newvalue) {
+                            elt.fire('value:change', {
+                                oldvalue : oldvalue, 
+                                newvalue : newvalue,
+                                handler  : handler
+                            });
+                            elt.store('value', newvalue);
+                        }
+                    });
+                break;
+                
+                // value:init fired by GvaScript.Form.fill_from_tree method
+                // used in formobj initialization
+                case 'init':
+                    this.formobj.register(query, 'value:init', function(event) {
+                        handler(event, event.memo.newvalue);        
+                    });
+                break;
+
+                default:
+                    this.formobj.register(query, eventname, handler);
+                break;
+            }
+        },
+
+        /**
+         * remove handler attached to eventname for inputs that match query
+         *
+         * @param {string} query : css selector to remove handlers from
+         * @param {string} eventname : eventname to stop observing
+         * @param {Funtion} handler : handler to stop firing oneventname
+         *                            NOTE: should be identical to what was used in
+         *                            watch method.
+         *                            {optional} : if not specified, will remove all 
+         *                            handlers attached to eventname for indicated selector
+         * @return undefined
+         */
+        stopWatching: function(query, eventname, handler) {
+            switch(eventname) {
+                case 'change' :
+                    this.formobj.unregister(query, 'focus', handler);
+                    this.formobj.unregister(query, 'blur', handler);
+                break;
+                default :
+                    this.formobj.unregister(query, eventname, handler);
+                break;
+            }
+        },
+
+        /**
+         * notify the form instance with eventname
+         * events supported are: onInit, onBeforeSubmit, onAfterSubmit, onSubmitFailure
+         *
+         * will first fire global handlers defined in GvaScript.Forms, if none returned false,
+         * will continue to fire the handler defined on this FormII instance.
+         *
+         * @param {string} eventName : eventName to fire
+         * @param {object} arg : arguement to carry over to handler.
+         *
+         * @return boolean indicating whether all handlers have succeeded (if any)
+         */
+        notify: function(eventName, arg) {
+            // first notify global observers
+            if(GvaScript.Forms.notify(eventName, this, arg)) {
+                // then fire instance handler
+                if(this.options[eventName]) {
+                    var handler_ok = this.options[eventName].call(this, arg);
+                    return (handler_ok !== false);
+                }
+                return true;
+            }
+            // one of global observers fail
+            else
+            return false;
+        },
+
+        // instance destructor
+        destroy: function() {
+            GvaScript.Forms.unregister(this);
+
+            this.formobj.stopObserving();
+            this.formobj.unregister();
+        }
+    }
+}());        
+
+/**
+ * GvaScript.Forms : 
+ * - holds references to all GvaScript.FormII instances indentified 
+ *   by the instance.getId() method.
+ *   handy to get GvaScript.FormII instance based on the form id.
+ *
+ * - holds general observers to be executed on all GvaScript.FormII 
+ *   instances
+ */ 
+GvaScript.Forms = {
+    observers: [],
+    forms: $A(),
+    
+    register: function(form) {
+        this.unregister(form);
+        this.forms.push(form);
+    },
+
+    unregister: function(form) {
+        // nothing to unregister
+        if(!form) return;
+
+        if(typeof form == 'string') form = this.get(form);
+        
+        // nothing to unregister
+        if(!form) return false;
+
+        // remove the reference from array
+        this.forms = this.forms.reject(function(f) { return f.getId() == form.getId() });
+
+        return true;
+    },
+
+    get: function(id) {
+        return this.forms.find(function(f) {return f.getId() == id});
+    }, 
+
+    addObserver: function(observer) {
+        this.removeObserver(observer);
+        this.observers.push(observer);
+    },
+  
+    removeObserver: function(observer) {  
+        this.observers = this.observers.reject( function(o) { return o==observer });
+    },
+  
+    notify: function(eventName, formII, arg) {  
+        var falsy_observer = this.observers.any(function(f) {
+            if(f[eventName]) {
+                return (f[eventName].call(formII, arg) === false ? true : false); 
+            }
+        });
+
+        return !falsy_observer;
+    }
+}
