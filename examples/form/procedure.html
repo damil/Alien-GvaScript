@@ -33,7 +33,7 @@ var tree = {
 
 var procForm = null;
 function setup() {
-  new GvaScript.FormII('form', {
+  new GvaScript.Form('form', {
       datatree   : tree,
 
       actionsbar : {
@@ -59,6 +59,7 @@ function setup() {
       watch: [
         ['input',             'mouseover', function(event) {event.target.style.backgroundColor = 'pink'}],
         ['input',             'mouseout',  function(event) {event.target.style.backgroundColor = 'transparent'}],
+        ['input',             'blur',  function(event) {event.target.style.backgroundColor = 'red'}],
         ['input.motif-code',  'change',    function(event, oldv, newv) {msg('motif code changed from '+oldv+' -> '+newv)}],
         ['input.avocat-code', 'change',    function(event, oldv, newv) {msg('avocat code changed from '+oldv+' -> '+newv)}],
         ['input.avocat-code', 'init',      function(event, newv) {msg('avocat code initialized to '+newv)}]
