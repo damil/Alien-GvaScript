@@ -54,7 +54,7 @@ function setup() {
           ]
       },
       
-      submitMethod: submit_form,
+      onSubmit: submit_form,
 
       registery: [
         ['input',             'mouseover', function(event) {event.target.style.backgroundColor = 'pink'}],
@@ -64,10 +64,12 @@ function setup() {
         ['input.avocat-code', 'init',      function(event, newv) {msg('avocat code initialized to '+newv)}]
       ],
 
-      onInit: function() { msg('form initialized. what do u wanna do?'); },
-      onBeforeSubmit: function() { return confirm('submit form??'); },
-      onAfterSubmit: function(obj) { alert('form submitted successfully');msg(Object.toJSON(obj)); },
-      onSubmitFailure: function(reason) { alert('form failed to submit:\n'+reason); } 
+      onInit: function(gva_form) { msg('form initialized. what do u wanna do?'); },
+      onBeforeSubmit: function(gva_form) { return confirm('submit form??') },
+
+      onAfterSubmit: function(gva_form, obj) { alert('form submitted successfully');msg(Object.toJSON(obj)); },
+      onSubmitFailure: function(gva_form, reason) { alert('form failed to submit:\n'+reason); }, 
+      onDataValidationError: function(gva_form, reason) { alert('data validation error!! '+reason); } 
     });
 }
 
@@ -77,15 +79,15 @@ function motif_on_add(event) {
   event.target.cells[3].innerHTML += " // " + event.target.id;
 }
 
-function submit_form(formII) {
-  var tree = GvaScript.Form.to_tree(formII.formobj);
+function submit_form(gva_form) {
+  var tree = GvaScript.Form.to_tree(gva_form.formElt);
 
   // some validation
   if( (tree.proc.motif || []).length > 0) {
-    formII.notify('onAfterSubmit', tree);
+    gva_form.notify('onAfterSubmit', tree);
   }
   else {
-    formII.notify('onSubmitFailure', 'please add at least one motif');
+    gva_form.notify('onSubmitFailure', 'please add at least one motif');
   }
 
 //  var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -111,7 +113,7 @@ function submit_form(formII) {
 
 <div id="msgs" style="height:100px;overflow-y:auto;border:1px solid gold;font:8pt 'courier new'"></div>
 
-<form id="form" method="post">
+<form id="form" method="post" onsubmit="return false;">
 
 
 <div id="form.actionsbar"></div>
