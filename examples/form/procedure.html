@@ -59,8 +59,8 @@ function setup() {
       registery: [
         ['input',             'mouseover', function(event) {event.target.style.backgroundColor = 'pink'}],
         ['input',             'mouseout',  function(event) {event.target.style.backgroundColor = 'transparent'}],
-        ['input.motif-code',  'change',    function(event, oldv, newv) {msg('motif code changed from '+oldv+' -> '+newv)}],
-        ['input.avocat-code', 'change',    function(event, oldv, newv) {msg('avocat code changed from '+oldv+' -> '+newv)}],
+        ['input.motif-code',  'change',    function(event, newv, oldv) {msg('motif code changed from '+oldv+' -> '+newv)}],
+        ['input.avocat-code', 'change',    function(event, newv, oldv) {msg('avocat code changed from '+oldv+' -> '+newv)}],
         ['input.avocat-code', 'init',      function(event, newv) {msg('avocat code initialized to '+newv)}]
       ],
 
