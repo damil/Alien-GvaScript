@@ -69,7 +69,7 @@ GvaScript.Form.Methods = {
       // get element type (might be a node list, which we call "collection")
       var elem_type = elem.type 
                   || (elem.length !== undefined ? "collection" : "unknown");
-      var old_value = elem.getValue(); // needed for value:change custom event
+      var old_value = null; // needed for value:change custom event
 
       switch (elem_type) {
         case "collection":
@@ -80,17 +80,20 @@ GvaScript.Form.Methods = {
 
         case "checkbox" :
         case "radio":
+          old_value = elem.getValue();
           elem.checked = val.include(elem.value);
         break;
 
         case "text" :
         case "textarea" :
         case "hidden" :
+          old_value = elem.getValue();
           elem.value = val.join(",");
         break;
 
         case "select-one" :
         case "select-multiple" :
+          old_value = elem.getValue();
           $A(elem.options).each(function(opt){
             var opt_value = Form.Element.Serializers.optionValue(opt);
             opt.selected = val.include(opt_value);
@@ -102,6 +105,7 @@ GvaScript.Form.Methods = {
         break;
       } // end switch
 
+      if(elem.fire) // not to be called when elem_type is collection
       // called as a subsequence of GvaScript.Form.init method
       if(is_init) 
       elem.fire('value:init',   {newvalue: elem.getValue()});
