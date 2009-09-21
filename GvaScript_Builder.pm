@@ -2,8 +2,8 @@ package GvaScript_Builder;
 use base 'Module::Build';
 
 use strict;
-use warnings;
 
+use warnings;
 
 # some files in the distribution are derived from pod and pm sources
 # so we regenerate them when doing actions "build" or "distdir"
@@ -21,10 +21,15 @@ sub ACTION_distdir{
 }
 
 
+sub ACTION_wiki {
+  my ($self) = @_;
+  $self->generate_googlewiki;
+}
+
 sub generate_from_sources {
   my ($self) = @_;
   $self->generate_js;
-  eval {$self->generate_html}; # might fail if Pod::POM is not installed
+  eval {$self->generate_html};       # might fail if Pod::POM is not installed
 }
 
 
@@ -47,6 +52,7 @@ sub generate_js { # concatenates sources below into "GvaScript.js"
  *  Authors: Laurent Dami            <laurent.d...\@etat.ge.ch>
  *           Jean-Christophe Durand  <jean-christophe.d.....\@etat.ge.ch>
  *           Sébastien Cuendet       <sebastien.c.....\@etat.ge.ch>
+ *           Mona Remlawi            <mona.rem....\@etat.ge.ch>
  *  LICENSE
  *  This library is free software, you can redistribute it and/or modify
  *  it under the same terms as Perl's artistic license.
@@ -84,6 +90,36 @@ sub generate_html {# regenerate html doc from pod sources
   }
   return 1;
 }
+
+sub generate_googlewiki {# regenerate wiki doc from pod sources
+  my ($self) = @_;
+
+  require Pod::Simple::Wiki;
+  require Pod::Simple::Wiki::Googlecode;
+
+  # destination for wiki files
+  my $dir = "blib/wiki";
+  -d $dir or mkdir $dir or die "mkdir $dir: $!";
+
+  # list of source files
+  my @podfiles = glob ("lib/Alien/GvaScript/*.pod");
+
+  # convert each file
+  foreach my $podfile (@podfiles) {
+    my $parser = Pod::Simple::Wiki->new('googlecode');
+    $podfile =~ m[^lib/Alien/GvaScript/(.*)\.pod];
+    my $wikifile = "$dir/$1.wiki";
+    open my $fh, ">$wikifile" or die "open >$wikifile: $!";
+    print STDERR "converting $podfile ==> $wikifile\n";
+
+    $parser->output_fh($fh);
+    $parser->parse_file($podfile);
+  }
+
+  return 1;
+}
+
+
 
 1;
 
