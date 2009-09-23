@@ -318,10 +318,9 @@ Object.extend(GvaScript.Form.prototype, function() {
                 onSubmit        : Prototype.emptyFunction,  // method to call on form.submit
 
                 onInit          : Prototype.emptyFunction,  // called after form initialization
+                onAnyChange     : Prototype.emptyFunction,  // called if any input/textarea value change
                 onBeforeSubmit  : Prototype.emptyFunction,  // called right after form.submit
-                onAfterSubmit   : Prototype.emptyFunction,  // submit method should notify this event when it succeeds
-                onSubmitFailure : Prototype.emptyFunction,  // submit method should notify this event when it fails
-                onDataValidationError : Prototype.emptyFunction  // form data validation failure
+                onSubmit        : Prototype.emptyFunction   // form submit handler
             }
 
             this.options = Object.extend(defaults, options || {});
@@ -330,7 +329,8 @@ Object.extend(GvaScript.Form.prototype, function() {
             this.formElt.observe('submit', function() {
                 // submit method only called if
                 // onBeforeSubmit handler doesnot return false
-                if(this.notify('onBeforeSubmit')) {
+                if ( this.notify('onBeforeSubmit') 
+                  && GvaScript.Forms.notify('onSubmit', this) ) {
                   this.options.onSubmit(this);
                 }
                 return false;
@@ -341,9 +341,13 @@ Object.extend(GvaScript.Form.prototype, function() {
                 this.register(w[0], w[1], w[2]);
             }, this);
             
+            var that = this;
             // workaround as change event doesnot bubble in IE
             this.formElt.observe('value:change', function(event) {
                 if(event.memo.handler) {
+                    // fire the onAnyChange event passing the event 
+                    // object as an arguement
+                    that.notify('onAnyChange', event);
                     event.memo.handler(event, 
                                        event.memo.newvalue,
                                        event.memo.oldvalue 
@@ -364,6 +368,9 @@ Object.extend(GvaScript.Form.prototype, function() {
 
             // initializing form actions
             _addActionButtons(this);
+
+            // registering change event to support the onAnyChange event
+            this.register('input,textarea','change', Prototype.emptyFunction);
 
             // initializing for with data
             GvaScript.Form.init(this.formElt,    
@@ -388,7 +395,7 @@ Object.extend(GvaScript.Form.prototype, function() {
 
         /**
          * notify the form instance with eventname
-         * events supported are: onInit, onBeforeSubmit, onAfterSubmit, onSubmitFailure
+         * events supported are: onInit, onAnyChange, onBeforeSubmit, onSubmit
          *
          * will first fire global handlers defined in GvaScript.Forms, if none returned false,
          * will continue to fire the handler defined on this Form instance.

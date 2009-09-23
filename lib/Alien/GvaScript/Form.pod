@@ -39,6 +39,11 @@ Class GvaScript.Form - Wrapper around HTML Forms
       ],
       // handlers to form's custom events
       onInit: function(gva_form) {},
+      onAnyChange: function(gva_form, event) {
+        // event.target -> element changed
+        // event.memo.oldvalue -> changed element's old value
+        // event.memo.newvalue -> changed element's new value
+      },
       onSubmit: function(gva_form) {
         // ....
         // do form submission
@@ -115,6 +120,18 @@ each item in the array would be passed over to the L</notify> method.
 
 function to be called after the successful initialization of the GvaScript.Form instance.
 
+=item onAnyChange
+
+function to be called when any of the form's elements has changed
+
+Signature
+
+  function onAnyChange(gva_form, event) {
+    // gva_form : GvaScript.Form instance
+    // event: Event object fired by the change on the form element
+    //        Has a memo object that has olvalue and newvalue set
+  }
+
 =item onBeforeSubmit
 
 function to be called directly before the form submits.
@@ -137,11 +154,9 @@ Signature
     // use to notify 'onAfterSubmit', 'onSubmitFailure' or 'onDataValidationError'
   }
 
-=item onAfterSubmit, onSubmitFailure, onDataValidationError
+=item on[XXX]
 
-functions that correspond to different events that might occur after the onSubmit of the form.
-
-the onSubmit handler must notify the form instance on which event to fire next.
+Event handlers for custom form events. The form instance should notify these events so as corresponding handler can be fired.
 
 =item actionsbar
 
@@ -208,11 +223,10 @@ returns the id of the form element that the gvascript_form instance is wrapped a
 
   gvascript_form.notify(eventName[, arg])
 
-notifies the gvascript_form instance with an event to fire the corresponding handler(s).
+notifies the gvascript_form instance with an event to fire.
 
 C<eventName>: eventName to fire.
 
-Supported C<eventName>s: B<onInit, onAfterSubmit, onSubmitFailure, onDataValidationError>
 
 C<arg> argument to send over to the corresponding handler(s).
 
@@ -405,5 +419,5 @@ finds and returns the GvaScript.Form instance where id is the unique id of the f
 adding one or more general form observers. to be applied on all instances of GvaScript.Form and will be 
 executed I<before> the instance specific handler.
 
-supported eventNames C<onInit, onBeforeSubmit, onAfterSubmit, onSubmitFailure, onDataValidationError>.
+Supported B<eventNames>: C<onInit, onAnyChange, onBeforeSubmit, onSubmit, on[XXX]> where C<on[XXX]> is a custom event name.
 

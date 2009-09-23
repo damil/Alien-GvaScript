@@ -180,6 +180,11 @@
       ],
       // handlers to form's custom events
       onInit: function(gva_form) {},
+      onAnyChange: function(gva_form, event) {
+        // event.target -&gt; element changed
+        // event.memo.oldvalue -&gt; changed element's old value
+        // event.memo.newvalue -&gt; changed element's new value
+      },
       onSubmit: function(gva_form) {
         // ....
         // do form submission
@@ -248,6 +253,16 @@ some differences both in syntax and in semantics.</p>
 <li><a name="item_onInit"></a><b>onInit</b>
 <p>function to be called after the successful initialization of the GvaScript.Form instance.</p>
 </li>
+<li><a name="item_onAnyChange"></a><b>onAnyChange</b>
+<p>function to be called when any of the form's elements has changed</p>
+<p>Signature</p>
+<pre>  function onAnyChange(gva_form, event) {
+    // gva_form : GvaScript.Form instance
+    // event: Event object fired by the change on the form element
+    //        Has a memo object that has olvalue and newvalue set
+  }</pre>
+
+</li>
 <li><a name="item_onBeforeSubmit"></a><b>onBeforeSubmit</b>
 <p>function to be called directly before the form submits.</p>
 <p>Signature</p>
@@ -266,9 +281,8 @@ some differences both in syntax and in semantics.</p>
   }</pre>
 
 </li>
-<li><a name="item_onAfterSubmit__onSubmitFailure__onDataValidationError"></a><b>onAfterSubmit, onSubmitFailure, onDataValidationError</b>
-<p>functions that correspond to different events that might occur after the onSubmit of the form.</p>
-<p>the onSubmit handler must notify the form instance on which event to fire next.</p>
+<li><a name="item_on_XXX_"></a><b>on[XXX]</b>
+<p>Event handlers for custom form events. The form instance should notify these events so as corresponding handler can be fired.</p>
 </li>
 <li><a name="item_actionsbar"></a><b>actionsbar</b>
 <p>initializes and instance of <i>Alien::GvaScript::ActionsBar</i>.</p>
@@ -352,9 +366,8 @@ an <code>autofocus</code> attribute automatically receives focus.</p>
     <div class="TN_content">
       <pre>  gvascript_form.notify(eventName[, arg])</pre>
 
-<p>notifies the gvascript_form instance with an event to fire the corresponding handler(s).</p>
+<p>notifies the gvascript_form instance with an event to fire.</p>
 <p><code>eventName</code>: eventName to fire.</p>
-<p>Supported <code>eventName</code>s: <b>onInit, onAfterSubmit, onSubmitFailure, onDataValidationError</b></p>
 <p><code>arg</code> argument to send over to the corresponding handler(s).</p>
 <p>this method will first execute the general observers set to the eventName.
 will stop if any of these observers returns <code>false</code>.
@@ -559,7 +572,7 @@ first child that has an <code>autofocus</code> attribute.</p>
 
 <p>adding one or more general form observers. to be applied on all instances of GvaScript.Form and will be 
 executed <i>before</i> the instance specific handler.</p>
-<p>supported eventNames <code>onInit, onBeforeSubmit, onAfterSubmit, onSubmitFailure, onDataValidationError</code>.</p>
+<p>Supported <b>eventNames</b>: <code>onInit, onAnyChange, onBeforeSubmit, onSubmit, on[XXX]</code> where <code>on[XXX]</code> is a custom event name.</p>
 
     </div>
   </div>
