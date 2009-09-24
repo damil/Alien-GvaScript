@@ -27,33 +27,7 @@ GvaScript.Form.Methods = {
   to_tree: function(form) {
     form = $(form);
     
-    // javascript version of Perl  CGI::Expand::expand_hash
-    function expand_hash(flat_hash) {
-        var tree = {};
-
-        // iterate on keys in the flat hash
-        for (var k in flat_hash) {
-          var parts = k.split(/\./);
-          var loop = {tree: tree, key: "root"};
-
-          // iterate on path parts within the key
-          for (var i = 0 ; i < parts.length; i++) {
-            var part = parts[i];
-
-            // if no subtree yet, build it (Array or Object)
-            if (!loop.tree[loop.key])
-            loop.tree[loop.key] = part.match(/^\d+$/) ? [] : {};
-
-            // walk down to subtree
-            loop = {tree: loop.tree[loop.key], key:part};
-          }
-          // store value in leaf
-          loop.tree[loop.key] = flat_hash[k];
-        }
-        return tree.root;
-      } 
-
-      return expand_hash(GvaScript.Form.to_hash(form));
+    return Hash.expand(GvaScript.Form.to_hash(form));
   },
 
   fill_from_tree : (function() {

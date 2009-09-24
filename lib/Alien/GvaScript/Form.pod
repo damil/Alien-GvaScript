@@ -354,15 +354,6 @@ then four repetition blocks will automatically created in the form.
 
 [I<This method can be called either as an instance method or as a generic method. If calling as a generic, pass the form HTMLElement/id in as the first argument.>]
 
-=head2 expand_hash
-
-  var tree = GvaScript.Form.expand_hash(flat_hash);
-
-Transforms a flat structure of key-value pairs into a nested tree
-structure, by splitting keys on dots.
-The idea and algorithm come from L<CGI::Expand/expand_hash>.
-
-
 =head2 add
 
   GvaScript.Form.add(repeat_name, count);

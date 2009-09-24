@@ -41,6 +41,57 @@ Form.Element.Methods.setValue = Form.Element.Methods.setValue.wrap(
 );
 Element.addMethods();
 
+
+// utilities for hash
+
+// expands flat hash into a multi-level deep hash
+// javascript version of Perl  CGI::Expand::expand_hash
+Hash.expand = function(flat_hash) {
+  var tree = {};
+
+  // iterate on keys in the flat hash
+  for (var k in flat_hash) {
+    var parts = k.split(/\./);
+    var loop = {tree: tree, key: "root"};
+
+    // iterate on path parts within the key
+    for (var i = 0 ; i < parts.length; i++) {
+      var part = parts[i];
+
+      // if no subtree yet, build it (Array or Object)
+      if (!loop.tree[loop.key])
+      loop.tree[loop.key] = part.match(/^\d+$/) ? [] : {};
+
+      // walk down to subtree
+      loop = {tree: loop.tree[loop.key], key:part};
+    }
+    // store value in leaf
+    loop.tree[loop.key] = flat_hash[k];
+  }
+
+  return tree.root;
+}
+
+// collapses deep hash into a one level hash 
+Hash.collapse = function(deep_hash, prefix, tree) {
+  tree = tree   || {};
+
+  for (var i in deep_hash) {
+    var v = deep_hash[i];
+    var new_prefix = prefix? prefix + '.' + i : i;
+    switch (typeof(v)) {
+        case "function": continue; break;
+        case "object"  : Hash.collapse(v, new_prefix, tree); break;
+        case "string"  :
+        case "number"  : tree["" + new_prefix + ""] = v; break;
+        default        : break;
+    }
+  }
+  return tree;
+}
+
+// utilities for string
+
 Object.extend(String.prototype, {
   chomp: function() {
     return this.replace(/(\n|\r)+$/, '');

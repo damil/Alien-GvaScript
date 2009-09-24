@@ -48,6 +48,18 @@
   <div class="TN_content"></div>
 </div>
 <div class="TN_node">
+  <a class="TN_label" href="#Hash_utilities">Hash utilities</a>
+  <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#Hash_expand">Hash.expand</a>
+  <div class="TN_content"></div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#Hash_collapse">Hash.collapse</a>
+  <div class="TN_content"></div>
+</div>
+</div>
+</div>
+<div class="TN_node">
   <a class="TN_label" href="#String_extensions">String extensions</a>
   <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#chomp">chomp</a>
@@ -175,6 +187,35 @@ prototype.js.</p>
   as discussed here 
   [https://prototype.lighthouseapp.com/projects/8886/tickets/435-eventdelegate-and-elementmethodsdelegate]</pre>
 
+
+    </div>
+  </div>
+  <div class="TN_node" id="Hash_utilities">
+    <h3 class="TN_label">Hash utilities</h3>
+    <div class="TN_content">
+        <div class="TN_node" id="Hash_expand">
+    <h4 class="TN_label">Hash.expand</h4>
+    <div class="TN_content">
+      <pre>  var tree = Hash.expand(flat_hash);</pre>
+
+<p>Transforms a flat structure of key-value pairs into a nested tree
+structure, by splitting keys on dots.
+The idea and algorithm come from <i>CGI::Expand/expand_hash</i>.</p>
+<pre>  Hash.expand({a: '...', b.0.x: '...', b.0.y: '...', b.1.x: '...', b.1.y: '...'}) =&gt;
+  {a: '...', b: [{x: '...', y: '...'}, {x: '...', y: '...'}]}</pre>
+
+
+    </div>
+  </div>
+  <div class="TN_node" id="Hash_collapse">
+    <h4 class="TN_label">Hash.collapse</h4>
+    <div class="TN_content">
+      <p>The exact opposite of Hash.expand</p>
+<p>Transforms a nested tree structure into a flat hash of key-value pairs
+where nested keys are joined by a dot.</p>
+
+    </div>
+  </div>
 
     </div>
   </div>

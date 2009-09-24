@@ -34,6 +34,26 @@ prototype.js.
   as discussed here 
   [https://prototype.lighthouseapp.com/projects/8886/tickets/435-eventdelegate-and-elementmethodsdelegate]
 
+=head2 Hash utilities
+
+=head3 Hash.expand
+
+  var tree = Hash.expand(flat_hash);
+
+Transforms a flat structure of key-value pairs into a nested tree
+structure, by splitting keys on dots.
+The idea and algorithm come from L<CGI::Expand/expand_hash>.
+
+  Hash.expand({a: '...', b.0.x: '...', b.0.y: '...', b.1.x: '...', b.1.y: '...'}) =>
+  {a: '...', b: [{x: '...', y: '...'}, {x: '...', y: '...'}]}
+
+=head3 Hash.collapse
+
+The exact opposite of Hash.expand
+
+Transforms a nested tree structure into a flat hash of key-value pairs
+where nested keys are joined by a dot.
+
 =head2 String extensions
 
 =head3 chomp
