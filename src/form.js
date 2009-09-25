@@ -112,7 +112,11 @@ GvaScript.Form.Methods = {
           }
         }
         // recurse to the repetition block
-        if (elem)
+
+        // mremlawi: sometimes multi-value fields are filled without
+        // passing by the repeat module
+        // -> no id's on repeatable blocks are set but need to recurse anyway
+//         if (elem)
         GvaScript.Form.fill_from_tree(form, new_prefix, array[i], is_init);
       }           
     }
