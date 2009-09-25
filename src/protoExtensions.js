@@ -73,7 +73,7 @@ Hash.expand = function(flat_hash) {
 }
 
 // collapses deep hash into a one level hash 
-Hash.collapse = function(deep_hash, prefix, tree) {
+Hash.flatten = function(deep_hash, prefix, tree) {
   tree = tree   || {};
 
   for (var i in deep_hash) {
