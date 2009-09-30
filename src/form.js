@@ -114,7 +114,7 @@ GvaScript.Form.Methods = {
         // recurse to the repetition block
 
         // mremlawi: sometimes multi-value fields are filled without
-        // passing by the repeat module
+        // passing by the repeat moduleearly
         // -> no id's on repeatable blocks are set but need to recurse anyway
 //         if (elem)
         GvaScript.Form.fill_from_tree(form, new_prefix, array[i], is_init);
@@ -296,7 +296,7 @@ Object.extend(GvaScript.Form.prototype, function() {
                 onSubmit        : Prototype.emptyFunction,  // method to call on form.submit
 
                 onInit          : Prototype.emptyFunction,  // called after form initialization
-                onAnyChange     : Prototype.emptyFunction,  // called if any input/textarea value change
+                onChange        : Prototype.emptyFunction,  // called if any input/textarea value change
                 onBeforeSubmit  : Prototype.emptyFunction,  // called right after form.submit
                 onSubmit        : Prototype.emptyFunction   // form submit handler
             }
@@ -307,11 +307,7 @@ Object.extend(GvaScript.Form.prototype, function() {
             this.formElt.observe('submit', function() {
                 // submit method only called if
                 // onBeforeSubmit handler doesnot return false
-                if ( this.notify('onBeforeSubmit') 
-                  && GvaScript.Forms.notify('onSubmit', this) ) {
-                  this.options.onSubmit(this);
-                }
-                return false;
+                if ( this.fire('BeforeSubmit') ) return this.fire('Submit');
             }.bind(this));
 
             // initializing watchers
@@ -323,9 +319,9 @@ Object.extend(GvaScript.Form.prototype, function() {
             // workaround as change event doesnot bubble in IE
             this.formElt.observe('value:change', function(event) {
                 if(event.memo.handler) {
-                    // fire the onAnyChange event passing the event 
+                    // fire the onChange event passing the event 
                     // object as an arguement
-                    that.notify('onAnyChange', event);
+                    that.fire('Change', event);
                     event.memo.handler(event, 
                                        event.memo.newvalue,
                                        event.memo.oldvalue 
@@ -347,7 +343,7 @@ Object.extend(GvaScript.Form.prototype, function() {
             // initializing form actions
             _addActionButtons(this);
 
-            // registering change event to support the onAnyChange event
+            // registering change event to support the onChange event
             this.register('input,textarea','change', Prototype.emptyFunction);
 
             // initializing for with data
@@ -363,7 +359,7 @@ Object.extend(GvaScript.Form.prototype, function() {
             GvaScript.Forms.register(this);
 
             // call onInit handler
-            this.notify('onInit');
+            this.fire('Init');
         },
 
         // returns id of the form
@@ -372,30 +368,36 @@ Object.extend(GvaScript.Form.prototype, function() {
         },
 
         /**
-         * notify the form instance with eventname
-         * events supported are: onInit, onAnyChange, onBeforeSubmit, onSubmit
+         * fire the eventName (ex: 'XYZ') on the form instance.
+         * basic events supported are: Init, Change, BeforeSubmit, Submit
          *
-         * will first fire global handlers defined in GvaScript.Forms, if none returned false,
-         * will continue to fire the handler defined on this Form instance.
+         * will first dispatch EarlyResponders defined in GvaScript.Form.EarlyResponders, 
+         * if none returned false, will continue to fire the callback defined on this Form instance.
+         * if callback doesnot return false, will continue to dispatch Responders
+         * defined in GvaScript.Form.Responders
          *
-         * @param {string} eventName : eventName to fire
+         * @param {string} eventName : eventName to fire without the 'on' prefix
          * @param {object} arg : arguement to carry over to handler.
          *
-         * @return boolean indicating whether all handlers have succeeded (if any)
+         * @return boolean indicating whether all responders + instance callback have succeeded (if any)
          */
-        notify: function(eventName, arg) {
-            // first notify global observers
-            if(GvaScript.Forms.notify(eventName, this, arg)) {
-                // then fire instance handler
-                if(this.options[eventName]) {
-                    var handler_ok = this.options[eventName](this, arg);
-                    return (handler_ok !== false);
-                }
-                return true;
+        fire: function(eventName, arg) {
+            var callback_ok = true;
+
+            // -- early responders 
+            callback_ok = GvaScript.Form.EarlyResponders.dispatch('on'+eventName, this, arg);
+            if(callback_ok === false) return false;
+
+            // -- instance callback
+            if( Object.isFunction(this.options['on'+eventName]) ) {
+              callback_ok = this.options['on'+eventName](this, arg);
+              if(callback_ok === false) return false;
             }
-            // one of global observers fail
-            else
-            return false;
+
+            // -- late responders
+            callback_ok = GvaScript.Form.Responders.dispatch('on'+eventName, this, arg) 
+
+            return (callback_ok !== false);
         },
 
         // instance destructor
@@ -419,8 +421,62 @@ Object.extend(GvaScript.Form.prototype, function() {
  * - holds general observers to be executed on all GvaScript.Form 
  *   instances
  */ 
+
+GvaScript.Form.EarlyResponders = {
+  responders: [],
+
+  _each: function(iterator) {
+    this.responders._each(iterator);
+  },
+
+  register: function(responder) {
+    if (!this.include(responder))
+      this.responders.push(responder);
+  },
+
+  unregister: function(responder) {
+    this.responders = this.responders.without(responder);
+  },
+
+  dispatch: function(eventName, form, arg) {
+      var falsy_observer = this.any(function(responder) {
+          if(Object.isFunction(responder[eventName])) {
+              return (responder[eventName](form, arg) === false ? true : false); 
+          }
+      });
+      return !falsy_observer;
+  }
+}
+Object.extend(GvaScript.Form.EarlyResponders, Enumerable);
+
+GvaScript.Form.Responders = {
+  responders: [],
+
+  _each: function(iterator) {
+    this.responders._each(iterator);
+  },
+
+  register: function(responder) {
+    if (!this.include(responder))
+      this.responders.push(responder);
+  },
+
+  unregister: function(responder) {
+    this.responders = this.responders.without(responder);
+  },
+
+  dispatch: function(eventName, form, arg) {
+      var falsy_observer = this.any(function(responder) {
+          if(Object.isFunction(responder[eventName])) {
+              return (responder[eventName](form, arg) === false ? true : false); 
+          }
+      });
+      return !falsy_observer;
+  }
+}
+Object.extend(GvaScript.Form.Responders, Enumerable);
+
 GvaScript.Forms = {
-    observers: [],
     forms: $A(),
     
     register: function(form) {
@@ -445,26 +501,7 @@ GvaScript.Forms = {
 
     get: function(id) {
       return this.forms.find(function(f) {return f.getId() == id});
-    }, 
-
-    addObserver: function(observer) {
-      this.removeObserver(observer);
-      this.observers.push(observer);
-    },
-  
-    removeObserver: function(observer) {  
-      this.observers = this.observers.reject( function(o) { return o==observer });
-    },
-  
-    notify: function(eventName, form, arg) {  
-      var falsy_observer = this.observers.any(function(f) {
-          if(f[eventName]) {
-              return (f[eventName](form, arg) === false ? true : false); 
-          }
-      });
-
-      return !falsy_observer;
-    }
+    } 
 }
 
 // GvaScript.Form helpers and methods
@@ -486,6 +523,18 @@ Object.extend(GvaScript.Form, {
     var n_blocks = GvaScript.Repeat.add(repeat_name, count);
     var last_block = repeat_name + "." + (n_blocks - 1);
     GvaScript.Form.autofocus(last_block);
+    
+    // get form owner of block
+    if(_block = $(last_block)) {
+      _form = _block.up('form');
+      // check if form has a GvaSCript.Form instance 
+      // wrapped around it
+      if(_form) {
+        if(_gva_form = GvaScript.Forms.get(_form.identify())) {
+          _gva_form.fire('Change');
+        }
+      }
+    }
   },
 
   remove: function(repetition_block) {
@@ -517,6 +566,12 @@ Object.extend(GvaScript.Form, {
 
     // re-populate blocks above
     GvaScript.Form.fill_from_tree(form, repeat_name, tree);
+
+    // check if form has a GvaSCript.Form instance 
+    // wrapped around it
+    if(_gva_form = GvaScript.Forms.get(form.identify())) {
+      _gva_form.fire('Change');
+    }
   }
 });
 
