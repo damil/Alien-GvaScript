@@ -202,3 +202,20 @@ table {padding:0;margin: 0;border-collapse:collapse;}
 .gva-grid td.grid-cell.center {text-align:center;float:none;}
 .gva-grid td.grid-cell.right {text-align:right;float:none;}
 .gva-grid td.grid-cell.red {color:#a00;}
+
+
+.icon-add {
+    display:inline-table;
+    width:16px;
+    height:16px;
+    cursor:pointer;
+    background: transparent url(add.png) no-repeat left center;
+}
+.icon-delete {
+    display:inline-table;
+    float: right;
+    width:16px;
+    height:16px;
+    cursor:pointer;
+    background: transparent url(delete.png) no-repeat left center;
+}  
