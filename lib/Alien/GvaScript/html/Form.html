@@ -68,7 +68,7 @@
   <div class="TN_content"></div>
 </div>
 <div class="TN_leaf">
-  <a class="TN_label" href="#notify">notify</a>
+  <a class="TN_label" href="#fire">fire</a>
   <div class="TN_content"></div>
 </div>
 <div class="TN_leaf">
@@ -117,13 +117,29 @@
   <a class="TN_label" href="#get">get</a>
   <div class="TN_content"></div>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="TN_node">
+  <a class="TN_label" href="#GvaScript_Form_Responders">GvaScript.Form.Responders</a>
+  <div class="TN_content"><div class="TN_node">
+  <a class="TN_label" href="#METHODS">METHODS</a>
+  <div class="TN_content"><div class="TN_leaf">
+  <a class="TN_label" href="#register">register</a>
+  <div class="TN_content"></div>
+</div>
 <div class="TN_leaf">
-  <a class="TN_label" href="#addObserver">addObserver</a>
+  <a class="TN_label" href="#unregister">unregister</a>
   <div class="TN_content"></div>
 </div>
 </div>
 </div>
 </div>
+</div>
+<div class="TN_leaf">
+  <a class="TN_label" href="#GvaScript_Form_EarlyResponders">GvaScript.Form.EarlyResponders</a>
+  <div class="TN_content"></div>
 </div>
 
        </div>
@@ -176,7 +192,7 @@
       ],
       // handlers to form's custom events
       onInit: function(gva_form) {},
-      onAnyChange: function(gva_form, event) {
+      onChange: function(gva_form, event) {
         // event.target -&gt; element changed
         // event.memo.oldvalue -&gt; changed element's old value
         // event.memo.newvalue -&gt; changed element's new value
@@ -185,10 +201,10 @@
         // ....
         // do form submission
         // ....
-        if(success)               {gva_form.notify('onAfterSubmit', arg)}
+        if(success)               {gva_form.fire('AfterSubmit', arg)}
         else 
-        if(data_validation_error) {gva_form.notify('onDataValidationError', arg)}
-        else                      {gva_form.notify('onSubmitFailure', arg)} 
+        if(data_validation_error) {gva_form.fire('DataValidationError', arg)}
+        else                      {gva_form.fire('SubmitFailure', arg)} 
       },
       onAfterSubmit: function(gva_form, arg) {},
       onDataValidationError: function(gva_form, arg) {},
@@ -249,13 +265,14 @@ some differences both in syntax and in semantics.</p>
 <li><a name="item_onInit"></a><b>onInit</b>
 <p>function to be called after the successful initialization of the GvaScript.Form instance.</p>
 </li>
-<li><a name="item_onAnyChange"></a><b>onAnyChange</b>
-<p>function to be called when any of the form's elements has changed</p>
+<li><a name="item_onChange"></a><b>onChange</b>
+<p>function to be called when any of the form's elements has changed or onAdd/onRemove of a repeatable section.</p>
 <p>Signature</p>
-<pre>  function onAnyChange(gva_form, event) {
+<pre>  function onChange(gva_form, event) {
     // gva_form : GvaScript.Form instance
     // event: Event object fired by the change on the form element
-    //        Has a memo object that has olvalue and newvalue set
+    //        Has a memo object that has olvalue and newvalue set unless 
+    //        called from the Repeat module
   }</pre>
 
 </li>
@@ -273,12 +290,12 @@ some differences both in syntax and in semantics.</p>
 <p>Signature</p>
 <pre>  function onSubmit(gva_form) {
     // gva_form : GvaScript.Form instance
-    // use to notify 'onAfterSubmit', 'onSubmitFailure' or 'onDataValidationError'
+    // use to fire 'onAfterSubmit', 'onSubmitFailure' or 'onDataValidationError'
   }</pre>
 
 </li>
-<li><a name="item_on_XXX_"></a><b>on[XXX]</b>
-<p>Event handlers for custom form events. The form instance should notify these events so as corresponding handler can be fired.</p>
+<li><a name="item_on_XYZ_"></a><b>on[XYZ]</b>
+<p>Event handlers for custom form events. The form instance should fire these events so as corresponding handler can be fired.</p>
 </li>
 <li><a name="item_actionsbar"></a><b>actionsbar</b>
 <p>initializes and instance of <i>Alien::GvaScript::ActionsBar</i>.</p>
@@ -357,17 +374,27 @@ an <code>autofocus</code> attribute automatically receives focus.</p>
 
     </div>
   </div>
-  <div class="TN_node" id="notify">
-    <h3 class="TN_label">notify</h3>
+  <div class="TN_node" id="fire">
+    <h3 class="TN_label">fire</h3>
     <div class="TN_content">
-      <pre>  gvascript_form.notify(eventName[, arg])</pre>
+      <pre>  gvascript_form.fire(eventName[, arg])</pre>
 
-<p>notifies the gvascript_form instance with an event to fire.</p>
-<p><code>eventName</code>: eventName to fire.</p>
-<p><code>arg</code> argument to send over to the corresponding handler(s).</p>
-<p>this method will first execute the general observers set to the eventName.
-will stop if any of these observers returns <code>false</code>.
-if not, will continue to execute the instance specific handler.</p>
+<p>used to fire event on the for instance and thus called corresponding responders and instance callback.</p>
+<p><code>eventName</code>: eventName to fire without the 'on' prefix.</p>
+<p><code>arg</code> argument to send over to the corresponding responder(s) and callback.</p>
+<p>this method will </p>
+<ol>
+<li>
+<p>execute the early responders set the on[eventName]</p>
+</li>
+<li>
+<p>execute instance on[eventName] callback</p>
+</li>
+<li>
+<p>execute the responders set the on[eventName]</p>
+</li>
+</ol>
+<p>execution sequence will stop whenever one of the responders or callback returns <code>false</code></p>
 <p>NOTE that the <b>onBeforeSubmit, onSubmit</b> events cannot be notified programatically. 
 You actually need to call form.submit() for these events to be fired.</p>
 
@@ -536,7 +563,7 @@ first child that has an <code>autofocus</code> attribute.</p>
   <div class="TN_node" id="GvaScript_Forms_">
     <h2 class="TN_label">GvaScript.Forms </h2>
     <div class="TN_content">
-      <p>namespace that holds all active instances of GvaScript.Form plus general observers to be applied on all instances.</p>
+      <p>namespace that holds all active instances of GvaScript.Form </p>
 <p>instances are unique per form id that the instance is wrapped around.</p>
   <div class="TN_node" id="METHODS_">
     <h3 class="TN_label">METHODS </h3>
@@ -550,20 +577,51 @@ first child that has an <code>autofocus</code> attribute.</p>
 
     </div>
   </div>
-  <div class="TN_node" id="addObserver">
-    <h4 class="TN_label">addObserver</h4>
-    <div class="TN_content">
-      <pre>  GvaScript.Forms.addObserver({eventName: handler}[, {eventName: handler}[, ...]]})</pre>
 
-<p>adding one or more general form observers. to be applied on all instances of GvaScript.Form and will be 
-executed <i>before</i> the instance specific handler.</p>
+    </div>
+  </div>
+
+    </div>
+  </div>
+  <div class="TN_node" id="GvaScript_Form_Responders">
+    <h2 class="TN_label">GvaScript.Form.Responders</h2>
+    <div class="TN_content">
+      <p>A repository of global listeners notified about every step of the GvaSript.Form lifecycle.</p>
+<p>Sometimes, you need to provide generic behaviors over all GvaScript.Form(s) in a single application.</p>
+<p>To achieve this, GvaScript.Form provides global Responders that will be executed for every GvaScript.Form instance.</p>
+<p>Responders by default are executed <b>after</b> the instance specific event callback.</p>
+  <div class="TN_node" id="METHODS">
+    <h3 class="TN_label">METHODS</h3>
+    <div class="TN_content">
+        <div class="TN_node" id="register">
+    <h4 class="TN_label">register</h4>
+    <div class="TN_content">
+      <pre>  GvaScript.Form.Responders.register({eventName: handler}[, {eventName: handler}[, ...]]})</pre>
+
+<p>adding one or more global form events responders.</p>
 <p>Supported <b>eventNames</b>: <code>onInit, onAnyChange, onBeforeSubmit, onSubmit, on[XXX]</code> where <code>on[XXX]</code> is a custom event name.</p>
 
     </div>
   </div>
+  <div class="TN_node" id="unregister">
+    <h4 class="TN_label">unregister</h4>
+    <div class="TN_content">
+      <pre>  GvaScript.Form.Responders.unregister({eventName: handler}[, {eventName: handler}[, ...]]})</pre>
+
+<p>unregistering one or more global form events responders.</p>
 
     </div>
   </div>
+
+    </div>
+  </div>
+
+    </div>
+  </div>
+  <div class="TN_node" id="GvaScript_Form_EarlyResponders">
+    <h2 class="TN_label">GvaScript.Form.EarlyResponders</h2>
+    <div class="TN_content">
+      <p>Identical to GvaScript.Form.Responders except that these responders would be executed <b>before</b> the instance specific callback.</p>
 
     </div>
   </div>

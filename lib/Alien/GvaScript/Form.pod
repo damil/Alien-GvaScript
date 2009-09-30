@@ -39,7 +39,7 @@ Class GvaScript.Form - Wrapper around HTML Forms
       ],
       // handlers to form's custom events
       onInit: function(gva_form) {},
-      onAnyChange: function(gva_form, event) {
+      onChange: function(gva_form, event) {
         // event.target -> element changed
         // event.memo.oldvalue -> changed element's old value
         // event.memo.newvalue -> changed element's new value
@@ -48,10 +48,10 @@ Class GvaScript.Form - Wrapper around HTML Forms
         // ....
         // do form submission
         // ....
-        if(success)               {gva_form.notify('onAfterSubmit', arg)}
+        if(success)               {gva_form.fire('AfterSubmit', arg)}
         else 
-        if(data_validation_error) {gva_form.notify('onDataValidationError', arg)}
-        else                      {gva_form.notify('onSubmitFailure', arg)} 
+        if(data_validation_error) {gva_form.fire('DataValidationError', arg)}
+        else                      {gva_form.fire('SubmitFailure', arg)} 
       },
       onAfterSubmit: function(gva_form, arg) {},
       onDataValidationError: function(gva_form, arg) {},
@@ -77,17 +77,17 @@ some differences both in syntax and in semantics.
 
 =over 12
 
-=item form_id
+=item * form_id
 
 id of the HTML form to extend
 
-=item options
+=item * options
 
 hash of optional properties that would define the behavior of the form
 
 =over 
 
-=item datatree
+=item * datatree
 
 tree represention of the initial form data. 
 
@@ -102,7 +102,7 @@ Ex:
     ] 
   }
 
-=item dataprefix
+=item * dataprefix
 
 sometimes it's helpful to prefix the html input names to give them 'context'.
 
@@ -110,29 +110,30 @@ Ex: C<doll.name> C<doll.friends.0.name>.
 
 in this example, the dataprefix should be set to 'doll'
 
-=item registery
+=item * registery
 
 a list of arrays C<[expression, eventName, handler]>.
 
 each item in the array would be passed over to the L</notify> method.
 
-=item onInit
+=item * onInit
 
 function to be called after the successful initialization of the GvaScript.Form instance.
 
-=item onAnyChange
+=item * onChange
 
-function to be called when any of the form's elements has changed
+function to be called when any of the form's elements has changed or onAdd/onRemove of a repeatable section.
 
 Signature
 
-  function onAnyChange(gva_form, event) {
+  function onChange(gva_form, event) {
     // gva_form : GvaScript.Form instance
     // event: Event object fired by the change on the form element
-    //        Has a memo object that has olvalue and newvalue set
+    //        Has a memo object that has olvalue and newvalue set unless 
+    //        called from the Repeat module
   }
 
-=item onBeforeSubmit
+=item * onBeforeSubmit
 
 function to be called directly before the form submits.
 
@@ -143,7 +144,7 @@ Signature
     // return false if you want to stop the form from submitting
   }
 
-=item onSubmit
+=item * onSubmit
 
 function to be called when the form is submit.
 
@@ -151,14 +152,14 @@ Signature
 
   function onSubmit(gva_form) {
     // gva_form : GvaScript.Form instance
-    // use to notify 'onAfterSubmit', 'onSubmitFailure' or 'onDataValidationError'
+    // use to fire 'onAfterSubmit', 'onSubmitFailure' or 'onDataValidationError'
   }
 
-=item on[XXX]
+=item * on[XYZ]
 
-Event handlers for custom form events. The form instance should notify these events so as corresponding handler can be fired.
+Event handlers for custom form events. The form instance should fire these events so as corresponding handler can be fired.
 
-=item actionsbar
+=item * actionsbar
 
 initializes and instance of L<Alien::GvaScript::ActionsBar>.
 
@@ -219,21 +220,36 @@ instance destructor -  will unregister the GvaScript.Form instance from the GvaS
 
 returns the id of the form element that the gvascript_form instance is wrapped around.
 
-=head2 notify
+=head2 fire
 
-  gvascript_form.notify(eventName[, arg])
+  gvascript_form.fire(eventName[, arg])
 
-notifies the gvascript_form instance with an event to fire.
+used to fire event on the for instance and thus called corresponding responders and instance callback.
 
-C<eventName>: eventName to fire.
+C<eventName>: eventName to fire without the 'on' prefix.
 
 
-C<arg> argument to send over to the corresponding handler(s).
+C<arg> argument to send over to the corresponding responder(s) and callback.
 
-this method will first execute the general observers set to the eventName.
-will stop if any of these observers returns C<false>.
-if not, will continue to execute the instance specific handler.
+this method will 
 
+=over
+
+=item 1. 
+
+execute the early responders set the on[eventName]
+
+=item 2. 
+
+execute instance on[eventName] callback
+
+=item 3. 
+
+execute the responders set the on[eventName]
+
+=back
+
+execution sequence will stop whenever one of the responders or callback returns C<false>
 
 NOTE that the B<onBeforeSubmit, onSubmit> events cannot be notified programatically. 
 You actually need to call form.submit() for these events to be fired.
@@ -391,9 +407,9 @@ first child that has an C<autofocus> attribute.
 
 =head1 GvaScript.Forms 
 
-namespace that holds all active instances of GvaScript.Form plus general observers to be applied on all instances.
+namespace that holds all active instances of GvaScript.Form 
 
-instances are unique per form id that the instance is wrapped around.
+instances are unique per form id
 
 =head2 METHODS 
 
@@ -403,12 +419,34 @@ instances are unique per form id that the instance is wrapped around.
 
 finds and returns the GvaScript.Form instance where id is the unique id of the form HTMLElement. 
 
-=head3 addObserver
+=head1 GvaScript.Form.Responders
 
-  GvaScript.Forms.addObserver({eventName: handler}[, {eventName: handler}[, ...]]})
+A repository of global listeners notified about every step of the GvaSript.Form lifecycle.
 
-adding one or more general form observers. to be applied on all instances of GvaScript.Form and will be 
-executed I<before> the instance specific handler.
+Sometimes, you need to provide generic behaviors over all GvaScript.Form(s) in a single application.
+
+To achieve this, GvaScript.Form provides global Responders that will be executed for every GvaScript.Form instance.
+
+Responders by default are executed B<after> the instance specific event callback.
+
+
+=head2 METHODS
+
+=head3 register
+
+  GvaScript.Form.Responders.register({eventName: handler}[, {eventName: handler}[, ...]]})
+
+adding one or more global form events responders.
 
 Supported B<eventNames>: C<onInit, onAnyChange, onBeforeSubmit, onSubmit, on[XXX]> where C<on[XXX]> is a custom event name.
 
+=head3 unregister
+
+  GvaScript.Form.Responders.unregister({eventName: handler}[, {eventName: handler}[, ...]]})
+
+unregistering one or more global form events responders.
+
+
+=head1 GvaScript.Form.EarlyResponders
+
+Identical to GvaScript.Form.Responders except that these responders would be executed B<before> the instance specific callback.
