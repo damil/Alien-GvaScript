@@ -44,6 +44,7 @@ GvaScript.ChoiceList = function(choices, options) {
   this.reuse = {
     onmouseover : this._listOverHandler.bindAsEventListener(this),
     onclick     : this._clickHandler.bindAsEventListener(this),
+    ondblclick  : this._dblclickHandler.bindAsEventListener(this),
     navigationRules: {
       DOWN:      this._highlightDelta.bindAsEventListener(this, 1),
       UP:        this._highlightDelta.bindAsEventListener(this, -1),
@@ -97,6 +98,7 @@ GvaScript.ChoiceList.prototype = {
         Event.observe(this.container, "mouseover", this.reuse.onmouseover);
     }
     Event.observe(this.container, "click"    , this.reuse.onclick);
+    Event.observe(this.container, "dblclick" , this.reuse.ondblclick);
 
     if (this.options.keymap) {
       this.keymap = this.options.keymap;
@@ -259,6 +261,15 @@ GvaScript.ChoiceList.prototype = {
   },
 
   // no _listOutHandler needed
+
+  _dblclickHandler: function(event) {
+    var elem = this._findChoiceItem(event);
+    if (elem) {
+      var newIndex = this._choiceIndex(elem);
+      this._highlightChoiceNum(newIndex, false);
+      this._clickHandler(event);
+    }
+  },
 
   _clickHandler: function(event) {
     var elem = this._findChoiceItem(event);
