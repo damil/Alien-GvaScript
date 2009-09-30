@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>GvaScript Form</title>
+  <link rel="stylesheet" type="text/css" href="form.gvascript.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="../../lib/Alien/GvaScript/lib/GvaScript.css" media="screen" />
+
+  <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
+  <script src="../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
+
+  <script type="text/javascript">
+  function log(msg) {
+    $('logs').innerHTML += msg + "<br/><hr/>" ;
+  }
+  function setInfoMessage(msg) {
+    $('app_message').update(msg);
+    $('app_message').addClassName('message-info');
+    $('app_message').removeClassName('message-error');
+    $('app_message').show();
+  }
+  function setErrorMessage(msg) {
+    $('app_message').update(msg);
+    $('app_message').addClassName('message-error');
+    $('app_message').removeClassName('message-info');
+    $('app_message').show();
+  }
+  function hideMessage() {
+    $('app_message').hide();
+  }
+
+  GvaScript.Form.Responders.register({
+    onInit: function(gva_form) {alert('late onInit')},
+
+    onChange: function(gva_form, event) {
+      gva_form.formElt.addClassName('form-edited');
+      gva_form.formElt.removeClassName('form-error');
+      
+      setInfoMessage('form updated ... make sure to save.');
+    },
+
+    onBeforeSubmit: function(gva_form) {
+      gva_form.formElt.removeClassName('form-edited');
+      gva_form.formElt.removeClassName('form-error');
+      hideMessage();
+    },
+
+    onAfterSubmit: function(gva_form) {
+      setInfoMessage('thank you!'); 
+    },
+
+    onDataValidationError: function(gva_form, msg) {
+      gva_form.formElt.addClassName('form-error'); 
+      gva_form.formElt.removeClassName('form-edited'); 
+      setErrorMessage(msg);
+    },
+
+    onSubmitFailure: function(gva_form, msg) {
+      gva_form.formElt.addClassName('form-error'); 
+      gva_form.formElt.removeClassName('form-edited'); 
+      setErrorMessage(msg);
+    }
+  });
+
+  GvaScript.Form.EarlyResponders.register({
+    onInit: function(gva_form) { alert('early onInit'); },
+
+    onBeforeSubmit: function(gva_form) {
+      if(!gva_form.formElt.hasClassName('form-edited')) {
+        alert('nothing change - skip trip to server');
+        return false;
+      }
+    }
+  });
+  </script>
+</head>
+
+<body>
+  <div id="logs"></div>
+  <div class="message" id="app_message"></div>
+
+  <form id="my_book" onsubmit="return false;">
+
+    <h2>Book</h2>
+    
+    <div class="header">
+      <h3>Data</h3>
+
+      <div>
+        <label>Title</label>
+        <input type="text" name="book.TITLE" autofocus/>
+      </div>
+      <div>
+        <label>Description</label>
+        <textarea name="book.DESCRIPTION"></textarea>
+      </div>
+
+    </div>
+
+    <div class="authors">
+      <h3>Authors 
+        <span class="icon-add" onclick="GvaScript.Form.add('book.authors')"></span>
+      </h3>
+
+      <div repeat="authors" repeat-prefix="book" 
+           onAdd="log('adding #{authors.path}')" 
+           onRemove="log('removing #{authors.path}')">
+
+        <div class="author">
+          <span class="icon-delete" onclick="GvaScript.Form.remove('#{authors.path}')"></span>
+          <span class="counter">#{authors.count}</span> 
+          
+          <div>
+            <label>Author name</label>
+            <input type="text" name="#{authors.path}.NAME" autofocus />
+          </div>
+          <div>
+            <label>Author remarks</label>
+            <textarea name="#{authors.path}.REMARKS"></textarea>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div style="clear:both"></div>
+
+    <div id="actionsbar"></div>
+
+  </form>
+
+</body>
+
+<script type="text/javascript">
+var book_data = {
+  TITLE: 'The Bible',
+  DESCRIPTION: 'A book about Jezus, God and everything.\n\nBest-seller!',
+
+  authors: [
+    {
+      NAME: 'Jezus Christ', 
+      REMARKS: 'Savior of mankind, died for your sins.'
+    },
+    {
+      NAME: 'Mozes ', 
+      REMARKS: 'Can write stuff in stone. Will split the sea when necessary.'
+    }
+  ]
+}
+
+var my_form_obj = new GvaScript.Form('my_book', {
+  datatree: book_data,
+  dataprefix: 'book',
+
+  actionsbar : {
+      container :  'actionsbar',
+      actions   : [
+          {
+              label : 'Submit Form',
+              type  : 'submit'
+          },
+          {
+              label : 'to_hash',
+              type  : 'button',
+              callback : function() {
+                log(Object.toJSON(my_form_obj.to_hash()))
+              }
+          },
+          {
+              label : 'to_tree',
+              type  : 'button',
+              callback : function() {
+                log(Object.toJSON(my_form_obj.to_tree()))
+              }
+          }
+      ]
+  },
+
+  registery: [
+    ['input,textarea', 'focus', function(event) {event.target.style.backgroundColor = 'cornsilk'}],
+    ['input,textarea', 'blur',  function(event) {event.target.style.backgroundColor = ''}]
+  ],
+
+  onInit: function(gva_form) { alert('instance onInit'); },
+
+  onBeforeSubmit: function() {
+    return confirm('ready to save book?');
+  },
+
+  onSubmit: function(gva_form) {
+    var tree = gva_form.to_tree();
+
+    (function() {                
+      if(!tree.book.authors)
+      gva_form.fire('DataValidationError', 'at least one author is required!');
+      else
+      if(tree.book.authors.any(function(a) {return a.NAME == ''}))
+      gva_form.fire('SubmitFailure', 'failed to set author!');
+      else 
+      gva_form.fire('AfterSubmit');
+      }).delay(1);
+
+    return true;
+  }
+});
+
+</script>
+
+</html>
