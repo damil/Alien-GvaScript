@@ -117,9 +117,9 @@ body { font-family: verdana; background-color: #f5f5f5; color: #333; }
 
 /* CHOICE LIST */
 
-.CL_highlight { 
-  background-color: #183E6C;
-  color: #ecf2ff;
+.CL_highlight, .hilite td { 
+  background-color: #183E6C !important;
+  color: #ecf2ff !important;
 }
 
 

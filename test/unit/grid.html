@@ -76,7 +76,7 @@
                 assertEqual('300px', tbl.rows[0].cells[3].getStyle('width'), 'Failed to set custom column width.');
 
                 // test custom column classname
-                assertEqual(8, $$('.red').length, 'Failed to set custom column classname.');
+                assertEqual(8, $$('td.red').length, 'Failed to set custom column classname.');
 
             }});
             /* 
@@ -102,12 +102,12 @@
         // test choiceList navigation
         testNavigation: function () { with(this) {
             assertEqual($$('.gva-grid tbody tr').length, $$('.CL_choiceItem').length, 'ChoiceList is not properly initialized.');
-            assertEqual($$('.gva-grid tbody tr')[0], $$('.liste_highlight')[0], 'First row is not selected by default!.');
+            assertEqual($$('.gva-grid tbody tr')[0], $$('.hilite')[0], 'First row is not selected by default!.');
             Event.simulateKey('grid', 'keydown', {keyCode:Event.KEY_DOWN});
-            assertEqual($$('.gva-grid tbody tr')[1], $$('.liste_highlight')[0], 'Failed to navigate to second row using KEY_DOWN');
+            assertEqual($$('.gva-grid tbody tr')[1], $$('.hilite')[0], 'Failed to navigate to second row using KEY_DOWN');
             Event.simulateKey('grid', 'keydown', {keyCode:Event.KEY_DOWN});
             Event.simulateKey('grid', 'keydown', {keyCode:Event.KEY_PAGEUP});
-            assertEqual($$('.gva-grid tbody tr')[0], $$('.liste_highlight')[0], 'Failed to navigate to first row using KEY_PAGEUP');
+            assertEqual($$('.gva-grid tbody tr')[0], $$('.hilite')[0], 'Failed to navigate to first row using KEY_PAGEUP');
 
             Event.simulateKey('grid', 'keydown', {keyCode:Event.KEY_PAGEDOWN});
             wait(500, function() { with(this) {
@@ -153,7 +153,7 @@
             
             // CLICK to select
             Event.simulateMouse($$('.gva-grid tbody tr')[3], 'click');
-            assert($$('.gva-grid tbody tr')[3].hasClassName('liste_highlight'));
+            assert($$('.gva-grid tbody tr')[3].hasClassName('hilite'));
             
             // CLICK to Ping
             Event.simulateMouse($$('.gva-grid tbody tr')[3], 'click');
