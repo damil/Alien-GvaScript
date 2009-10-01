@@ -11,7 +11,8 @@
 
   <script type="text/javascript">
   function log(msg) {
-    $('logs').innerHTML += msg + "<br/><hr/>" ;
+    $('logs').innerHTML += "<div class='msg'> >> "+msg+" </div>" ;
+    $('logs').scrollTop  = 99999; 
   }
   function setInfoMessage(msg) {
     $('app_message').update(msg);
@@ -30,9 +31,10 @@
   }
 
   GvaScript.Form.Responders.register({
-    onInit: function(gva_form) {alert('late onInit')},
+    onInit: function(gva_form) {log('Form <em>[Late]</em> onInit')},
 
     onChange: function(gva_form, event) {
+      log('Form <em>[Late]</em> onChange');
       gva_form.formElt.addClassName('form-edited');
       gva_form.formElt.removeClassName('form-error');
       
@@ -40,22 +42,26 @@
     },
 
     onBeforeSubmit: function(gva_form) {
+      log('Form <em>[Late]</em> onBeforeSubmit');
       gva_form.formElt.removeClassName('form-edited');
       gva_form.formElt.removeClassName('form-error');
       hideMessage();
     },
 
     onAfterSubmit: function(gva_form) {
+      log('Form <em>[Late]</em> onAfterSubmit');
       setInfoMessage('thank you!'); 
     },
 
     onDataValidationError: function(gva_form, msg) {
+      log('Form <em>[Late]</em> onDataValidationError');
       gva_form.formElt.addClassName('form-error'); 
       gva_form.formElt.removeClassName('form-edited'); 
       setErrorMessage(msg);
     },
 
     onSubmitFailure: function(gva_form, msg) {
+      log('Form <em>[Late]</em> onSubmitFailure');
       gva_form.formElt.addClassName('form-error'); 
       gva_form.formElt.removeClassName('form-edited'); 
       setErrorMessage(msg);
@@ -63,9 +69,8 @@
   });
 
   GvaScript.Form.EarlyResponders.register({
-    onInit: function(gva_form) { alert('early onInit'); },
-
     onBeforeSubmit: function(gva_form) {
+      log('Form <em>[Early]</em> onBeforeSubmit');
       if(!gva_form.formElt.hasClassName('form-edited')) {
         alert('nothing change - skip trip to server');
         return false;
@@ -76,6 +81,7 @@
 </head>
 
 <body>
+  [<a href="#" onclick="$('logs').update()">Clear</a>]
   <div id="logs"></div>
   <div class="message" id="app_message"></div>
 
@@ -103,8 +109,8 @@
       </h3>
 
       <div repeat="authors" repeat-prefix="book" 
-           onAdd="log('adding #{authors.path}')" 
-           onRemove="log('removing #{authors.path}')">
+           onAdd="" 
+           onRemove="">
 
         <div class="author">
           <span class="icon-delete" onclick="GvaScript.Form.remove('#{authors.path}')"></span>
@@ -123,13 +129,9 @@
       </div>
 
     </div>
-
     <div style="clear:both"></div>
-
     <div id="actionsbar"></div>
-
   </form>
-
 </body>
 
 <script type="text/javascript">
@@ -178,17 +180,21 @@ var my_form_obj = new GvaScript.Form('my_book', {
   },
 
   registery: [
+    ['input,textarea', 'change', function(event, newvalue, oldvalue) {log(event.target.name + ' changed value ['+oldvalue+'] -> ['+newvalue+']')}],
+    ['input,textarea', 'init', function(event, newvalue) {log(event.target.name + ' initialized value -> ['+newvalue+']')}],
+    ['input,textarea', 'mouseover', function(event) {event.target.style.borderColor = '#a0a'}],
+    ['input,textarea', 'mouseout', function(event) {event.target.style.borderColor = '#ddd'}],
     ['input,textarea', 'focus', function(event) {event.target.style.backgroundColor = 'cornsilk'}],
     ['input,textarea', 'blur',  function(event) {event.target.style.backgroundColor = ''}]
   ],
 
-  onInit: function(gva_form) { alert('instance onInit'); },
-
   onBeforeSubmit: function() {
+    log('Form <em>[instance]</em> onBeforeSubmit');
     return confirm('ready to save book?');
   },
 
   onSubmit: function(gva_form) {
+    log('Form <em>[instance]</em> onSubmit');
     var tree = gva_form.to_tree();
 
     (function() {                

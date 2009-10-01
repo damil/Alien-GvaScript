@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
 
     <link href="../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css">
@@ -68,6 +69,15 @@
                 if (this.menuVisible) return;
                 this.menuVisible = true;
             
+                // make the menu visible under the textbox
+                var coords = Position.cumulativeOffset(this.textbox);
+                var dim = Element.getDimensions(this.textbox);
+                with (this.menu.style) {
+                    display = 'block';
+                    left    = coords[0];
+                    top     = coords[1] + dim.height;
+                };
+
                 // if first time here, instantiate GvaScript.TreeNavigator
                 if (!this.treeNav) { 
                     this.treeNav = new GvaScript.TreeNavigator(this.menu, {
@@ -77,17 +87,7 @@
                     });
                 }
                 else            // else reuse rules popped from last hideMenu()
-                    this.textboxKeymap.rules.push(this.treeNav_rules);  
-            
-                // make the menu visible under the textbox
-                var coords = Position.cumulativeOffset(this.textbox);
-                var dim = Element.getDimensions(this.textbox);
-                with (this.menu.style) {
-                    display = 'block';
-                    left    = coords[0];
-                    top     = coords[1] + dim.height;
-                };
-            
+                    this.textboxKeymap.rules.push(this.treeNav_rules);   
                 this.textbox.style.backgroundImage = "url(specialIcons/navopen.gif)";
 
                 if (event) Event.stop(event);

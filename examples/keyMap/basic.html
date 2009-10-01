@@ -1,14 +1,20 @@
-<html>
-<head>
-<style>
-#current_cell {background: blue}
-TD {width: 20}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+
+<style type="text/css">
+#current_cell {background-color: blue; color: yellow;}
+tt {font-size:1.2em;background-color:#eee;}
+table {border-width: 2px;}
+td {width: 20px; text-align: center;}
+td.rborder {border-right: 2px solid black;}
+tr.bborder td {border-bottom: 2px solid black;}
 </style>
 
+<link rel="stylesheet" type="text/css" href="../../lib/Alien/GvaScript/lib/GvaScript.css" />
 
 <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
 <script src="../../lib/Alien/GvaScript/lib/GvaScript.js"></script>
-
 
 
 <script>
@@ -67,15 +73,11 @@ function say(msg) {
 
 var keymap;
 
-function setup() {
-
-  
-
+document.observe('dom:loaded', function() {
   var C_X_map = {A: say('A'),
                  B: say('B'),
                  R: GvaScript.KeyMap.Prefix({K: say('Ctrl-X R K'),
                                           O: say('Ctrl-X R O')})};
-
 
   var rules   = {UP:     Up, 
                  DOWN:   Down, 
@@ -94,22 +96,17 @@ function setup() {
 
   keymap.observe("keydown");
 
-
-  // keymap.observe("keydown", document.getElementById('table'));
-
-}
-
+  $('table').focus();
+});
 
 
 function push_grab_all() {
   keymap.rules.push(GvaScript.KeyMap.MapAllKeys(add_msg));
 }
 
-
 function push_ignore_all() {
   keymap.rules.push(GvaScript.KeyMap.MapAllKeys(function () {}));
 }
-
 
 function push_navigate_divs() {
   var cur_div = 3;
@@ -139,23 +136,21 @@ function pop() {
   keymap.rules.pop();
 }
 
-
-
 function add_msg(event) {
-  var msg = event.keyModifiers + ":" + event.keyName + " / " +  event.keyCode;
-  $("msg").innerHTML += "Msg: " + msg + "<br>";
-  $("msg").scrollTop = 99999;
+  var msg = event.keyModifiers + event.keyName + " / " +  event.keyCode;
+  $("logs").innerHTML += "<div class='msg'> >> " + msg + "</div>";
+  $("logs").scrollTop = 99999;
 }
-
-
 
 </script>
 </head>
 
-<body onload="setup()">
+<body>
 
-<h1 id=title>Test Keymap</h1>
+[<a href="#" onclick="$('logs').update()">Clear</a>]
+<div id="logs"></div>
 
+<h1>Keymap Example</h1>
 
 <div id="d1">Use arrow keys to move the cursor in cells.</div>
 <div id="d2">Press RETURN to color a cell.</div>
@@ -163,70 +158,66 @@ function add_msg(event) {
 <div id="d4">Try combinations <tt>Ctrl-X A</tt>, <tt>Ctrl-X B</tt>, 
      <tt>Ctrl-X R K</tt>, <tt>Ctrl-X R O</tt>.</div>
 
-<table border id="table">
+<br/>
 
+<table id="table" border="1" tabindex="0">
 <tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td><td>1</td><td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 </tr>
 
 <tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td><td>4</td><td class="rborder">2</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+</tr>
+
+<tr class="bborder">
+<td>8</td><td>7</td><td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 </tr>
 
 <tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td><td>&nbsp;</td><td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 </tr>
 
 <tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-</tr>
-
-<tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td><td>&nbsp;</td><td class="rborder">&nbsp;</td><td>&nbsp;</td>
 <td id="current_cell">&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+</tr>
+
+<tr class="bborder">
+<td>&nbsp;</td><td>&nbsp;</td><td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 </tr>
 
 <tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td><td>&nbsp;</td><td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 </tr>
 
 <tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td><td>&nbsp;</td><td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 </tr>
 
 <tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td>&nbsp;</td><td>&nbsp;</td><td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+<td class="rborder">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 </tr>
-
-<tr>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-</tr>
-
 
 </table>
 
-Use buttons below to push new rules or pop to 
-previous rules.
-<br>
+<br/>
+<em>Use buttons below to push new rules or pop to 
+previous rules.</em>
+<br/><br/>
 
 <button onclick=push_grab_all()>Grab all</button>
 <button onclick=push_ignore_all()>Ignore all</button>
 <button onclick=push_navigate_divs()>Navigate divs</button>
 <button onclick=pop()>Pop</button>
-
-<div id="msg" style="height:100;overflow-y:scroll">
-</div>
-
-
 
 </body>
 </html>

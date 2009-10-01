@@ -1,18 +1,7 @@
 body {
-  font: 0.75em Verdana,Arial,Helvetica,sans-serif;
 }
-#logs {
-  height:100px;
-  padding: 0.3em;
-  margin: 2em 0;
-  background-color: #E0EFE2;
-  overflow-y:auto;
-  border:1px solid green;
-  font:8pt 'courier new';
-}
-hr { color: #ddd; }
-h2 {color: #a00;}
-h3 {color: navy;}
+
+
 
 .message {float:right;padding:4px;}
 .message-info {background-color: #EFFFF1;border:1px solid green;}

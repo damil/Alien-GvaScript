@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="../../lib/Alien/GvaScript/lib/GvaScript.css" />
@@ -35,16 +36,12 @@
             {label: 'value',       value: 'value'}
         ],
         actions: [
-          {label:'Grid Action', condition: function() {return true;}, callback: function() {alert('grid action fired');}},
+          {label:'Action', condition: function() {return true;}, callback: function() {alert('grid action fired');}},
+          {label:'Action II', callback: function() {alert('grid action II fired');}},
           {label:'CONDITION FALSE', condition: false}
         ],
-        grabfocus: true,
-        onEmpty: function() {
-          this.clearResult('huh no word!');
-        },        
-        onPing: function(target) {
-          alert('Ping\n'+$H(target).inspect());
-        }, 
+        onEmpty: function() { this.clearResult('huh no word!'); },        
+        onPing: function(target) { alert('Ping\n'+$H(target).inspect()); }, 
         onCancel: function() {alert('ESC has been pressed')}
     });
   </script>

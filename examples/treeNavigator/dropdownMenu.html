@@ -1,6 +1,6 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
-
     <link href="../../lib/Alien/GvaScript/lib/GvaScript.css" rel="stylesheet" type="text/css">
     <script src="../../lib/Alien/GvaScript/lib/prototype.js"></script>
     <script src="../../lib/Alien/GvaScript/lib/GvaScript.js"></script>    <style>
@@ -38,6 +38,15 @@
          if (menuVisible) return;
          menuVisible = true;
          
+         // make the menu visible under the textbox
+         var textbox = $('textbox');
+         var coords = textbox.cumulativeOffset();
+         var dim = Element.getDimensions(textbox);
+         with ($('menu').style) {
+           display = 'block';
+           left    = coords[0] + 'px';
+           top     = coords[1] + dim.height + 'px';
+         };
          if (!treeNav) { // if first time here, instantiate GvaScript.TreeNavigator
            treeNav = new GvaScript.TreeNavigator('menu', {
              treeTabIndex  : -1,
@@ -48,22 +57,10 @@
          }
          else            // else reuse rules popped from last hideMenu()
            textboxKeymap.rules.push(treeNav_rules);  
-         
-         // make the menu visible under the textbox
-         var textbox = $('textbox');
-         var coords = Position.cumulativeOffset(textbox);
-         var dim = Element.getDimensions(textbox);
-         with ($('menu').style) {
-           display = 'block';
-           left    = coords[0];
-           top     = coords[1] + dim.height;
-         };
-
          textbox.style.backgroundImage = "url(specialIcons/navopen.gif)";
 
          if (event) Event.stop(event);
       }
-
 
       function hideMenu(event) {
         if (!menuVisible) return;
@@ -75,7 +72,6 @@
 
         if (event) Event.stop(event);
       }
-
 
       function selectEntry(event) {
         var node = Event.element(event);
@@ -109,8 +105,6 @@
           hideMenu();
       }
 
-
-
       function setup() {  
          var textbox = $('textbox');
 
@@ -126,12 +120,12 @@
           backgroundImage    = "url(specialIcons/navclose.gif)";
           backgroundRepeat   = "no-repeat";
           backgroundPosition = "center right";
-         }
+        }
+
+        textbox.focus();
       }
 
-
-      window.onload = setup;
-
+      document.observe('dom:loaded', setup);
     </script>
 
 
@@ -139,10 +133,9 @@
 
   <body>
 
-    <h1>GvaScript.TreeNavigator as a dropdown menu</h1>
+    <h1>Tree Navigator as a dropdown menu</h1>
 
     Press the DOWN arrow or click on the triangle: <input id='textbox'>
-    
 
     <div id='menu' onPing="selectEntry" >
       <div class="TN_leaf" value="value1" >
