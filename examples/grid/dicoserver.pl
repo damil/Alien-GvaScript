@@ -12,7 +12,7 @@ my $query;
 my @dico = <DATA>;
 chomp foreach @dico;
 
-my $port = $ARGV[0] || 8081;
+my $port = $ARGV[0] || 8082;
 
 my $consonnes = qr/[bcdfghjklmnpqrstvwxyz]/;
 
