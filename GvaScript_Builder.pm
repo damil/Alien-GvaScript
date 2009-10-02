@@ -153,7 +153,6 @@ sub view_pod {
   return <<__EOHTML__
 <html>
 <head>
-  <link href="../lib/GvaScript.css" rel="stylesheet" type="text/css">
   <script src="../lib/prototype.js"></script>
   <script src="../lib/GvaScript.js"></script>
   <link href="GvaScript_doc.css" rel="stylesheet" type="text/css">
