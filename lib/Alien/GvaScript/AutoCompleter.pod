@@ -112,11 +112,14 @@ of the field. See also C<options.caseSensitive>.
 
 Useful when accessing data on a different domain via JSONP services.
 
-  { json_url: 'http://search.yahooapis.com/WebSearchService/V1/relatedSuggestion?appid=YahooDemo&query=?1&output=json&callback=?2',
-    json_list: 'ResultSet/Result' }
+  Ex :   { json_url: 'http://search.yahooapis.com/WebSearchService/V1/relatedSuggestion?appid=YahooDemo&query=?1&output=json&callback=?2',
+           json_list: 'ResultSet/Result' }
 
 The object should hold details of the JSONP service to be called. 
-C<json_url> is the url to call with placeholders (?1, ?2) for value to look for and callback method respectively.
+
+C<json_url> : url to call with placeholders (?1, ?2) for value to look for and callback method respectively.
+
+C<json_list> : path to the list in the json response
 
 =back
 

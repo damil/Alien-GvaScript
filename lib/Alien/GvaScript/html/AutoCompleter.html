@@ -228,11 +228,12 @@ of the field. See also <code>options.caseSensitive</code>.</p>
 </li>
 <li><a name="item_an_object__JSONP_"></a><b>an object (JSONP)</b>
 <p>Useful when accessing data on a different domain via JSONP services.</p>
-<pre>  { json_url: 'http://search.yahooapis.com/WebSearchService/V1/relatedSuggestion?appid=YahooDemo&amp;query=?1&amp;output=json&amp;callback=?2',
-    json_list: 'ResultSet/Result' }</pre>
+<pre>  Ex :   { json_url: 'http://search.yahooapis.com/WebSearchService/V1/relatedSuggestion?appid=YahooDemo&amp;query=?1&amp;output=json&amp;callback=?2',
+           json_list: 'ResultSet/Result' }</pre>
 
-<p>The object should hold details of the JSONP service to be called. 
-<code>json_url</code> is the url to call with placeholders (?1, ?2) for value to look for and callback method respectively.</p>
+<p>The object should hold details of the JSONP service to be called. </p>
+<p><code>json_url</code> : url to call with placeholders (?1, ?2) for value to look for and callback method respectively.</p>
+<p><code>json_list</code> : path to the list in the json response</p>
 </li>
 </ul>
 
