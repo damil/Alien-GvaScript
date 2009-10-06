@@ -87,12 +87,12 @@ The string is taken as a base URL. Whenever a suggestion list is needed,
 the autocompleter will send an Ajax requests to that URL, concatenated with 
 the current value in the associated field. So for example if we have
 
-  var ac = new GvaScript.Autocompleter("http://my/server/completion?search=");
+  var ac = new GvaScript.Autocompleter("/myapp/completion?search=");
   ..
   <input name="someInput" onfocus="ac.complete(this)">
 
 and user has typed C<ab> in the input field, then an Ajax request
-will be sent to C<http://my/server/completion?search=ab>.
+will be sent to C</myapp/completion?search=ab>.
 
 The server should return a JSON array, in the format explained below.
 
@@ -107,6 +107,16 @@ The array is taken as in-memory datasource. The returned suggestion
 list is either the complete array (when C<options.ignorePrefix> is true)
 or just the list of items that are prefixed by the current value 
 of the field. See also C<options.caseSensitive>.
+
+=item an object (JSONP)
+
+Useful when accessing data on a different domain via JSONP services.
+
+  { json_url: 'http://search.yahooapis.com/WebSearchService/V1/relatedSuggestion?appid=YahooDemo&query=?1&output=json&callback=?2',
+    json_list: 'ResultSet/Result' }
+
+The object should hold details of the JSONP service to be called. 
+C<json_url> is the url to call with placeholders (?1, ?2) for value to look for and callback method respectively.
 
 =back
 

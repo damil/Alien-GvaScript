@@ -44,6 +44,8 @@ Form.Element.Methods.setValue = Form.Element.Methods.setValue.wrap(
 Element.addMethods();
 
 
+
+
 // utilities for hash
 
 // expands flat hash into a multi-level deep hash
@@ -356,4 +358,31 @@ RegExp.escape = function(str) {
   Event.observe(window, 'unload', Event.unregisterAll);
   document.register = Event.register.curry(document);
   Element.addMethods({register: Event.register, unregister: Event.unregister});
+})();
+      
+// based on:
+// getJSON function by Juriy Zaytsev 
+// http://github.com/kangax/protolicious/tree/master/get_json.js
+(function(){
+  var id = 0, head = $$('head')[0];
+  Prototype.getJSON = function(url, callback) {
+    var script = document.createElement('script'), token = '__jsonp' + id;
+    
+    // callback should be a global function
+    window[token] = callback;
+
+    // url should have "?2" parameter which is to be replaced with a global callback name
+    script.src = url.replace(/\?2(&|$)/, '__jsonp' + id + '$1');
+
+    // clean up on load: remove script tag, null script variable and delete global callback function
+    script.onload = function() {
+      script.remove();
+      script = null;
+      delete global[token];
+    };
+    head.appendChild(script);
+    
+    // callback name should be unique
+    id++;
+  }
 })();

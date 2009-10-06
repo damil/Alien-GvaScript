@@ -209,6 +209,8 @@ GvaScript.AutoCompleter.prototype = {
       : (ds_type == "function") ? this._updateChoicesFromCallback
       : (ds_type == "object" && datasource instanceof Array) 
                                 ? this._updateChoicesFromArray 
+      : (ds_type == "object" && datasource instanceof Object) 
+                                ? this._updateChoicesFromJSONP
       : undefined;
      if (!this._updateChoicesHandler)
       throw new Error("unexpected datasource type");
@@ -309,6 +311,25 @@ GvaScript.AutoCompleter.prototype = {
      continuation(this._datasource(val_to_complete));
   },
 
+  _updateChoicesFromJSONP : function(val_to_complete, continuation) {
+      if(val_to_complete) {
+        var _url = this._datasource.json_url.replace(/\?1/, val_to_complete);
+        var that = this;
+
+        Element.addClassName(that.inputElement, that.classes.loading);
+        Prototype.getJSON(_url, function(data) {
+          var _data_list = data;
+         
+          if(that._datasource.json_list)
+          that._datasource.json_list.split('/').each(function(p) {
+            _data_list = _data_list[p];
+          });
+          Element.removeClassName(that.inputElement, that.classes.loading);
+          
+          continuation(_data_list);
+        });
+      }
+  },
 
   _updateChoicesFromArray : function(val_to_complete, continuation) {
     if (this.options.ignorePrefix)

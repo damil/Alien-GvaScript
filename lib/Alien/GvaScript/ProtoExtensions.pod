@@ -34,6 +34,15 @@ prototype.js.
   as discussed here 
   [https://prototype.lighthouseapp.com/projects/8886/tickets/435-eventdelegate-and-elementmethodsdelegate]
 
+=head2 Prototype.getJSON
+
+  Prototype.getJSON(url, callback)
+
+based on: getJSON function by Juriy Zaytsev L<http://github.com/kangax/protolicious/tree/master/get_json.js>
+
+A method to temporarily load JSON data (ideally hosted on a different domain and accessible via JSONP service) and send it over to callback method when ready.
+
+
 =head2 Hash utilities
 
 =head3 Hash.expand

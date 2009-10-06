@@ -208,12 +208,12 @@ described below.</p>
 <p>The string is taken as a base URL. Whenever a suggestion list is needed,
 the autocompleter will send an Ajax requests to that URL, concatenated with 
 the current value in the associated field. So for example if we have</p>
-<pre>  var ac = new GvaScript.Autocompleter("http://my/server/completion?search=");
+<pre>  var ac = new GvaScript.Autocompleter("/myapp/completion?search=");
   ..
   &lt;input name="someInput" onfocus="ac.complete(this)"&gt;</pre>
 
 <p>and user has typed <code>ab</code> in the input field, then an Ajax request
-will be sent to <code><a href="http://my/server/completion?search=ab">http://my/server/completion?search=ab</a></code>.</p>
+will be sent to <code>/myapp/completion?search=ab</code>.</p>
 <p>The server should return a JSON array, in the format explained below.</p>
 </li>
 <li><a name="item_a_callback_function"></a><b>a callback function</b>
@@ -225,6 +225,14 @@ as single argument.</p>
 list is either the complete array (when <code>options.ignorePrefix</code> is true)
 or just the list of items that are prefixed by the current value 
 of the field. See also <code>options.caseSensitive</code>.</p>
+</li>
+<li><a name="item_an_object__JSONP_"></a><b>an object (JSONP)</b>
+<p>Useful when accessing data on a different domain via JSONP services.</p>
+<pre>  { json_url: 'http://search.yahooapis.com/WebSearchService/V1/relatedSuggestion?appid=YahooDemo&amp;query=?1&amp;output=json&amp;callback=?2',
+    json_list: 'ResultSet/Result' }</pre>
+
+<p>The object should hold details of the JSONP service to be called. 
+<code>json_url</code> is the url to call with placeholders (?1, ?2) for value to look for and callback method respectively.</p>
 </li>
 </ul>
 
