@@ -41,7 +41,7 @@ sub generate_js { # concatenates sources below into "GvaScript.js"
                    treeNavigator choiceList autoCompleter
                    customButtons paginator grid
                    repeat form/;
-  my $dest = "lib/Alien/GvaScript/lib/GvaScript.js";
+  my $dest = "lib/GvaScript.js";
   chmod 0777, $dest;
   open my $dest_fh, ">$dest"  or die "open >$dest : $!";
 
@@ -82,7 +82,7 @@ sub generate_html {# regenerate html doc from pod sources
   foreach my $podfile (@podfiles) {
     my $pom = $parser->parse($podfile) or die $parser->error;
     $podfile =~ m[^lib/Alien/GvaScript/(.*)\.pod];
-    my $htmlfile = "lib/Alien/GvaScript/html/$1.html";
+    my $htmlfile = "doc/html/$1.html";
     print STDERR "converting $podfile ==> $htmlfile\n";
     open my $fh, ">$htmlfile" or die "open >$htmlfile: $!";
     print $fh Pod::POM::View::HTML::GvaScript->print($pom);
@@ -153,15 +153,11 @@ sub view_pod {
   return <<__EOHTML__
 <html>
 <head>
-  <script src="../lib/prototype.js"></script>
-  <script src="../lib/GvaScript.js"></script>
+  <script src="../../lib/prototype.js"></script>
+  <script src="../../lib/GvaScript.js"></script>
   <link href="GvaScript_doc.css" rel="stylesheet" type="text/css">
   <script>
-    var treeNavigator;
-    function setup() {  
-      new GvaScript.TreeNavigator('TN_tree');
-    }
-    window.onload = setup;
+    document.observe('dom:loaded', function() { new GvaScript.TreeNavigator('TN_tree'); });
     function jumpto_href(event) {
       var label = event.controller.label(event.target);
       if (label && label.tagName == "A") {
