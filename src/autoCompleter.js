@@ -1,18 +1,9 @@
 /** 
 
-  PROBLEMS:
-    - autoSuggestDelay not used
-    - autoSuggest, cannot BACKSPACE
-
-  TEST :
-    - choices as arrays instead of objects
-
 TODO: 
   - if ignorePrefix, should highlight current value (not the 1st one)
       a) change in _updateChoicesFunction (because there might be an
          initial value in the form)
-
-
 
   - messages : choose language
 
@@ -23,13 +14,7 @@ TODO:
   - rajouter option "hierarchicalValues : true/false" (si true, pas besoin de
     refaire un appel serveur quand l'utilisateur rajoute des lettres).
 
- - typeAhead only works when autoSuggest is true !
-
-
   - sometimes arrowDown should force Ajax call even if < minChars
-
-  - do a demo with 
-     http://suggestqueries.google.com/complete/search?q=**&output=firefox  - 
 
   - choiceElementHTML
 
@@ -361,30 +346,12 @@ GvaScript.AutoCompleter.prototype = {
   },
 
 
-  _blurHandler: function(event) { // does the reverse of "autocomplete()"
+  // does the reverse of "autocomplete()"
+  // doesnot fire if input blurred from click on choice list
+  _blurHandler: function(event) { 
 
-    // check if this is a "real" blur, or just a clik on dropdownDiv
-    if (this.dropdownDiv) {
-      var targ;
-      var e = event;
-      if (e.target) targ = e.target;
-      else if (e.srcElement) targ = e.srcElement;
-      if (targ.nodeType && targ.nodeType == 3) // defeat Safari bug
-          targ = targ.parentNode;
-      var x = Event.pointerX(e) || Position.cumulativeOffset(targ)[0];
-      var y = Event.pointerY(e) || Position.cumulativeOffset(targ)[1];
-      if (Position.within(this.dropdownDiv, x, y)) {
-        // not a "real" blur ==> bring focus back to the input element
-        this.inputElement.focus(); // will trigger again this.autocomplete()
-        return;
-      }
-      else {
-        this._removeDropdownDiv();
-      }
-    }
-
-
-//     if (window.console) console.log('blurHandler', value);    
+    // remove choice list
+    if (this.dropdownDiv)  this._removeDropdownDiv(); 
 
     // abort any pending ajax call on this input element
     if (this._runningAjax[this.inputElement.name]) {
@@ -742,6 +709,16 @@ GvaScript.AutoCompleter.prototype = {
     if (navigator.userAgent.match(/\bMSIE [456]\b/)) {
       div.style.width  = this.options.minWidth + "px"; 
     }
+   
+    // mouseenter and mouseleave events to control
+    // whether autocompleter has been blurred 
+    var elem = this.inputElement;
+    div.observe('mouseenter', function(e) {
+      Element.stopObserving(elem, "blur", this.reuse.onblur);
+    }.bind(this));
+    div.observe('mouseleave', function(e) {
+      Element.observe(elem, "blur", this.reuse.onblur);
+    }.bind(this));
 
     return this.dropdownDiv = div;
   },
@@ -838,12 +815,12 @@ GvaScript.AutoCompleter.prototype = {
       this.displayMessage("pas de suggestion");
   },
 
-
   _removeDropdownDiv: function() { 
-
     // remove the dropdownDiv that was added previously by _mkDropdownDiv();
     // that div contained either a menu of choices or a message to the user
     if (this.dropdownDiv) {
+      // remove mouseenter and mouseleave observers
+      this.dropdownDiv.stopObserving();
       Element.remove(this.dropdownDiv);
       this.dropdownDiv = null;
     }
@@ -852,7 +829,6 @@ GvaScript.AutoCompleter.prototype = {
     if (this.keymap.rules.length > 1)
       this.keymap.rules.pop(); 
   },
-
 
   _valueFromChoice: function(index) {
     if (!this.choices) return null;
