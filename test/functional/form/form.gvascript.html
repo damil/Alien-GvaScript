@@ -12,26 +12,9 @@
   <script src="validation.js"></script>
 
   <script type="text/javascript">
-  function log(msg) {
-    $('logs').innerHTML += "<div class='msg'> >> "+msg+" </div>" ;
-    $('logs').scrollTop  = 99999; 
-  }
-  function setInfoMessage(msg) {
-    $('app_message').update(msg);
-    $('app_message').addClassName('message-info');
-    $('app_message').removeClassName('message-error');
-    $('app_message').show();
-  }
-  function setErrorMessage(msg) {
-    $('app_message').update(msg);
-    $('app_message').addClassName('message-error');
-    $('app_message').removeClassName('message-info');
-    $('app_message').show();
-  }
-  function hideMessage() {
-    $('app_message').hide();
-  }
-
+    /**
+     * Declaring Form Global Responders
+     */
   GvaScript.Form.Responders.register({
     onInit: function(gva_form) {
       gva_form.valid = new Validation(gva_form.formElt, {onSubmit:false});
@@ -70,7 +53,13 @@
       gva_form.formElt.addClassName('form-error'); 
       gva_form.formElt.removeClassName('form-edited'); 
       setErrorMessage(msg);
+    },
+
+    onBeforeDestroy: function(gva_form) {
+      gva_form.valid = null;
+      log('Form <em>[Late]</em> onBeforeDestroy : validation module detached');
     }
+
   });
 
   GvaScript.Form.EarlyResponders.register({
@@ -199,6 +188,14 @@ var my_form_obj = new GvaScript.Form('my_book', {
               callback : function() {
                 log(Object.toJSON(my_form_obj.to_tree()))
               }
+          },
+          {
+              label : 'destroy',
+              type  : 'button',
+              callback : function() {
+                GvaScript.Forms.get('my_book').destroy();
+                $('my_book').remove();
+              }
           }
       ]
   },
@@ -232,6 +229,26 @@ var my_form_obj = new GvaScript.Form('my_book', {
   }
 });
 
+
+function log(msg) {
+  $('logs').innerHTML += "<div class='msg'> >> "+msg+" </div>" ;
+  $('logs').scrollTop  = 99999; 
+}
+function setInfoMessage(msg) {
+  $('app_message').update(msg);
+  $('app_message').addClassName('message-info');
+  $('app_message').removeClassName('message-error');
+  $('app_message').show();
+}
+function setErrorMessage(msg) {
+  $('app_message').update(msg);
+  $('app_message').addClassName('message-error');
+  $('app_message').removeClassName('message-info');
+  $('app_message').show();
+}
+function hideMessage() {
+  $('app_message').hide();
+}
 </script>
 
 </html>

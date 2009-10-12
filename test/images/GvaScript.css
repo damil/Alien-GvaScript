@@ -1,5 +1,5 @@
 /* AUTOCOMPLETER */
-.AC_input { background: transparent url(search-small.png) no-repeat right center; }
+.AC_input { background: #fff url(search-small.png) no-repeat right center; }
 .AC_loading { background-image: url(ajax_loading_small.gif); }
 .AC_highlight { background-color: #183E6C; color: #ecf2ff; }
 .AC_dropdown { 

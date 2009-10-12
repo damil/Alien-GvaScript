@@ -6,6 +6,7 @@ h3 {color: navy;}
 em {color: #aaa;}
 sup {color: #a00;}
 tt {background-color: #eee; border: 1px solid #ddd; white-space: pre; font-size: 10pt;}
+input, textarea {border: 1px solid #ddd;}
 
 /* navigation menu */
 .navigation { background: #4E5B82; color: #f5f5f5; position:relative; height: 98%; }
