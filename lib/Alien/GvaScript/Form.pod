@@ -55,7 +55,8 @@ Class GvaScript.Form - Wrapper around HTML Forms
       },
       onAfterSubmit: function(gva_form, arg) {},
       onDataValidationError: function(gva_form, arg) {},
-      onSubmitFailure: function(gva_form, arg) {}
+      onSubmitFailure: function(gva_form, arg) {},
+      onBeforeDestroy: function(gva_form, arg) {}
     }
   </script>
 
@@ -154,6 +155,12 @@ Signature
     // gva_form : GvaScript.Form instance
     // use to fire 'onAfterSubmit', 'onSubmitFailure' or 'onDataValidationError'
   }
+
+=item * onBeforeDestroy
+
+function to be called right before the form instance calls the destroy method.
+
+Callback useful for doing some inhouse cleaning before the form gets removed from the DOM.
 
 =item * on[XYZ]
 
@@ -438,7 +445,7 @@ Responders by default are executed B<after> the instance specific event callback
 
 adding one or more global form events responders.
 
-Supported B<eventNames>: C<onInit, onAnyChange, onBeforeSubmit, onSubmit, on[XXX]> where C<on[XXX]> is a custom event name.
+Supported B<eventNames>: C<onInit, onChange, onBeforeSubmit, onSubmit, on[XXX]> where C<on[XXX]> is a custom event name.
 
 =head3 unregister
 

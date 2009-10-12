@@ -203,7 +203,8 @@
       },
       onAfterSubmit: function(gva_form, arg) {},
       onDataValidationError: function(gva_form, arg) {},
-      onSubmitFailure: function(gva_form, arg) {}
+      onSubmitFailure: function(gva_form, arg) {},
+      onBeforeDestroy: function(gva_form, arg) {}
     }
   &lt;/script&gt;</pre>
 
@@ -288,6 +289,10 @@ some differences both in syntax and in semantics.</p>
     // use to fire 'onAfterSubmit', 'onSubmitFailure' or 'onDataValidationError'
   }</pre>
 
+</li>
+<li><a name="item_onBeforeDestroy"></a><b>onBeforeDestroy</b>
+<p>function to be called right before the form instance calls the destroy method.</p>
+<p>Callback useful for doing some inhouse cleaning before the form gets removed from the DOM.</p>
 </li>
 <li><a name="item_on_XYZ_"></a><b>on[XYZ]</b>
 <p>Event handlers for custom form events. The form instance should fire these events so as corresponding handler can be fired.</p>
@@ -594,7 +599,7 @@ first child that has an <code>autofocus</code> attribute.</p>
       <pre>  GvaScript.Form.Responders.register({eventName: handler}[, {eventName: handler}[, ...]]})</pre>
 
 <p>adding one or more global form events responders.</p>
-<p>Supported <b>eventNames</b>: <code>onInit, onAnyChange, onBeforeSubmit, onSubmit, on[XXX]</code> where <code>on[XXX]</code> is a custom event name.</p>
+<p>Supported <b>eventNames</b>: <code>onInit, onChange, onBeforeSubmit, onSubmit, on[XXX]</code> where <code>on[XXX]</code> is a custom event name.</p>
 
     </div>
   </div>

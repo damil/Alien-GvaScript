@@ -293,12 +293,13 @@ Object.extend(GvaScript.Form.prototype, function() {
                 actionsbar: {},                             // form actions
                 registery: [],                              // list of [elements_selector, event_name, event_handler]
                 
-                onSubmit        : Prototype.emptyFunction,  // method to call on form.submit
+                onSubmit         : Prototype.emptyFunction,  // method to call on form.submit
 
-                onInit          : Prototype.emptyFunction,  // called after form initialization
-                onChange        : Prototype.emptyFunction,  // called if any input/textarea value change
-                onBeforeSubmit  : Prototype.emptyFunction,  // called right after form.submit
-                onSubmit        : Prototype.emptyFunction   // form submit handler
+                onInit           : Prototype.emptyFunction,  // called after form initialization
+                onChange         : Prototype.emptyFunction,  // called if any input/textarea value change
+                onBeforeSubmit   : Prototype.emptyFunction,  // called right after form.submit
+                onSubmit         : Prototype.emptyFunction,  // form submit handler
+                onBeforeDestroy  : Prototype.emptyFunction   // called right before form.destroy
             }
 
             this.options = Object.extend(defaults, options || {});
@@ -402,12 +403,14 @@ Object.extend(GvaScript.Form.prototype, function() {
 
         // instance destructor
         destroy: function() {
-            GvaScript.Forms.unregister(this);
+            if( this.fire('BeforeDestroy') ) {
+              GvaScript.Forms.unregister(this);
 
-            if(this.actionsbar) this.actionsbar.destroy();
+              if(this.actionsbar) this.actionsbar.destroy();
 
-            this.formElt.stopObserving();
-            this.formElt.unregister();
+              this.formElt.stopObserving();
+              this.formElt.unregister();
+            }
         }
     }
 }());        
