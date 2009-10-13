@@ -291,7 +291,7 @@ Object.extend(GvaScript.Form.prototype, function() {
 
 
                 actionsbar: {},                             // form actions
-                registery: [],                              // list of [elements_selector, event_name, event_handler]
+                registry: [],                               // list of [elements_selector, event_name, event_handler]
                 
                 onSubmit         : Prototype.emptyFunction,  // method to call on form.submit
 
@@ -312,7 +312,7 @@ Object.extend(GvaScript.Form.prototype, function() {
             }.bind(this));
 
             // initializing watchers
-            $A(this.options.registery).each(function(w) {
+            $A(this.options.registry).each(function(w) {
                 this.register(w[0], w[1], w[2]);
             }, this);
             

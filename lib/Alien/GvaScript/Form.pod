@@ -31,7 +31,7 @@ Class GvaScript.Form - Wrapper around HTML Forms
       datatree: {name:'kitty', bdate:'01.01.1990'},
       dataprefix: 'person',
       // 'active' form elements 
-      registery: [
+      registry: [
         ['input', 'mouseover', function(event) {}],
         ['input', 'mouseout',  function(event) {}],
         ['input', 'change',    function(event, newv ,oldv) {}],
@@ -111,7 +111,7 @@ Ex: C<doll.name> C<doll.friends.0.name>.
 
 in this example, the dataprefix should be set to 'doll'
 
-=item * registery
+=item * registry
 
 a list of arrays C<[expression, eventName, handler]>.
 

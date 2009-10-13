@@ -200,7 +200,7 @@ var my_form_obj = new GvaScript.Form('my_book', {
       ]
   },
 
-  registery: [
+  registry: [
     ['input,textarea', 'change', function(event, newvalue, oldvalue) {log(event.target.name + ' changed value ['+oldvalue+'] -> ['+newvalue+']')}],
     ['input,textarea', 'init', function(event, newvalue) {log(event.target.name + ' initialized value -> ['+newvalue+']')}],
     ['input,textarea', 'mouseover', function(event) {event.target.addClassName('hover')}],
