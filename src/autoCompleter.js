@@ -689,7 +689,7 @@ GvaScript.AutoCompleter.prototype = {
     }
 
     // create div
-    var div    = document.createElement('div');
+    var div = new Element('div');
     div.className = this.classes.dropdown;
 
     // positioning
