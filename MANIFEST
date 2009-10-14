@@ -17,7 +17,6 @@ doc/html/ProtoExtensions.html
 doc/html/Repeat.html
 doc/html/toc.html
 doc/html/TreeNavigator.html
-doc/html/WindowExtension.html
 doc/index.html
 GvaScript_Builder.pm
 lib/Alien/GvaScript.pm
