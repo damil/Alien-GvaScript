@@ -105,9 +105,9 @@
 </div>
 </div>
 <div class="TN_node">
-  <a class="TN_label" href="#GvaScript_Forms_">GvaScript.Forms </a>
+  <a class="TN_label" href="#GvaScript_Forms">GvaScript.Forms</a>
   <div class="TN_content"><div class="TN_node">
-  <a class="TN_label" href="#METHODS_">METHODS </a>
+  <a class="TN_label" href="#METHODS">METHODS</a>
   <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#get">get</a>
   <div class="TN_content"></div>
@@ -172,9 +172,9 @@
        &lt;/button&gt;
     &lt;/div&gt;  
     &lt;button onclick="GvaScript.Form.add('foo')"&gt;Add a foo&lt;/button&gt;
-  &lt;/form&gt;</pre>
+  &lt;/form&gt;
 
-<pre>  &lt;script&gt;
+  &lt;script&gt;
     var gvascript_form = new GvaScript.Form('my_form', {
       datatree: {name:'kitty', bdate:'01.01.1990'},
       dataprefix: 'person',
@@ -237,8 +237,8 @@ some differences both in syntax and in semantics.</p>
 <p>hash of optional properties that would define the behavior of the form</p>
 <ul>
 <li><a name="item_datatree"></a><b>datatree</b>
-<p>tree represention of the initial form data. </p>
-<p>Ex: </p>
+<p>tree represention of the initial form data.</p>
+<p>Ex:</p>
 <pre>  { 
     name: 'barbie', 
     age: '49', 
@@ -382,7 +382,7 @@ an <code>autofocus</code> attribute automatically receives focus.</p>
 <p>used to fire event on the for instance and thus called corresponding responders and instance callback.</p>
 <p><code>eventName</code>: eventName to fire without the 'on' prefix.</p>
 <p><code>arg</code> argument to send over to the corresponding responder(s) and callback.</p>
-<p>this method will </p>
+<p>this method will</p>
 <ol>
 <li>
 <p>execute the early responders set the on[eventName]</p>
@@ -408,7 +408,7 @@ You actually need to call form.submit() for these events to be fired.</p>
 
 <p>tells the form to watch the <i>eventName</i> on elements that match the <i>expression</i> and to fire the corresponding <i>handler</i>.</p>
 <p><code>expression</code> (String) - A css selector</p>
-<p><code>eventName</code> (String) - The name of the event, in all lower case, without the "on" prefix — e.g., "click" (not "onclick"). </p>
+<p><code>eventName</code> (String) - The name of the event, in all lower case, without the "on" prefix — e.g., "click" (not "onclick").</p>
 <p>A custom <b>"init"</b> event is also supported which is fired on an input that gets its value initialized with the initialization of the form.</p>
 <p><code>handler</code> (Function) - handler to fire.</p>
 <p>Signature</p>
@@ -560,20 +560,20 @@ first child that has an <code>autofocus</code> attribute.</p>
 
     </div>
   </div>
-  <div class="TN_node" id="GvaScript_Forms_">
-    <h2 class="TN_label">GvaScript.Forms </h2>
+  <div class="TN_node" id="GvaScript_Forms">
+    <h2 class="TN_label">GvaScript.Forms</h2>
     <div class="TN_content">
-      <p>namespace that holds all active instances of GvaScript.Form </p>
+      <p>namespace that holds all active instances of GvaScript.Form</p>
 <p>instances are unique per form id</p>
-  <div class="TN_node" id="METHODS_">
-    <h3 class="TN_label">METHODS </h3>
+  <div class="TN_node" id="METHODS">
+    <h3 class="TN_label">METHODS</h3>
     <div class="TN_content">
         <div class="TN_node" id="get">
     <h4 class="TN_label">get</h4>
     <div class="TN_content">
       <pre>  GvaScript.Forms.get(id)</pre>
 
-<p>finds and returns the GvaScript.Form instance where id is the unique id of the form HTMLElement. </p>
+<p>finds and returns the GvaScript.Form instance where id is the unique id of the form HTMLElement.</p>
 
     </div>
   </div>

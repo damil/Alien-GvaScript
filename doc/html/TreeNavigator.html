@@ -228,7 +228,7 @@
 description is usual HTML, with some special classes to
 identify nodes.  Nodes can be browsed, closed or
 opened. All operations take place directly within the
-tree, not in a separate panel. </p>
+tree, not in a separate panel.</p>
 <p>To read further chapters of this documentation, use
 the arrow keys or the <code>TAB</code>
 key. To see the whole page at once (for example for
@@ -296,13 +296,13 @@ add the +/- navigation buttons.</p>
       <p>By default, the navigation buttons inserted on the
 left of labels are small icons representing +/- signs.
 To show other icons, change the CSS rules about the 
-<code>TN_button</code> class: </p>
+<code>TN_button</code> class:</p>
 <pre>  .TN_button { 
   background-image: url(myIconForOpenNodes.gif);   
   }
   .TN_closed .TN_button { 
   background-image: url(myIconForClosedNodes.gif); 
-  } </pre>
+  }</pre>
 
 <p>In addition, if you want another icon for illustrating
 the node's content (like for example an open or closed
@@ -358,7 +358,7 @@ label toggles the open/closed status of the node.</p>
 <p>close the node</p>
 </li>
 <li><a name="item__code_keypad____code_"></a><b><code>keypad *</code></b>
-<p>open the node and all its subnodes </p>
+<p>open the node and all its subnodes</p>
 </li>
 <li><a name="item__code_keypad____code_"></a><b><code>keypad /</code></b>
 <p>close the node and all its subnodes</p>
@@ -375,16 +375,16 @@ visible, which may be useful for printing)</p>
 item (maybe the next node, or another tabindex-enabled HTML element,
 such as a form control).</p>
 </li>
-<li><a name="item__code__uarr___code_"></a><b><code>&uarr;</code></b>
+<li><a name="item__code_ARROW_UP__code_"></a><b><code>ARROW_UP</code></b>
 <p>move to previous displayed node</p>
 </li>
-<li><a name="item__code__darr___code_"></a><b><code>&darr;</code></b>
+<li><a name="item__code_ARROW_DOWN__code_"></a><b><code>ARROW_DOWN</code></b>
 <p>move to next displayed node</p>
 </li>
-<li><a name="item__code__larr___code_"></a><b><code>&larr;</code></b>
+<li><a name="item__code_ARROW_LEFT__code_"></a><b><code>ARROW_LEFT</code></b>
 <p>if open, close the node; if already closed, move to parent node</p>
 </li>
-<li><a name="item__code__rarr___code_"></a><b><code>&rarr;</code></b>
+<li><a name="item__code_ARROW_RIGHT__code_"></a><b><code>ARROW_RIGHT</code></b>
 <p>if closed, open the node; if already open, move to next subnode</p>
 </li>
 <li><a name="item__code_HOME__code_"></a><b><code>HOME</code></b>
@@ -444,13 +444,13 @@ After that, a new search will be effective.</p>
 <p>Creates the object that controls
 navigation in the tree. Arguments are</p>
 <ul>
-<li><a name="item__code_elem__code_"></a><b><code>elem</code> </b>
+<li><a name="item__code_elem__code_"></a><b><code>elem</code></b>
 <p>the HTML element containing the
 tree, or the id of that element.</p>
 </li>
 <li><a name="item__code_options__code_"></a><b><code>options</code></b>
 <p>an optional inline object
-specifying options. </p>
+specifying options.</p>
 </li>
 </ul>
 <p>The tree navigation object is returned, which may be
@@ -492,7 +492,7 @@ In that case, the keymap created for
 capturing keyboard events will be  bound globally
 to the <code>document</code> element (and therefore might
 interact in unpredictable ways with other elements
-capturing keys; so this is not a recommended setting). </p>
+capturing keys; so this is not a recommended setting).</p>
 
     </div>
   </div>
@@ -534,7 +534,7 @@ a second clic (or a double-clic) will fire the event.</p>
     <h5 class="TN_label">selectFirstNode</h5>
     <div class="TN_content">
       <p>If true (the default), the first node is selected and gets focus
-just after constructing the tree navigator. </p>
+just after constructing the tree navigator.</p>
 
     </div>
   </div>
@@ -603,26 +603,26 @@ A leaf should contain just a label element.</p>
 A label should have style <code>display:inline</code>.</p>
 </li>
 <li><a name="item_content"></a><b>content</b>
-<p>Class(es) for content elements (default is <code>TN_content</code>). </p>
+<p>Class(es) for content elements (default is <code>TN_content</code>).</p>
 </li>
 <li><a name="item_closed"></a><b>closed</b>
-<p>Class(es) for marking closed nodes (default is <code>TN_closed</code>). </p>
+<p>Class(es) for marking closed nodes (default is <code>TN_closed</code>).</p>
 </li>
 <li><a name="item_selected"></a><b>selected</b>
-<p>Class(es) for marking the selected node (default is <code>TN_selected</code>). </p>
+<p>Class(es) for marking the selected node (default is <code>TN_selected</code>).</p>
 </li>
 <li><a name="item_mouse"></a><b>mouse</b>
 <p>Class(es) added when the mouse hovers over a node
-(default is <code>TN_mouse</code>). </p>
+(default is <code>TN_mouse</code>).</p>
 </li>
 <li><a name="item_button"></a><b>button</b>
 <p>Class(es) for buttons added automatically by the tree navigator
-(default is <code>TN_button</code>). </p>
+(default is <code>TN_button</code>).</p>
 </li>
 <li><a name="item_showall"></a><b>showall</b>
 <p>Class(es) for the special mode in which closed nodes are nevertheless
 displayed
-(default is <code>TN_showall</code>). </p>
+(default is <code>TN_showall</code>).</p>
 </li>
 </ul>
 
@@ -835,7 +835,7 @@ the example above, a hander is registered for
 event <code>Open</code>.</p>
 <p>The string containing handler code is
 evaluated in a context where some special
-variables are predefined: </p>
+variables are predefined:</p>
 <ul>
 <li><a name="item__code_targetNode__code_"></a><b><code>targetNode</code></b>
 <p>the node element</p>

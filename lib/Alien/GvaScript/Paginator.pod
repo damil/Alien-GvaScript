@@ -47,6 +47,8 @@ The Paginator Object will manage the 2 request parameters
 
 These two parameters would help you in deciding which part of the dataset to return.
 
+=back
+
 =head2 Navigation Links
 
 Navigation links are the icons used to navigate through pages (page flipping). Along with icons, a 
@@ -112,9 +114,9 @@ URL used to retrieve pages content using HTTP request.
 
 =item C<options>
 
-Options used to define and customize the Paginator object.
+=back
 
-=over
+Options used to define and customize the Paginator object.
 
 The Paginator object is returned as it might be useful for a programatic navigation of pages.
 
@@ -182,6 +184,7 @@ Error message to display on timeoutAjax.
 optional - defaulted to "Problème de connexion. Réessayer et si le problème persiste, contacter un administrateur."
 
 =back
+
 
 =head3 Flipping the Pages
 

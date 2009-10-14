@@ -61,7 +61,7 @@
   <div class="TN_content"><div class="TN_node">
   <a class="TN_label" href="#Methods">Methods</a>
   <div class="TN_content"><div class="TN_leaf">
-  <a class="TN_label" href="#new_GvaScript_Paginator_">new GvaScript.Paginator </a>
+  <a class="TN_label" href="#new_GvaScript_Paginator">new GvaScript.Paginator</a>
   <div class="TN_content"></div>
 </div>
 <div class="TN_leaf">
@@ -91,9 +91,9 @@
       <pre>  var url = '/app/my/paginated/data';
   var mypaginator = new GvaScript.Paginator(url, {
     list_container  : 'list_result_container', 
-    links_container : 'pagination_links_container'</pre>
+    links_container : 'pagination_links_container'
 
-<pre>    onSuccess   : onSuccessHandler,
+    onSuccess   : onSuccessHandler,
     parameters  : {param1: 'val1', param2: 'val2'},
     step        : 20
   }</pre>
@@ -195,21 +195,66 @@ if declared before the inclusion of this Library</p>
         <div class="TN_node" id="Methods">
     <h3 class="TN_label">Methods</h3>
     <div class="TN_content">
-        <div class="TN_node" id="new_GvaScript_Paginator_">
-    <h4 class="TN_label">new GvaScript.Paginator </h4>
+        <div class="TN_node" id="new_GvaScript_Paginator">
+    <h4 class="TN_label">new GvaScript.Paginator</h4>
     <div class="TN_content">
       <pre>  var paginator = new GvaScript.Paginator(
         url, 
         {opt1:"val1", opt2:"val2", ...}
   );</pre>
 
-<p>Creates the object that controls pages navigation. Arguments are </p>
+<p>Creates the object that controls pages navigation. Arguments are</p>
 <ul>
 <li><a name="item__code_url__code_"></a><b><code>url</code></b>
-<p>URL used to retrieve pages content using HTTP request. </p>
+<p>URL used to retrieve pages content using HTTP request.</p>
 </li>
 <li><a name="item__code_options__code_"></a><b><code>options</code></b>
+</li>
+</ul>
 <p>Options used to define and customize the Paginator object.</p>
+<p>The Paginator object is returned as it might be useful for a programatic navigation of pages.</p>
+<p>Available options are:</p>
+<ul>
+<li><a name="item_links_container__i__String_HTMLElement___i_"></a><b>links_container <i>(String|HTMLElement)</i></b>
+<p>Element or an id of an HTML Element to render the navigation links into.</p>
+<p>required.</p>
+</li>
+<li><a name="item_list_container__i__String_HTMLElement___i_"></a><b>list_container <i>(String|HTMLElement)</i></b>
+<p>Element of an id of an HTML Element that is used to render the result of the pagination.
+A 'gva-loading' classname is set to this container in the duration of page request.  Also ajax timeout and error messages
+will be displayed in this container.</p>
+<p>required.</p>
+</li>
+<li><a name="item_step__i__numeric___i_"></a><b>step <i>(numeric)</i></b>
+<p>Number of items to display per page.  
+This number would be the value of <code>STEP</code> (HTTP Request Parameter) that is transferred with pagination calls.</p>
+<p>optional - defaulted to 20</p>
+</li>
+<li><a name="item_method__i__String___i_"></a><b>method <i>(String)</i></b>
+<p>String indicating the HTTP method to use in the AJAX request for retrieving paginated data.</p>
+<p>optional - defaulted to 'post'</p>
+</li>
+<li><a name="item_parameters__i__String_Hash___i_"></a><b>parameters <i>(String|Hash)</i></b>
+<p>String in the syntax of key1=val1&amp;key2=val2, or hash {key1: 'val1', key2: 'val2'} of key/value pairs of parameters to be 
+sent with the HTTP request</p>
+<p>optional - defaulted to {}</p>
+</li>
+<li><a name="item_onSuccess__i__function___i_"></a><b>onSuccess <i>(function)</i></b>
+<p>Function handler of the onSuccess of the AJAX HTTP request to retrieve paginated data.</p>
+<p>optional - defaulted to Prototype.emptyFunction</p>
+</li>
+<li><a name="item_lazy__i__boolean___i_"></a><b>lazy <i>(boolean)</i></b>
+<p>Boolean indicating whether to load first page with the initialization of the Paginator Object.
+<code>true</code> implies lazy loading of the first page - will wait for an explicit call to <code>loadContent</code> method.</p>
+<p>optional - defaulted to false</p>
+</li>
+<li><a name="item_timeoutAjax__i__Numeric___i_"></a><b>timeoutAjax <i>(Numeric)</i></b>
+<p>Number of seconds to wait before aborting the Ajax HTTP Request.  Upon abort, an error message will display in the <code>list_container</code>.</p>
+<p>optional - defaulted to 15</p>
+</li>
+<li><a name="item_errorMsg__i__String___i_"></a><b>errorMsg <i>(String)</i></b>
+<p>Error message to display on timeoutAjax.</p>
+<p>optional - defaulted to "Problème de connexion. Réessayer et si le problème persiste, contacter un administrateur."</p>
 </li>
 </ul>
 

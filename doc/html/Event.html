@@ -139,7 +139,7 @@ to <code>fireEvent</code> can be an object with several
 properties. In that case, all properties will be copied
 into the generated event structure. The <code>type</code> property
 should contain the event name, in order to be compatible
-with the first syntax. So for example </p>
+with the first syntax. So for example</p>
 <pre>  this.fireEvent({type  : "Ping",
                   prop1 : "value1",
                   prop2 : "value2"}, this.htmlElement, otherElement1, ...);</pre>
@@ -158,9 +158,9 @@ below, plus the properties <code>prop1</code> and <code>prop2</code>.</p>
       <pre>  &lt;div onEventName="doSomethingWith(this)"&gt;
     &lt;span onEventName="doSomethingMoreSpecificWith(this, controller)"&gt;
     &lt;span onEventName="doYetAnotherThing"&gt;
-  &lt;/div&gt;</pre>
+  &lt;/div&gt;
 
-<pre>  myController.onEventName = function(event){...};</pre>
+  myController.onEventName = function(event){...};</pre>
 
 <p>There are three ways to register a handler:</p>
 <ul>

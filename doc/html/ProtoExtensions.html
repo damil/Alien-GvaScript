@@ -92,7 +92,11 @@
   <a class="TN_label" href="#outerHTML">outerHTML</a>
   <div class="TN_content"></div>
 </div>
-<div class="TN_leaf">
+</div>
+</div>
+<div class="TN_node">
+  <a class="TN_label" href="#Form_Element_extensions">Form.Element extensions</a>
+  <div class="TN_content"><div class="TN_leaf">
   <a class="TN_label" href="#setValue">setValue</a>
   <div class="TN_content"></div>
 </div>
@@ -149,20 +153,20 @@
     <h2 class="TN_label">SYNOPSIS</h2>
     <div class="TN_content">
       <pre>  Element.hasAnyClass(elem, ["class1", "class2", ...]);  
-  Element.getElementsByClassNames(elem, ["class1", "class2", ...]);  </pre>
+  Element.getElementsByClassNames(elem, ["class1", "class2", ...]);  
 
-<pre>  var stop_condition = function(elem) { return elem.tagName == "SPAN"};
+  var stop_condition = function(elem) { return elem.tagName == "SPAN"};
   Element.navigateDom(elem, "nextSibling", ["class1", "class2", ...],
-                       stop_condition);</pre>
+                       stop_condition);
 
-<pre>  this.options = Class.checkOptions(defaultOptions, receivedOptions);</pre>
+  this.options = Class.checkOptions(defaultOptions, receivedOptions);
 
-<pre>  Element.register(elem, 'input.active', 'mouseover', function(e) {
+  Element.register(elem, 'input.active', 'mouseover', function(e) {
     e._target.addClassName('hover');
   });
-  Element.unregister(elem, 'input.active', 'mouseover');</pre>
+  Element.unregister(elem, 'input.active', 'mouseover');
 
-<pre>  Element.store(elem, key, value);
+  Element.store(elem, key, value);
   Element.retrieve(elem, key, default);</pre>
 
 
@@ -257,9 +261,9 @@ where nested keys are joined by a dot.</p>
   <div class="TN_node" id="hasAnyClass">
     <h4 class="TN_label">hasAnyClass</h4>
     <div class="TN_content">
-      <pre>  if (Element.hasAnyClass(elem, ["class1", "class2", ...]) {...}  </pre>
+      <pre>  if (Element.hasAnyClass(elem, ["class1", "class2", ...]) {...}  
 
-<pre>  if (Element.hasAnyClass(elem, "class1") {...}  </pre>
+  if (Element.hasAnyClass(elem, "class1") {...}</pre>
 
 <p>Returns true if the supplied element has any of the given classes. 
 For convenience, also accepts a single string instead of an array
@@ -284,13 +288,13 @@ of the given class names.</p>
       <pre>  var wantedClasses = ["class1", "class2", ...];
   
   // which direction to navigate (could be "parentNode", etc.)
-  var direction     = "nextSibling"; </pre>
+  var direction     = "nextSibling"; 
 
-<pre>  // some criteria for stopping navigation (can be anything, here a stupid
+  // some criteria for stopping navigation (can be anything, here a stupid
   // example)
-  var stopCondition = function(elem) {return elem.innerHTML.length &gt; 10}</pre>
+  var stopCondition = function(elem) {return elem.innerHTML.length &gt; 10}
 
-<pre>  var nextElement
+  var nextElement
     = Element.navigateDom(startElement, direction, wantedClasses,
                           stopCondition);</pre>
 
@@ -303,7 +307,7 @@ condition (in which case <code>null</code> is returned).</p>
   <div class="TN_node" id="autoScroll">
     <h4 class="TN_label">autoScroll</h4>
     <div class="TN_content">
-      <pre>  Element.autoScroll(elem, percentage) </pre>
+      <pre>  Element.autoScroll(elem, percentage)</pre>
 
 <p>Makes sure that <code>elem</code> is visible in the central area of 
 its offset parent; if not, the parent is scrolled.
@@ -324,13 +328,17 @@ lower than the bottom 20% of the viewport.</p>
 including tags and attributes. Implemented through
 the native <code>outerHTML</code> property, if present; otherwise
 constructs a string from tag name, attributes and 
-innerHTML property.
-   
-=head2 Form.Element extensions</p>
+innerHTML property.</p>
 
     </div>
   </div>
-  <div class="TN_node" id="setValue">
+
+    </div>
+  </div>
+  <div class="TN_node" id="Form_Element_extensions">
+    <h3 class="TN_label">Form.Element extensions</h3>
+    <div class="TN_content">
+        <div class="TN_node" id="setValue">
     <h4 class="TN_label">setValue</h4>
     <div class="TN_content">
       <p>Form.Element.setValue method is wrapped to fire a
@@ -371,7 +379,7 @@ for that event will be cancelled</p>
     <h4 class="TN_label">stopAll</h4>
     <div class="TN_content">
       <p>Just a convenience object, having both properties
-above set to true. So </p>
+above set to true. So</p>
 <pre>  Event.detailedStop(event, Event.stopAll);</pre>
 
 <p>is equivalent to calling prototype's <code>Event.stop(event)</code>.</p>
@@ -392,7 +400,7 @@ above set to true. So </p>
 <p>Utility for constructor methods. The first argument is an object
 containing a collection of default options (keys and values).
 The second argument is a similar object, containing options
-given to the constructor. </p>
+given to the constructor.</p>
 <p>If one of the keys in <code>ctorOptions</code> has no corresponding
 key in  <code>defaultOptions</code>, an error is generated (because
 the constructor does not expect such a key). Otherwise,

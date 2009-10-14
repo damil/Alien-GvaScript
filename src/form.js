@@ -1,5 +1,6 @@
 /* TODO
 
+
    - submit attrs on buttons
        - action / method / enctype / replace / target / novalidate
   - after_submit:
@@ -174,11 +175,11 @@ GvaScript.Form.Methods = {
     * method wrapped for special handling of form inputs 
     * 'change' and 'init' events
     *
-    * all handlers will recieve 'event' object as a first arguement.
-    * 'change' handler will also recieve input's oldvalue/newvalue as
-    * second and third arguements respectively.
-    * 'init' handler will also recieve input's newvalue as a 
-    * second arguemen.
+    * all handlers will receive 'event' object as a first argument.
+    * 'change' handler will also receive input's oldvalue/newvalue as
+    * second and third arguments respectively.
+    * 'init' handler will also receive input's newvalue as a 
+    * second argument.
     *
     * @param {string} query : css selector to match elements
     *                         to watch
@@ -378,7 +379,7 @@ Object.extend(GvaScript.Form.prototype, function() {
          * defined in GvaScript.Form.Responders
          *
          * @param {string} eventName : eventName to fire without the 'on' prefix
-         * @param {object} arg : arguement to carry over to handler.
+         * @param {object} arg : argument to carry over to handler.
          *
          * @return boolean indicating whether all responders + instance callback have succeeded (if any)
          */
@@ -579,7 +580,7 @@ Object.extend(GvaScript.Form, {
 });
 
 // copy GvaScript.Form methods into GvaScript.Form.prototype
-// set the first arguement of methods to this.formElt
+// set the first argument of methods to this.formElt
 (function() {
   var update = function (array, args) {
     var arrayLength = array.length, length = args.length;

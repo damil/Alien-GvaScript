@@ -19,7 +19,7 @@
   <div class="TN_node">
    <h1 class="TN_label">KeyMap</h1>
    <div class="TN_content">
-     <p><em>Manage maps of handlers for key events 
+     <p><em>Manage maps of handlers for key events
 </em></p>
      <div class="TN_node"  onPing="jumpto_href">
        <h3 class="TN_label">Table of contents</h3>
@@ -33,7 +33,7 @@
   <div class="TN_content"></div>
 </div>
 <div class="TN_leaf">
-  <a class="TN_label" href="#DESTRUCTOR_">DESTRUCTOR </a>
+  <a class="TN_label" href="#DESTRUCTOR">DESTRUCTOR</a>
   <div class="TN_content"></div>
 </div>
 <div class="TN_leaf">
@@ -97,7 +97,7 @@
   <div class="TN_node" id="NAME">
     <h2 class="TN_label">NAME</h2>
     <div class="TN_content">
-      <p>KeyMap - Manage maps of handlers for key events </p>
+      <p>KeyMap - Manage maps of handlers for key events</p>
 
     </div>
   </div>
@@ -121,16 +121,16 @@
   };
   
   // create a keymap object
-  var aKeyMap = new KeyMap(rules);</pre>
+  var aKeyMap = new KeyMap(rules);
 
-<pre>  // attach the corresponding handler to the keydown event (on document)
+  // attach the corresponding handler to the keydown event (on document)
   aKeyMap.observe("keydown");
   
   // other way to attach : manually insert handler
   document.onkeydown = aKeyMap.eventHandler({preventDefault: true,
-                                             ignoreShift   : true});</pre>
+                                             ignoreShift   : true});
 
-<pre>  // dynamically change the map
+  // dynamically change the map
   aKeyMap.rules.push(new_rules);
   
   // idem, temporarily ignore all keys
@@ -142,8 +142,8 @@
 
     </div>
   </div>
-  <div class="TN_node" id="DESTRUCTOR_">
-    <h2 class="TN_label">DESTRUCTOR </h2>
+  <div class="TN_node" id="DESTRUCTOR">
+    <h2 class="TN_label">DESTRUCTOR</h2>
     <div class="TN_content">
       <pre>  aKeyMap.destroy();</pre>
 
@@ -157,7 +157,7 @@ or to deactivate the keymap handler.</p>
     <h2 class="TN_label">DESCRIPTION</h2>
     <div class="TN_content">
       <p>Provides an abstraction layer for associating handlers
-with HTML key events, in a browser-independent way. </p>
+with HTML key events, in a browser-independent way.</p>
 <p>A <i>keymap</i> is a stack of collections of rules. Each rule has a 
 <i>key specification</i>
 or a <i>regexp specification</i>, and a <i>handler</i> to be called whenever the
@@ -206,7 +206,7 @@ cover several possible key events; details are given below.</p>
 receive an <i>event object</i> as argument. This is the usual HTML event
 object, augmented with two properties <code>keyName</code> and <code>keyModifiers</code>, 
 computed according to the specifications given above. So for 
-example a simple handler can be </p>
+example a simple handler can be</p>
 <pre>  var myHandler = function (event) {
     alert(event.keyName + " was pressed with modifiers " + 
           event.keyModifiers);
@@ -271,12 +271,12 @@ to an element.</p>
     <div class="TN_content">
       <pre>  var myKeyMap = new KeyMap(rules);</pre>
 
-<p>Constructor for a keymap object. </p>
+<p>Constructor for a keymap object.</p>
   <div class="TN_node" id="Single_key_rules">
     <h4 class="TN_label">Single-key rules</h4>
     <div class="TN_content">
       <p>The rules argument is a map from key specifications to handlers, like
-for example </p>
+for example</p>
 <pre>  { A:     function() {alert("pressed 'A'");},
     S_TAB: function() {alert("pressed 'Shift-Tab'");},
     CTRL:  function() {alert("pressed the 'Ctrl' key");},
@@ -285,7 +285,7 @@ for example </p>
 
 <p>Each key specification in the map corresponds to exacly one key
 combination, so for example <code>S_TAB</code> will not fire if the user pressed
-<code>Ctrl-Shift-Tab</code>.  </p>
+<code>Ctrl-Shift-Tab</code>.</p>
 
     </div>
   </div>

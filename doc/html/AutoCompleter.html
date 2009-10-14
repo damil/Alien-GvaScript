@@ -130,16 +130,16 @@
       {minimumChars : 2, 
        strict       : true, 
        onBind       : doSomething,
-       onLeave      : doSomethingElse}  );</pre>
+       onLeave      : doSomethingElse}  );
 
-<pre>  var autoCompleter2 = new GvaScript.Autocompleter(
-        ["foo", "bar", ...], options);</pre>
+  var autoCompleter2 = new GvaScript.Autocompleter(
+        ["foo", "bar", ...], options);
 
-<pre>  var autoCompleter3 = new GvaScript.Autocompleter(
+  var autoCompleter3 = new GvaScript.Autocompleter(
         [{label: "foo", value: "f", otherValue: 123},
-         {label: "bar", value: "b", otherValue: 456}, ...], options);</pre>
+         {label: "bar", value: "b", otherValue: 456}, ...], options);
 
-<pre>  var autoCompleter4 = new GvaScript.Autocompleter(
+  var autoCompleter4 = new GvaScript.Autocompleter(
         myCompletionFunction, options);</pre>
 
 <p>Then, in HTML :</p>
@@ -227,7 +227,7 @@ of the field. See also <code>options.caseSensitive</code>.</p>
 <pre>  Ex :   { json_url: 'http://search.yahooapis.com/WebSearchService/V1/relatedSuggestion?appid=YahooDemo&amp;query=?1&amp;output=json&amp;callback=?2',
            json_list: 'ResultSet/Result' }</pre>
 
-<p>The object should hold details of the JSONP service to be called. </p>
+<p>The object should hold details of the JSONP service to be called.</p>
 <p><code>json_url</code> : url to call with placeholders (?1, ?2) for value to look for and callback method respectively.</p>
 <p><code>json_list</code> : path to the list in the json response</p>
 </li>
@@ -240,7 +240,7 @@ of the field. See also <code>options.caseSensitive</code>.</p>
     <div class="TN_content">
       <p>Datasources should return a list of suggestions in the form
 of a Javascript array (in case of Ajax requests, the response 
-should be a JSON body containing a single array). </p>
+should be a JSON body containing a single array).</p>
 <p>For each suggestion in the array, the autocompleter needs
 a <i>label</i> (an HTML fragment to display in suggestion
 dropdown lists) and a <i>value</i> (a plain string to put into
@@ -352,7 +352,7 @@ Default is 5</p>
 <li><a name="item_classes"></a><b>classes</b>
 <p>Classes that will be assigned at various stages
 to autocompleter DOM elements .
-Possible classes are </p>
+Possible classes are</p>
 <ul>
 <li><a name="item_loading"></a><b>loading</b>
 <p>Class added to the  input or textarea field while an Ajax
@@ -473,12 +473,12 @@ Used internally to warn for example about illegal values.</p>
       <p>For a general explanation on registering handlers
 for GvaScript events, see the <i>event</i> documentation.
 In short, you can register handlers either on the 
-HTML input element, as in </p>
+HTML input element, as in</p>
 <pre>  &lt;input name="someInput" onfocus = "myAutoCompleter.complete(this)"
                           onBind  = "bindHandler(this, event)"
                           onLeave = "leaveHandler"&gt;</pre>
 
-<p>or on the javascript object, as in </p>
+<p>or on the javascript object, as in</p>
 <pre>   myAutocompleter.onBind = function(event) {
         bindHandler(event.target, event)
    };
