@@ -298,7 +298,7 @@ GvaScript.AutoCompleter.prototype = {
 
   _updateChoicesFromJSONP : function(val_to_complete, continuation) {
       if(val_to_complete) {
-        var _url = this._datasource.json_url.replace(/\?1/, val_to_complete);
+        var _url = this._datasource.json_url.replace(/\?1/, val_to_complete).replace(/\?2/, '?');
         var that = this;
 
         Element.addClassName(that.inputElement, that.classes.loading);

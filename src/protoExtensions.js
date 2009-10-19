@@ -82,7 +82,7 @@ Hash.flatten = function(deep_hash, prefix, tree) {
     var new_prefix = prefix? prefix + '.' + i : i;
     switch (typeof(v)) {
         case "function": continue; break;
-        case "object"  : Hash.collapse(v, new_prefix, tree); break;
+        case "object"  : Hash.flatten(v, new_prefix, tree); break;
         case "string"  :
         case "number"  : tree["" + new_prefix + ""] = v; break;
         default        : break;
@@ -369,13 +369,13 @@ RegExp.escape = function(str) {
     window[token] = callback;
 
     // url should have "?2" parameter which is to be replaced with a global callback name
-    script.src = url.replace(/\?2(&|$)/, '__jsonp' + id + '$1');
+    script.src = url.replace(/\?(&|$)/, '__jsonp' + id + '$1');
 
     // clean up on load: remove script tag, null script variable and delete global callback function
     script.onload = function() {
       script.remove();
       script = null;
-      delete global[token];
+      delete window[token];
     };
     head.appendChild(script);
     
