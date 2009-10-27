@@ -5,7 +5,7 @@ use warnings;
 use File::Copy qw(copy);
 use File::Path qw(mkpath);
 
-our $VERSION = '1.19';
+our $VERSION = '1.19.1';
 
 
 sub path {
