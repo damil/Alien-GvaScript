@@ -385,10 +385,14 @@ GvaScript.AutoCompleter.prototype = {
 
       // if not enough chars to get valid choices, this is illegal
       else if (value.length < this.options.minimumChars) {    
-        this.inputElement.style.backgroundColor = this.options.colorIllegal;
-        this._updateDependentFields(this.inputElement, null);
-        this.fireEvent({type: "IllegalValue", value: value}, 
-                       this.inputElement);
+        var return_value = this.fireEvent({
+          type: "IllegalValue", value: value
+        }, this.inputElement);
+        
+        if(! return_value) {
+          this.inputElement.style.backgroundColor = this.options.colorIllegal;
+          this._updateDependentFields(this.inputElement, null);
+        }
       }
 
       // otherwise get choices and then inspect status (maybe asynchronously)
@@ -457,11 +461,16 @@ GvaScript.AutoCompleter.prototype = {
 
     }
     else {
-        inputElement.style.backgroundColor = this.options.colorIllegal;
-        this._updateDependentFields(inputElement, null);
-        this.fireEvent({ type       : "IllegalValue", 
-                         value      : input_val, 
-                         controller : null  }, inputElement);
+        var return_value = this.fireEvent({ 
+          type       : "IllegalValue", 
+          value      : input_val, 
+          controller : null  
+        }, inputElement);
+
+        if(! return_value) {
+          inputElement.style.backgroundColor = this.options.colorIllegal;
+          this._updateDependentFields(inputElement, null);
+        }
     }
   },
 
@@ -600,8 +609,7 @@ GvaScript.AutoCompleter.prototype = {
             if (this.options.autoSuggest)
               this._displayChoices();
           }
-          else if (this.options.strict && 
-                   (value || !this.options.blankOK)) {
+          else if (this.options.strict && (!this.options.blankOK)) {
             this.inputElement.style.backgroundColor 
             = this.options.colorIllegal;
           }
