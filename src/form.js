@@ -165,8 +165,8 @@ GvaScript.Form.Methods = {
     if(container) {
       var target = container.down('[autofocus]');
       // TODO : check if target is visible
-      if (target) try {target.focus()} 
-                      catch(e){}
+      if (target) try {target.activate()} 
+                  catch(e){}
     }
   },
 
@@ -539,6 +539,7 @@ Object.extend(GvaScript.Form, {
         }
       }
     }
+    return n_blocks;
   },
 
   remove: function(repetition_block) {
