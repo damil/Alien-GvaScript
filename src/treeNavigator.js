@@ -811,21 +811,29 @@ GvaScript.TreeNavigator.prototype = {
   },
 
   _kpStarHandler: function (event) {
-    var treeNavigator = this;
-    var target = this.selectedNode || this.rootElement;
-    var nodes = Element.getElementsByClassNames(target, this.classes.node);
-    if (target == this.selectedNode) nodes.unshift(target);
-    nodes.each(function(node) {treeNavigator.open(node)});
-    Event.stop(event);
+    var selectedNode = this.selectedNode;
+    if (selectedNode) {
+      var nodes = Element.getElementsByClassNames(
+        selectedNode,
+        this.classes.node
+      );
+      nodes.unshift(selectedNode);
+      nodes.each(function(node) {this.open(node)}, this);
+      Event.stop(event);
+    }
   },
 
   _kpSlashHandler: function (event) {
-    var treeNavigator = this;
-    var target = this.selectedNode || this.rootElement;
-    var nodes = Element.getElementsByClassNames(target, this.classes.node);
-    if (target == this.selectedNode) nodes.unshift(target);
-    nodes.each(function(node) {treeNavigator.close(node)});
-    Event.stop(event);
+    var selectedNode = this.selectedNode;
+    if (selectedNode) {
+      var nodes = Element.getElementsByClassNames(
+        selectedNode, 
+        this.classes.node
+      );
+      nodes.unshift(selectedNode);
+      nodes.each(function(node) {this.close(node)}, this);
+      Event.stop(event);
+    }
   },
 
   _ctrl_R_handler: function (event) {
