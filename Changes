@@ -1,6 +1,6 @@
 Revision history for Alien-GvaScript
 
-1.19.5 07.01.2009
+1.19.5   07.01.2009
   - Element.autoScroll : fix scroll amount when the scrolling block has
     an offsetTop > 0
   - removed PAGE_UP/DOWN handlers in TreeNavigator -- let the browser deal 
