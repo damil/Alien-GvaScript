@@ -134,7 +134,7 @@ Object.extend(Element, {
        if (stop_condition && stop_condition(elem)) break;
        if (elem.nodeType == 1 &&
            Element.hasAnyClass(elem, wanted_classes))
-         return elem;
+         return $(elem);
        // else walk to next element
        elem = elem[navigation_property];
      }
