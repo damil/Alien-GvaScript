@@ -71,8 +71,9 @@ GvaScript.AutoCompleter = function(datasource, options) {
 
   this.options = Class.checkOptions(defaultOptions, options);
 
-  // backwards compatibility
-  this.options.checkNewValDelay = this.options.autoSuggestDelay;
+  // autoSuggestDelay cannot be smaller than checkNewValueDelay
+  this.options.autoSuggestDelay = Math.max(this.options.autoSuggestDelay,
+                                           this.options.checkNewValDelay);
 
   var defaultClasses = {
     loading         : "AC_loading",
