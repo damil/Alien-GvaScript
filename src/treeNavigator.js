@@ -186,9 +186,26 @@ GvaScript.TreeNavigator.prototype = {
       return;
 
     Element.removeClassName(node, this.classes.closed);
-    this.fireEvent("Open", node, this.rootElement);
-    if (!this.content(node))
+
+    var node_content = this.content(node);
+    // if inline content, adjust scrollbar to make visible (if necessary)
+    if (node_content) {
+      _content_y  = node_content.viewportOffset().top + node_content.offsetHeight;
+      _viewport_y = document.viewport.getHeight();
+
+      // part of content is hidden 
+      // -> scroll into label of node
+      // (scroll into content might make the label invisible)
+      if(_content_y > _viewport_y) {
+        this.label(node).scrollTo();
+      }
+    }
+    // ajax content -> go get it
+    else {
       this.loadContent(node);
+    }
+ 
+    this.fireEvent("Open", node, this.rootElement);
   },
 
   toggle: function(node) {
@@ -243,7 +260,7 @@ GvaScript.TreeNavigator.prototype = {
     }
   },
 
-  select: function (node, prevent_autoscroll) {
+  select: function (node) {
     var previousNode = this.selectedNode;
 
     // re-selecting the current node is a no-op
@@ -273,7 +290,7 @@ GvaScript.TreeNavigator.prototype = {
           if(! label.hasAttribute('hasFocus'))
             label.focus();
             
-          if (!prevent_autoscroll && this.options.autoScrollPercentage !== null)
+          if (this.options.autoScrollPercentage !== null)
             Element.autoScroll(label, 
                                this.rootElement, 
                                this.options.autoScrollPercentage);
@@ -565,7 +582,7 @@ GvaScript.TreeNavigator.prototype = {
 
     // select node if it wasn't
     if (!is_selected) 
-      this.select(node, true); // true: prevent_autoscroll
+      this.select(node);
 
     // should ping : depends on options.noPingOnFirstClick
     var should_ping = (!is_first_click) || !this.options.noPingOnFirstClick;
