@@ -197,8 +197,16 @@ GvaScript.TreeNavigator.prototype = {
       // -> scroll into label of node
       // (scroll into content might make the label invisible)
       if(_content_y > _viewport_y) {
-        var pos = Element.cumulativeOffset(this.label(node));
-        window.scrollTo(0, pos[1]);
+        _delta = _content_y - _viewport_y;
+        
+        // amount required to scroll to greater than available document height 
+        if(_delta > _viewport_y) {
+          // make label top 
+          var lbl_pos = Element.cumulativeOffset(this.label(node));
+          window.scrollTo(window.scrollX, lbl_pos[1]);
+        }
+        else 
+        window.scrollBy(0, parseInt(_content_y - _viewport_y));
       }
     }
     // ajax content -> go get it
