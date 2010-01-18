@@ -269,7 +269,7 @@ GvaScript.TreeNavigator.prototype = {
     }
   },
 
-  select: function (node) {
+  select: function (node, prevent_autoscroll) {
     var previousNode = this.selectedNode;
 
     // re-selecting the current node is a no-op
@@ -299,7 +299,7 @@ GvaScript.TreeNavigator.prototype = {
           if(! label.hasAttribute('hasFocus'))
             label.focus();
             
-          if (this.options.autoScrollPercentage !== null)
+          if (!prevent_autoscroll && this.options.autoScrollPercentage !== null)
             Element.autoScroll(label, 
                                this.rootElement, 
                                this.options.autoScrollPercentage);
@@ -324,7 +324,7 @@ GvaScript.TreeNavigator.prototype = {
       || document.body.scroll == 'no') // IE 
     return;
     
-    window.scrollTo(0, 
+    window.scrollTo(window.scrollX, 
                     Element.cumulativeOffset(node).top 
                     - document.viewport.getHeight()/2); 
   },
@@ -591,7 +591,7 @@ GvaScript.TreeNavigator.prototype = {
 
     // select node if it wasn't
     if (!is_selected) 
-      this.select(node);
+      this.select(node, true); // true: prevent_autoscroll
 
     // should ping : depends on options.noPingOnFirstClick
     var should_ping = (!is_first_click) || !this.options.noPingOnFirstClick;
