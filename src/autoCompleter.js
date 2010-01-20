@@ -278,11 +278,16 @@ GvaScript.AutoCompleter.prototype = {
        evalJSON: 'force', // will evaluate even if header != 'application/json'
        onSuccess: function(xhr) {
           // aborted by the onblur handler
-          if(xhr.transport.status == 0) return;
+          if (xhr.transport.status == 0) return;
           
           autocompleter._runningAjax[inputElement.name] = null;
-          if (xhr.responseJSON)
-              continuation(xhr.responseJSON);
+
+          if (xhr.responseJSON) continuation(xhr.responseJSON);
+
+          // autocompleter input already blurred without _blurHandler being 
+          // called (autocompleter is strict and needs its choices to 
+          // be able to fire its final status
+          if (xhr.transport.blurAfterSuccess) autocompleter._blurHandler();
        },
        onFailure: function(xhr) {
           autocompleter._runningAjax[inputElement.name] = null;
@@ -355,11 +360,20 @@ GvaScript.AutoCompleter.prototype = {
 
     // remove choice list
     if (this.dropdownDiv)  this._removeDropdownDiv(); 
+    
+    // xhr is still active: waiting for response from server
+    if (_xhr = this._runningAjax[this.inputElement.name]) {
 
-    // abort any pending ajax call on this input element
-    if (this._runningAjax[this.inputElement.name]) {
-      this._runningAjax[this.inputElement.name].transport.abort();
-      this._runningAjax[this.inputElement.name] = null;
+      // if autocompleter is strict, need to wait for xhr to 
+      // finish before calling the _blurHandler to fire the 
+      // autocompleter's finalState
+      if (this.options.strict) {
+        _xhr.transport.blurAfterSuccess = true;
+        return;
+      }
+
+      _xhr.transport.abort();
+      _xhr = null;
       Element.removeClassName(this.inputElement, this.classes.loading);
     }
 
