@@ -162,8 +162,30 @@ GvaScript.Form.Methods = {
   autofocus: function(container) {
     container = $(container);
     
+    // replace prototype's down selector
+    // as it performs slowly on IE6
+    var _find_autofocus = function(p_node) {
+      var _kids = p_node.childNodes, _idx = 0;
+
+      for( ; _idx < _kids.length; ) {
+        _kid = _kids[_idx ++];
+
+        if(Object.isElement(_kid)) {
+          if(Element.hasAttribute(_kid, 'autofocus')) {
+            return _kid;
+          }
+          else {
+            var _look_in_descendants = _find_autofocus(_kid);
+            if(_look_in_descendants) return _look_in_descendants;
+          }
+        }
+      }    
+    }
+
     if(container) {
-      var target = container.down('[autofocus]');
+      //slow on IE6
+      //var target = container.down('[autofocus]');
+      var target = _find_autofocus(container);
       // TODO : check if target is visible
       if (target) try {target.activate()} 
                   catch(e){}
