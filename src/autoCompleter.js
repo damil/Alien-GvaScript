@@ -287,7 +287,7 @@ GvaScript.AutoCompleter.prototype = {
           // autocompleter input already blurred without _blurHandler being 
           // called (autocompleter is strict and needs its choices to 
           // be able to fire its final status
-          if (xhr.transport.blurAfterSuccess) autocompleter._blurHandler();
+          if (xhr['blurAfterSuccess']) autocompleter._blurHandler();
        },
        onFailure: function(xhr) {
           autocompleter._runningAjax[inputElement.name] = null;
@@ -368,7 +368,7 @@ GvaScript.AutoCompleter.prototype = {
       // finish before calling the _blurHandler to fire the 
       // autocompleter's finalState
       if (this.options.strict) {
-        _xhr.transport.blurAfterSuccess = true;
+        _xhr['blurAfterSuccess'] = true;
         return;
       }
 
