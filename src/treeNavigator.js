@@ -269,7 +269,7 @@ GvaScript.TreeNavigator.prototype = {
     }
   },
 
-  select: function (node, prevent_autoscroll) {
+  select: function (node) {
     var previousNode = this.selectedNode;
 
     // re-selecting the current node is a no-op
@@ -298,11 +298,6 @@ GvaScript.TreeNavigator.prototype = {
           // focus has not yet been given to label
           if(! label.hasAttribute('hasFocus'))
             label.focus();
-            
-          if (!prevent_autoscroll && this.options.autoScrollPercentage !== null)
-            Element.autoScroll(label, 
-                               this.rootElement, 
-                               this.options.autoScrollPercentage);
         }
       }
     }
@@ -325,8 +320,11 @@ GvaScript.TreeNavigator.prototype = {
     return;
     
     window.scrollTo(window.scrollX, 
-                    Element.cumulativeOffset(node).top 
-                    - document.viewport.getHeight()/2); 
+      Element.cumulativeOffset(node).top
+        - (document.viewport.getHeight()
+            * (this.options.autoScrollPercentage / 100)
+          )
+    );
   },
 
   label: function(node) {
@@ -590,8 +588,7 @@ GvaScript.TreeNavigator.prototype = {
     var is_first_click = !is_selected;
 
     // select node if it wasn't
-    if (!is_selected) 
-      this.select(node, true); // true: prevent_autoscroll
+    if (!is_selected) this.select(node);
 
     // should ping : depends on options.noPingOnFirstClick
     var should_ping = (!is_first_click) || !this.options.noPingOnFirstClick;
@@ -626,7 +623,6 @@ GvaScript.TreeNavigator.prototype = {
                                                   
       // not yet been selected
       if(node && !label.hasClassName(treeNavigator.classes.selected)) {
-        treeNavigator.scrollTo(node); 
         treeNavigator.select  (node); 
       }
     };
