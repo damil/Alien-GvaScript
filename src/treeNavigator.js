@@ -192,24 +192,7 @@ GvaScript.TreeNavigator.prototype = {
     // if inline content, adjust scrollbar to make visible (if necessary)
     // FIXME: only works for default scrollingContainer
     if (node_content) {
-      _content_y  = node_content.viewportOffset().top + node_content.offsetHeight;
-      _viewport_y = document.viewport.getHeight();
-
-      // part of content is hidden 
-      // -> scroll into label of node
-      // (scroll into content might make the label invisible)
-      if(_content_y > _viewport_y) {
-        _delta = _content_y - _viewport_y;
-        
-        // amount required to scroll to greater than available document height 
-        if(_delta > _viewport_y) {
-          // make label top 
-          var lbl_pos = Element.cumulativeOffset(this.label(node));
-          window.scrollTo(window.scrollX, lbl_pos[1]);
-        }
-        else 
-        window.scrollBy(0, parseInt(_content_y - _viewport_y));
-      }
+       this.scrollTo(node, true);
     }
     // ajax content -> go get it
     else {
@@ -313,13 +296,48 @@ GvaScript.TreeNavigator.prototype = {
       setTimeout(callback, this.options.selectDelay);
   },
 
-  scrollTo: function(node) {
-    if(node)
-    Element.autoScroll(
-      node,
-      $(this.options.scrollingContainer),
-      this.options.autoScrollPercentage
-    );
+  scrollTo: function(node, with_content) {
+    if(!node) return; 
+
+    var container = this.options.scrollingContainer;
+    if(typeof container == 'string') {
+      container = $(container);
+    }
+
+    // test if the node in 'in view'
+    _container_y_start = container.scrollTop;
+    _container_y_end   = _container_y_start + container.clientHeight;
+    _node_y  = Element.cumulativeOffset(node).top + (with_content? node.offsetHeight: 0);
+    
+    // calculate padding space between the selected node and
+    // the edge of the scrollable container
+    _perc = this.options.autoScrollPercentage || 0;
+    _padding = container.clientHeight * _perc / 100;
+    
+    // calculate delta scroll to affect on scrollingContainer
+    _delta = 0; 
+
+    // node is beneath scrolling area 
+    if(_node_y > _container_y_end - _padding) {
+      _delta = _node_y - _container_y_end + _padding;
+    }
+
+    // node is above scrolling area 
+    if(_node_y < _container_y_start + _padding) {
+      _delta = _container_y_start - _node_y - _padding;
+    }
+
+    if(_delta != 0) {
+      // amount required to scroll to greater than available document height 
+      if(_delta > container.clientHeight - _padding) {
+        // make label top 
+        var lbl_pos = Element.cumulativeOffset(this.label(node)).top;
+        container.scrollTop = lbl_pos - _padding;
+      }
+      else 
+      container.scrollTop += parseInt(_delta)
+    }
+    return;
   },
 
   label: function(node) {

@@ -146,13 +146,21 @@ Object.extend(Element, {
     percentage = percentage || 20; // default                  
     container  = container  || elem.offsetParent;
 
-    if(container) {
-      if(container.tagName.toLowerCase() == 'body')
-        container = elem.ownerDocument.documentElement;
-     
-      container.scrollTop = Element.cumulativeOffset(elem).top 
-                          - container.clientHeight * percentage / 100;
+    var offset = elem.offsetTop;
+    var firstElementChild = container.firstElementChild 
+                          || $(container).firstDescendant();
+
+    if (firstElementChild) {
+      var first_child_offset = firstElementChild.offsetTop;
+      if (first_child_offset == container.offsetTop)
+        offset -= first_child_offset;
     }
+
+    var min = offset - (container.clientHeight * (100-percentage)/100);
+    var max = offset - (container.clientHeight * percentage/100);
+
+    if      (container.scrollTop < min) container.scrollTop = min;
+    else if (container.scrollTop > max) container.scrollTop = max;
   },
 
   outerHTML: function(elem) {
