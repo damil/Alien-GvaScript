@@ -304,6 +304,22 @@ GvaScript.TreeNavigator.prototype = {
       container = $(container);
     }
 
+    // donot invoke scroll if scrolling is disabled
+    // first test if scrolling is enabled on the scrolling container
+    if(container.tagName.toLowerCase() == 'html') {
+      // on document body
+      if(document.body.style.overflow == 'hidden'
+        || document.body.style.overflowY == 'hidden'
+        || document.body.scroll == 'no') // IE 
+      return;
+    }
+    else {
+      // on element
+      if(containe.style.overflow == 'hidden'
+        || document.body.style.overflowY == 'hidden')
+      return;
+    }
+
     // test if the node in 'in view'
     _container_y_start = container.scrollTop;
     _container_y_end   = _container_y_start + container.clientHeight;
