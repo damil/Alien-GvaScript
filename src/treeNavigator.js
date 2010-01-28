@@ -303,6 +303,7 @@ GvaScript.TreeNavigator.prototype = {
     if(typeof container == 'string') {
       container = $(container);
     }
+    if(!container) return;
 
     // donot invoke scroll if scrolling is disabled
     // first test if scrolling is enabled on the scrolling container
@@ -315,8 +316,8 @@ GvaScript.TreeNavigator.prototype = {
     }
     else {
       // on element
-      if(containe.style.overflow == 'hidden'
-        || document.body.style.overflowY == 'hidden')
+      if(container.style.overflow == 'hidden'
+        || container.style.overflowY == 'hidden')
       return;
     }
 
