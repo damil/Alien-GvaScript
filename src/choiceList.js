@@ -117,8 +117,8 @@ GvaScript.ChoiceList.prototype = {
     // can we unregister the keymap ?
 
 
-    // highlight the first choice
-    this._highlightChoiceNum(0, false);
+    // highlight the initial value or the first choice
+    this._highlightChoiceNum(this.currentHighlightedIndex || 0, false);
   },
 
   updateContainer: function(container, list) {

@@ -1,10 +1,6 @@
 /**
 
 TODO:
-  - if ignorePrefix, should highlight current value (not the 1st one)
-      a) change in _updateChoicesFunction (because there might be an
-         initial value in the form)
-
   - messages : choose language
 
   - multivalue :
@@ -328,8 +324,19 @@ GvaScript.AutoCompleter.prototype = {
   },
 
   _updateChoicesFromArray : function(val_to_complete, continuation) {
-    if (this.options.ignorePrefix)
-        continuation(this._datasource);
+    if (this.options.ignorePrefix) {
+      // store the index of the initial value
+      if (val_to_complete) {
+        this._idx_to_hilite = (val_to_complete == ''? 0 : -1);
+        $A(this._datasource).each(function(choice, index) {
+          if(choice.toLowerCase().startsWith(val_to_complete.toLowerCase())) {
+            this._idx_to_hilite = index;
+            throw $break;
+          }
+        }, this);
+      }
+      continuation(this._datasource);
+    }
     else {
       var regex = new RegExp("^" + RegExp.escape(val_to_complete),
                              this.options.caseSensitive ? "" : "i");
@@ -771,7 +778,7 @@ GvaScript.AutoCompleter.prototype = {
         choiceItemTagName : this.options.choiceItemTagName,
         htmlWrapper       : this.options.htmlWrapper
       });
-
+      cl.currentHighlightedIndex = ac._idx_to_hilite;
 
       // TODO: explain and publish method "choiceElementHTML", or redesign
       // and make it a private method
