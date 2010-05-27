@@ -157,7 +157,7 @@ GvaScript.TreeNavigator.prototype = {
   },
 
   isVisible: function(elem) { // true if elem is not display:none
-    return elem.offsetTop > -1;
+    return !(elem.offsetWidth == 0 && elem.offsetHeight == 0);
   },
 
   isLeaf: function(node) {
