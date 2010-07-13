@@ -37,7 +37,7 @@ GvaScript.Form.Methods = {
 
     // IMPLEMENTATION NOTE : Form.Element.setValue() is quite similar,
     // but our treatment of arrays is different, so we have to reimplement
-    var _fill_from_value = function(elem, val, is_init) {
+    var _fill_from_value = function(form, elem, val, is_init) {
 
       // force val into an array
       if (!(val instanceof Array)) val = [val];
@@ -47,6 +47,13 @@ GvaScript.Form.Methods = {
       var new_value = null;
 
       switch (elem.type) {
+
+        case "text" :
+        case "textarea" :
+        case "hidden" :
+          old_value  = elem.value;
+          elem.value = new_value = val.join(",");
+        break;
 
         case "checkbox" :
         case "radio":
@@ -64,39 +71,35 @@ GvaScript.Form.Methods = {
           new_value = elem.checked ? elem_val : null;
         break;
 
-        case "text" :
-        case "textarea" :
-        case "hidden" :
-          old_value  = elem.value;
-          elem.value = new_value = val.join(",");
-        break;
-
         case "select-one" :
         case "select-multiple" :
           var options = elem.options;
-          var old_values = [];
+          var old_values = [],
+              new_values = [];
           for (var i=0, len=options.length; i<len; i++) {
             var opt = options[i];
-            var opt_value = opt.hasAttribute('value') ? opt.value : opt.text;
+            var opt_value = opt.value || opt.text;
             if (opt.selected) old_values.push(opt_value);
             // hand-crafted loop through val array (because val.include() is too slow
             opt.selected = false;
             for (var count = val.length; count--;) {
               if (val[count] == opt_value) {
+                new_values.push(opt_value);
                 opt.selected = true;
                 break;
               }
             }
           }
           old_value = old_values.join(",");
+          new_value = new_values.join(",");
         break;
 
         default:
           // if no element type, might be a node list
           var elem_length = elem.length;
-          if (elem_length  !== undefined) {
+          if (elem_length !== undefined) {
             for (var i=0; i < elem_length; i++) {
-              _fill_from_value(elem.item(i), val, is_init);
+              _fill_from_value(form, elem.item(i), val, is_init);
             }
           }
           else
@@ -104,21 +107,19 @@ GvaScript.Form.Methods = {
         break;
       } // end switch
 
-      // called as a subsequence of GvaScript.Form.init method
-      try {
-
-        // DAL 28.06.2010: Element.fire is extremely slow, while
-        // this.fireEvent is much faster. 
-        // NEED TO CHECK CHANGE WITH MONA (impact on client code)
-        // also : WHY IS THIS CODE IN A TRY BLOCK ?
-
-        if(is_init)
-          Element.fire(elem, 'value:init',   {newvalue: new_value}); 
-//          this.fireEvent('Init', {newvalue: new_value});
-        else
+      // if initializing form
+      //   and form has an init handler registered to its inputs
+      //   and elem has a new_value set
+      // => fire the custom 'value:init' event
+      if (is_init) {
+        if (form.has_init_registered)
+          if (new_value)
+            Element.fire(elem, 'value:init', {newvalue: new_value}); 
+      }
+      else {
+        if (new_value != old_value)
           Element.fire(elem, 'value:change', {oldvalue: old_value, newvalue: new_value});
-//          this.fireEvent('Change', {oldvalue: old_value, newvalue: new_value});
-      } catch(e) {}
+      }
     }
 
     var _fill_from_array = function (form, field_prefix, array, is_init) {
@@ -128,7 +129,7 @@ GvaScript.Form.Methods = {
         // if form has a corresponding named element, fill it
         var elem = form[new_prefix];
         if (elem) {
-          _fill_from_value(elem, array[i], is_init);
+          _fill_from_value(form, elem, array[i], is_init);
           continue;
         }
 
@@ -173,7 +174,7 @@ GvaScript.Form.Methods = {
           case "number":
               var elem = form[new_prefix];
               if (elem)
-              _fill_from_value(elem, val, is_init);
+              _fill_from_value(form, elem, val, is_init);
               break;
 
           case "object":
@@ -194,7 +195,8 @@ GvaScript.Form.Methods = {
 
   autofocus: function(container) {
 
-    container = $(container);
+    if (container instanceof String) 
+      container = document.getElementById(container);
 
     // replace prototype's down selector
     // as it performs slowly on IE6
@@ -205,7 +207,7 @@ GvaScript.Form.Methods = {
         _kid = _kids[_idx ++];
 
         if(_kid.nodeType == 1) {
-          if(_kid.hasAttribute('autofocus')) {
+          if(Element.hasAttribute(_kid, 'autofocus')) {
             return _kid;
           }
           else {
@@ -278,6 +280,11 @@ GvaScript.Form.Methods = {
         // value:init fired by GvaScript.Form.fill_from_tree method
         // used in formElt initialization
         case 'init':
+          // set a flag here in order to fire the 
+          // value:init custom event while initializing
+          // the form 
+          form.has_init_registered = true;
+
           form.register(query, 'value:init', function(event) {
               handler(event, event.memo.newvalue);
           });
