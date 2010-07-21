@@ -157,7 +157,7 @@ GvaScript.Form.Methods = {
     }
 
     function fill_from_tree(form, field_prefix, tree, is_init)  {
-      if (form instanceof String) form = $(form);
+      if (Object.isString(form)) form = $(form);
 
       for (var key in tree) {
         if (!tree.hasOwnProperty(key)) continue;
@@ -195,7 +195,7 @@ GvaScript.Form.Methods = {
 
   autofocus: function(container) {
 
-    if (container instanceof String) 
+    if (Object.isString(container)) 
       container = document.getElementById(container);
 
     // replace prototype's down selector
