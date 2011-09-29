@@ -261,12 +261,17 @@ GvaScript.AutoCompleter.prototype = {
 
     Element.addClassName(inputElement, this.classes.loading);
 
-    // encode value to complete if sent to controller via a URL param
-    var complete_url = this._datasource + ( 
-                           this._datasource.match('\\?')
-                           ? encodeURIComponent(val_to_complete)
-                           : val_to_complete 
-                         );
+    // encode value to complete 
+    val_to_complete = val_to_complete.split("").map(function (c) {
+      if (c.match(/[@\+\/]/)) {
+        return encodeURIComponent(c);
+      }
+      else {
+        return escape(c);
+      }
+    }).join("");
+    
+    var complete_url = this._datasource + val_to_complete;
 
     this._runningAjax[inputElement.name] = new Ajax.Request(
       complete_url,
