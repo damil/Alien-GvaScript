@@ -136,6 +136,7 @@ GvaScript.KeyMap.KEYS = {
         44: "PRINT_SCREEN", // MSIE6.0: will only fire on keyup!
         45: "INSERT",
         46: "DELETE",
+        53: "OPEN_BRACKET",
         91: "WINDOWS",
         96: "KP_0",
         97: "KP_1",
@@ -166,7 +167,8 @@ GvaScript.KeyMap.KEYS = {
         123: "F12",
         144: "NUM_LOCK",
         145: "SCROLL_LOCK",
-        190: "DOT"
+        190: "DOT",
+        219: "CLOSE_BRACKET"
     },
     META_KEYS: {
         8   : 'KEY_BACKSPACE',
